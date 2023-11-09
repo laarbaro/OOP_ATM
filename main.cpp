@@ -6,3 +6,4 @@ int main() {
     std::cout << "Hello, World!\n";
     return 0;
 }
+//코드 수정_ivy12
