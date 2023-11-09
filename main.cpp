@@ -5,47 +5,39 @@ using namespace std;
 
 class ATM{
 private: 
-    const int SerialNumber;
-    string PrimaryBank;
-    string NonPrimaryBank = [];
-    int AvailableCash = 0;
-		int 2_DP = 1000;
-    int 1_WD = 1000;
-    int 2_WD = 2000;
-    int 1_1_TR = 2000;
-    int 1_2_TR = 3000;
-    int 2_2_TR = 4000;
-    int Cash_TR = 5000;
-    Account* admin;
-    static string[] History = [];
-    bool IsBilingual = false;
-		bool IsMultiBank = false;
-		static int NumberOfATM;
+	const int SerialNumber;
+	string PrimaryBank;
+	string NonPrimaryBank = [];
+	int AvailableCash = 0;
+	Account* admin;
+	static string[] History = [];
+	bool IsBilingual = false;
+	bool IsMultiBank = false;
+	static int NumberOfATM;
+//int DP_2 = 1000; int WD_1 = 1000; int WD_2 = 2000;int TR_1_1 = 2000;int TR_1_2 = 3000;int TR_2_2 = 4000;int Cash_TR = 5000;
 
 public:
-		//영우의 일거리
-    ATM()//기본값으로 설정, Bank는 아무거나 설정
-    ATM(int, Bank*, bool=false, bool=false);//SerialNumber, PrimaryBank, multibank 여부, bilingual 여부
-    ~ATM();
-		int get_SerialNumber();
-    bool get_IsMultiBank();
-		void Withdraw(int, string, string, int, string)//amount, bank, username, AccountNum, password //bank에서 계좌 확인 후 limit 안넘으면 출금, bank 확인해 fee 결정해 빼고 출금, ATM의 available_cash 감소, 최대 50만원 withdraw 가능    
-		void Transfer(string, string, int, string, string, int) //bank1, username, AccountNum, password, bank2, amount//fee 고려, amount+fee 잔액 확인
-    void Open_Account(string, string, int, string, int, int)//bank, username, AccountNum, password, account number, available fund
-		void Deposit(int, account*);//cash total 개수, 계좌
-
-	  //유리의 일거리
-		void CheckInput();//cash인지 check인지 확인해 CheckCash 또는 CheckCheck 호출
-    void CheckCash(mapset, string, string, string, string);//cash 종류별 개수, bank, username, accountnum, password
-    void CheckCheck(int[], string, int, string);//amount, username, accountnum, password
-    void Display(int, string, int, int, string, bool)//이동한 금액, username, AccountNum, card number, bank, externalFile=False 필요여부//이름 받아 transaction 결과 보여줌, 각 transaction에서 호출, external file True면 external file로 출력
-    void Authorize(int, string, int)//card number, username, AccountNum//함수 내에서 password 요구 및 확인 필요, 최대 3번 요구 후 return card
-    void EndSession() // History에서 withdraw 3번 넘으면 session 종료
-    void check_admin(int)//card number //admin이면 transaction history 메뉴 보여줌
-		int get_cash();
-		static string[] get_History();
-
-		
+//영우의 일거리
+	ATM()//기본값으로 설정, Bank는 아무거나 설정
+	ATM(int, Bank*, bool=false, bool=false);//SerialNumber, PrimaryBank, multibank 여부, bilingual 여부
+	~ATM();
+	int get_SerialNumber();
+	bool get_IsMultiBank();
+	void Withdraw(int, string, string, int, string)//amount, bank, username, AccountNum, password //bank에서 계좌 확인 후 limit 안넘으면 출금, bank 확인해 fee 결정해 빼고 출금, ATM의 available_cash 감소, 최대 50만원 withdraw 가능    
+	void Transfer(string, string, int, string, string, int) //bank1, username, AccountNum, password, bank2, amount//fee 고려, amount+fee 잔액 확인
+	void Open_Account(string, string, int, string, int, int)//bank, username, AccountNum, password, account number, available fund
+	void Deposit(int, account*);//cash total 개수, 계좌
+	
+	//유리의 일거리
+	void CheckInput();//cash인지 check인지 확인해 CheckCash 또는 CheckCheck 호출
+	void CheckCash(mapset, string, string, string, string);//cash 종류별 개수, bank, username, accountnum, password
+	void CheckCheck(int[], string, int, string);//amount, username, accountnum, password
+	void Display(int, string, int, int, string, bool)//이동한 금액, username, AccountNum, card number, bank, externalFile=False 필요여부//이름 받아 transaction 결과 보여줌, 각 transaction에서 호출, external file True면 external file로 출력
+	void Authorize(int, string, int)//card number, username, AccountNum//함수 내에서 password 요구 및 확인 필요, 최대 3번 요구 후 return card
+	void EndSession() // History에서 withdraw 3번 넘으면 session 종료
+	void check_admin(int)//card number //admin이면 transaction history 메뉴 보여줌
+	int get_cash();
+	static string[] get_History();		
 }
 
 //Youngwoo
