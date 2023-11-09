@@ -252,6 +252,61 @@ ATM::Authorize(string Username, int AccountNum, string Password, Bank* Bank){
     
 }
 
+#include <iostream>
+#include <string>
+#include <unordered_map>
+
+// Account 클래스 정의
+class Account {
+private:
+    string accountNumber;
+    double balance;
+
+public:
+    // Account 생성자 정의
+    Account(const string& accNum, double initialBalance) : accountNumber(accNum), balance(initialBalance) {}
+
+    // 다른 추가 가능 추가
+};
+
+// Bank 클래스 정의
+class Bank {
+private:
+    string bankName;
+    unordered_map<string, Account> accounts; // 계좌 번호를 키로 사용
+
+public:
+    // Bank 생성자 정의
+    Bank(const string& name) : bankName(name) {}
+
+    // 은행 이름을 반환하는 함수
+    const string& getBankName() const {
+        return bankName;
+    }
+
+    // 특정 계좌를 찾는 함수
+    Account* findAccount(const string& accountNumber) {
+        auto it = accounts.find(accountNumber);
+        if (it != accounts.end()) {
+            return &it->second;
+        }
+        return nullptr; // 계좌를 찾지 못한 경우 nullptr 반환
+    }
+
+    // 계좌 추가 함수
+    void addAccount(const string& accountNumber, double initialBalance) {
+        // 이미 존재하는 계좌인지 확인하고 추가
+        if (findAccount(accountNumber) == nullptr) {
+            accounts[accountNumber] = Account(accountNumber, initialBalance);
+        }
+    }
+};
+
+
 int main() {
 		return 0;
 }
+
+
+
+
