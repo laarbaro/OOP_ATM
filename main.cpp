@@ -365,7 +365,9 @@ public:
 };
 
 int main() {
-    // 예제 사용법:
+	
+    // 지영 예제 사용법:
+	
     Bank myBank;
 
     // 계정 생성 및 추가
@@ -387,11 +389,6 @@ int main() {
     }
 
     return 0;
-}
-
-
-int main() {
-		return 0;
 }
 
 
