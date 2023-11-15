@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string.h>
+#include <unordered_map>
 
 using namespace std;
 
@@ -252,55 +253,141 @@ ATM::Authorize(string Username, int AccountNum, string Password, Bank* Bank){
     
 }
 
-#include <iostream>
-#include <string>
-#include <unordered_map>
 
-// Account 클래스 정의
-class Account {
-private:
-    string accountNumber;
-    double balance;
 
-public:
-    // Account 생성자 정의
-    Account(const string& accNum, double initialBalance) : accountNumber(accNum), balance(initialBalance) {}
 
-    // 다른 추가 가능 추가
+
+///황지영
+
+
+class Card {
+    // Card 클래스 정의
+    // (필요에 따라 Card 클래스의 구현을 추가)
 };
 
-// Bank 클래스 정의
+class Account;
+
 class Bank {
 private:
-    string bankName;
-    unordered_map<string, Account> accounts; // 계좌 번호를 키로 사용
+    unordered_map<std::string, Account> accounts; // 계좌 번호를 키로 사용
+    Card bankCard;
 
 public:
-    // Bank 생성자 정의
-    Bank(const string& name) : bankName(name) {}
-
-    // 은행 이름을 반환하는 함수
-    const string& getBankName() const {
-        return bankName;
-    }
-
-    // 특정 계좌를 찾는 함수
-    Account* findAccount(const string& accountNumber) {
-        auto it = accounts.find(accountNumber);
-        if (it != accounts.end()) {
-            return &it->second;
-        }
-        return nullptr; // 계좌를 찾지 못한 경우 nullptr 반환
-    }
-
-    // 계좌 추가 함수
-    void addAccount(const string& accountNumber, double initialBalance) {
+    // Account 생성 및 추가
+    void createAccount(const string& accountNum, const string& password, const string& ownerName) {
         // 이미 존재하는 계좌인지 확인하고 추가
-        if (findAccount(accountNumber) == nullptr) {
-            accounts[accountNumber] = Account(accountNumber, initialBalance);
+        if (accounts.find(accountNum) == accounts.end()) {
+            accounts[accountNum] = Account(accountNum, password, ownerName, this);
+        }
+    }
+
+    // 사용자 정보를 출력하는 함수
+    void allAccount(const string& username) {
+        cout << "사용자 " << username << "의 모든 계정 정보:" << endl;
+        for (const auto& entry : accounts) {
+            const Account& account = entry.second;
+            if (account.getOwnerName() == username) {
+                cout << "계좌 번호: " << account.getAccountNum() << ", ";
+                cout << "잔액: " << account.getBalance() << endl;
+            }
+        }
+    }
+
+    // 사용자 정보를 확인하는 함수
+    bool verifyUser(const string& username, const string& accountNum, const string& password) {
+        auto it = accounts.find(accountNum);
+        if (it != accounts.end()) {
+            const Account& account = it->second;
+            return (account.getOwnerName() == username && account.verifyPW(password));
+        }
+        return false; // 사용자 확인 실패
+    }
+
+    // 계정 정보를 확인하는 함수
+    bool verifyAccount(const string& accountNum, const string& password) {
+        auto it = accounts.find(accountNum);
+        return (it != accounts.end() && it->second.verifyPW(password));
+    }
+};
+
+class Account {
+private:
+    string accountNum;
+    string password;
+    string ownerName;
+    Card associatedCard;
+    int balance;
+    Bank* myBank; // Bank 클래스의 전방 선언 사용
+
+public:
+    // 생성자: AccountNum, Password, OwnerName 설정
+    Account(const string& accountNum, const string& password, const string& ownerName, Bank* bank)
+        : accountNum(accountNum), password(password), ownerName(ownerName), myBank(bank), balance(0) {}
+
+    // Password 검증 함수
+    bool verifyPW(const std::string& enteredPassword) const {
+        return (password == enteredPassword);
+    }
+
+    // AccountNum 반환 함수
+    const std::string& getAccountNum() const {
+        return accountNum;
+    }
+
+    // OwnerName 반환 함수
+    const std::string& getOwnerName() const {
+        return ownerName;
+    }
+
+    // Bank 반환 함수
+    Bank* getBank() const {
+        return myBank;
+    }
+
+    // 잔액 조회 함수
+    int getBalance() const {
+        return balance;
+    }
+
+    // 입금 함수
+    void deposit(int amount) {
+        balance += amount;
+    }
+
+    // 출금 함수
+    void withdraw(int amount) {
+        if (amount <= balance) {
+            balance -= amount;
+        } else {
+            std::cout << "잔액이 부족합니다." << std::endl;
         }
     }
 };
+
+int main() {
+    // 예제 사용법:
+    Bank myBank;
+
+    // 계정 생성 및 추가
+    myBank.createAccount("123", "password123", "JohnDoe");
+    myBank.createAccount("456", "pass456", "JaneDoe");
+    myBank.allAccount("JohnDoe"); // JohnDoe의 계정 출력
+
+    // 사용자 및 계정 확인
+    if (myBank.verifyUser("JohnDoe", "123", "password123")) {
+        std::cout << "사용자 확인 성공." << std::endl;
+    } else {
+        std::cout << "사용자 확인 실패." << std::endl;
+    }
+
+    if (myBank.verifyAccount("123", "password123")) {
+        std::cout << "계정 확인 성공." << std::endl;
+    } else {
+        std::cout << "계정 확인 실패." << std::endl;
+    }
+
+    return 0;
+}
 
 
 int main() {
