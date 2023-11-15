@@ -269,7 +269,7 @@ class Account;
 
 class Bank {
 private:
-    unordered_map<std::string, Account> accounts; // 계좌 번호를 키로 사용
+    unordered_map<string, Account> accounts; // 계좌 번호를 키로 사용
     Card bankCard;
 
 public:
