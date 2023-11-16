@@ -35,6 +35,7 @@ private:
 	bool IsBilingual = false;
 	bool IsMultiBank = false;
 	static int NumberOfATM;
+	map<string, Bank*> BankMap; 
 
 //int DP_2 = 1000; int WD_1 = 1000; int WD_2 = 2000;int TR_1_1 = 2000;int TR_1_2 = 3000;int TR_2_2 = 4000;int Cash_TR = 5000;
 
@@ -51,32 +52,41 @@ public:
 	static string* get_History();
 	//card 받는 함수 추가하기!
 }
+
+//-------------------------------------ATM-------------------------------------------
 //Youngwoo
 ATM::ATM() : ATM(NumberOfATM, "Default", false, false) {
-    cout << "primary bank: " << endl;
-    cin >> PrimaryBank;
-    cout << "Multibank? y or n" << endl;
-    cin >> tmp;
-    while(1) {
-        if (tmp == "y") {IsMultiBank = true; break;}
-        else if(tmp == "n") {IsMultiBank = false; break;}
-        else{
-            cout << "You should input the value y or n. Case sensitive." << endl;
-            cout << "Multibank? y or n" << endl;
-            cin >> tmp;
-        }
-    }
-    cout << "Bilingual? y or n" << endl;
-    cin >> tmp;
-    while(1) {
-        if (tmp == "y") {IsBilingual = true; break;}
-        else if(tmp == "n") {IsBilingual = false; break;}
-        else{
-            cout << "You should input the value y or n. Case sensitive." << endl;
-            cout << "Multibank? y or n" << endl;
-            cin >> tmp;
-        }
-    };
+	Bank* bankpointer;
+	cout << "primary bank name: " << endl;
+	cin >> PrimaryBank;
+	cout << "primary bank pointer: " << endl;
+	cin >> bankpointer;
+	BankMap.insert({PrimaryBank, bankpointer});
+	cout << "Multibank? y or n" << endl;
+	cin >> tmp;
+	while(1) {
+	        if (tmp == "y") {
+			IsMultiBank = true; 
+			//main함수의 banklist에 들어있는 다른 은행들을 nonprimarybank list와 bankmap에 넣기
+			break;}
+	        else if(tmp == "n") {IsMultiBank = false; break;}
+	        else{
+	            cout << "You should input the value y or n. Case sensitive." << endl;
+	            cout << "Multibank? y or n" << endl;
+	            cin >> tmp;
+	        }
+	}
+	cout << "Bilingual? y or n" << endl;
+	cin >> tmp;
+	while(1) {
+	        if (tmp == "y") {IsBilingual = true; break;}
+	        else if(tmp == "n") {IsBilingual = false; break;}
+	        else{
+	            cout << "You should input the value y or n. Case sensitive." << endl;
+	            cout << "Multibank? y or n" << endl;
+	            cin >> tmp;
+	        }
+	};
 
 }
 ATM::ATM(int snum, Bank* primary, bool maltibank=false, bool bilingual=false) {
@@ -84,6 +94,7 @@ ATM::ATM(int snum, Bank* primary, bool maltibank=false, bool bilingual=false) {
 	SerialNumber = snum;
 	PrimaryBank = primary;
 	IsMultiBank = multibank;
+	//main함수의 banklist에 들어있는 다른 은행들을 nonprimarybank list와 bankmap에 넣기
 	IsBilingual = bilingual;
 	NumberOfATM++;
 
@@ -100,9 +111,7 @@ bool ATM::get_IsMultiBank() {
     return IsMultiBank;
 }
 
-
-//Youri
-
+//-------------------------------------Session---------------------------------------
 void Session::Withdraw(int, string, string, int, string) {
     //amount, bank, username, AccountNum, password
     //bank에서 계좌 확인 후 limit 안넘으면 출금, bank 확인해 fee 결정해 빼고 출금, ATM의 available_cash 감소, 최대 50만원 withdraw 가능
@@ -179,9 +188,6 @@ void Session::Deposit(int, account*) {
 	}
 
 }
-
-
-//Youri
 Session::CheckCash() {
 //declaration
     	map<int, int>inputmap;
@@ -372,7 +378,7 @@ public:
 };
 
 int main() {
-	
+	//bank list
 	ATM ShinhanATM;
 	ATM DaeguATM;
 	
