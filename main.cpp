@@ -20,7 +20,7 @@ public:
 	void Display(int, string, int, int, string, bool)//이동한 금액, username, AccountNum, card number, bank, externalFile=False 필요여부//이름 받아 transaction 결과 보여줌, 각 transaction에서 호출, external file True면 external file로 출력
 	void Authorize(int, string, int)//card number, username, AccountNum//함수 내에서 password 요구 및 확인 필요, 최대 3번 요구 후 return card
 	void EndSession() // History에서 withdraw 3번 넘으면 session 종료
-	void check_admin(int)//card number //admin이면 transaction history 메뉴 보여줌
+	
 }
 
 class ATM{
@@ -43,7 +43,8 @@ public:
 	~ATM();
 	int get_SerialNumber();
 	bool get_IsMultiBank();
-	
+	int get_AvailableCash();
+	void check_admin(int)//card number //admin이면 transaction history 메뉴 보여줌
 	int get_cash();
 	static string[] get_History();		
 }
