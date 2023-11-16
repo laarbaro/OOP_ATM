@@ -4,6 +4,11 @@
 
 using namespace std;
 
+class Session{
+private: 
+public:
+}
+
 class ATM{
 private: 
 	const int SerialNumber;
