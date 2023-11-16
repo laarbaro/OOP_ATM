@@ -101,11 +101,6 @@ bool ATM::get_IsMultiBank() {
 
 //Youri
 
-
-
-
-
-
 void Session::Withdraw(int, string, string, int, string) {
     //amount, bank, username, AccountNum, password
     //bank에서 계좌 확인 후 limit 안넘으면 출금, bank 확인해 fee 결정해 빼고 출금, ATM의 available_cash 감소, 최대 50만원 withdraw 가능
