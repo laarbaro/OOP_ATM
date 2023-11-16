@@ -43,7 +43,30 @@ public:
 
 //Youngwoo
 ATM::ATM() : ATM(NumberOfATM, "Default", false, false) {
-    //
+    cout << "primary bank: " << endl;
+    cin >> PrimaryBank;
+    cout << "Multibank? y or n" << endl;
+    cin >> tmp;
+    while(1) {
+        if (tmp == "y") {IsMultiBank = true; break;}
+        else if(tmp == "n") {IsMultiBank = false; break;}
+        else{
+            cout << "You should input the value y or n. Case sensitive." << endl;
+            cout << "Multibank? y or n" << endl;
+            cin >> tmp;
+        }
+    }
+    cout << "Bilingual? y or n" << endl;
+    cin >> tmp;
+    while(1) {
+        if (tmp == "y") {IsBilingual = true; break;}
+        else if(tmp == "n") {IsBilingual = false; break;}
+        else{
+            cout << "You should input the value y or n. Case sensitive." << endl;
+            cout << "Multibank? y or n" << endl;
+            cin >> tmp;
+        }
+    }
 }
 ATM::ATM(int snum, Bank* primary, bool maltibank=false, bool bilingual=false) {
     //SerialNumber, PrimaryBank, multibank 여부, bilingual 여부
