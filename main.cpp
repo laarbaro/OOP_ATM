@@ -30,7 +30,7 @@ private:
 	string NonPrimaryBank = [];
 	int AvailableCash = 0;
 	Account* admin;
-	static string[] History = [];
+	static string* History = [];
 	bool IsBilingual = false;
 	bool IsMultiBank = false;
 	static int NumberOfATM;
@@ -46,7 +46,8 @@ public:
 	int get_AvailableCash();
 	void check_admin(int)//card number //admin이면 transaction history 메뉴 보여줌
 	int get_cash();
-	static string[] get_History();		
+	static string* get_History();
+	//card 받는 함수 추가하기!
 }
 
 //Youngwoo
