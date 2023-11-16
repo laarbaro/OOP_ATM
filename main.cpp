@@ -35,6 +35,7 @@ private:
 	bool IsBilingual = false;
 	bool IsMultiBank = false;
 	static int NumberOfATM;
+
 //int DP_2 = 1000; int WD_1 = 1000; int WD_2 = 2000;int TR_1_1 = 2000;int TR_1_2 = 3000;int TR_2_2 = 4000;int Cash_TR = 5000;
 
 public:
@@ -49,7 +50,6 @@ public:
 	int get_cash();
 	static string* get_History();
 	//card 받는 함수 추가하기!
-	int& operator[](int);
 }
 //Youngwoo
 ATM::ATM() : ATM(NumberOfATM, "Default", false, false) {
@@ -76,20 +76,22 @@ ATM::ATM() : ATM(NumberOfATM, "Default", false, false) {
             cout << "Multibank? y or n" << endl;
             cin >> tmp;
         }
-    }
+    };
+
 }
 ATM::ATM(int snum, Bank* primary, bool maltibank=false, bool bilingual=false) {
-    //SerialNumber, PrimaryBank, multibank 여부, bilingual 여부
-    SerialNumber = snum;
-    PrimaryBank = primary;
-    IsMultiBank = multibank;
-    IsBilingual = bilingual;
-    NumberOfATM++;
+	//SerialNumber, PrimaryBank, multibank 여부, bilingual 여부
+	SerialNumber = snum;
+	PrimaryBank = primary;
+	IsMultiBank = multibank;
+	IsBilingual = bilingual;
+	NumberOfATM++;
+
 }
 ATM::~ATM() {
-    //
-    NumberOfATM--;
-    //detach?
+	//
+	NumberOfATM--;
+	//detach?
 }
 int ATM::get_SerialNumber() {
     return SerialNumber;
@@ -153,17 +155,34 @@ void Session::Open_Account(string, string, int, string, int) {
     Account(bankName, userName, pw);
 }
 void Session::Deposit(int, account*) {
-    //cash total 개수, 계좌
-    cout << "입금하실 금액을 입력하세요." << endl;
-    cin >> int d;
-    if (d > limit) {
-        cout << "입금가능한 금액을 초과하였습니다." << endl;
-    }
-    else {
-        accout.Deposit(d-fee);
-        AvailableCash += d;
-        cout << d << "원이 입금되었습니다." << endl;
-    }
+    //Receiving Account
+	cout << "====================Cash Deposit====================" << endl;
+	cout << "Which Bank do you want to deposit?" << endl;
+	cin >> Bank1;
+	cout <<"What is your name?" << endl;
+	cin >> Username1;
+	cout << "Please write your Account Number and Password" << endl;
+	cin >> AccountNum1, Password1;
+	
+	cout << "Authorizing your account..." << endl;
+	if Authorize(Username1, AccountNum1, Password1) {
+	        cout << "Successfully Authorized Your Account!" << endl;  
+	        //Saving Cash
+	        if (Bank1 == this->PrimaryBank){
+	            Bank1->getAccount(AccountNum1)->Amount += InputAmount; 
+	        }else{
+	            Bank1->getAccount(AccountNum1)->Amount += (InputAmount-this->2_DP);
+	        }
+	        cout << "Successfully Deposited!" << endl;
+	        cout << "Bank : " << Bank1->getName();
+	        cout << " Account Number : " << AccountNum1;
+	        cout << " Total Amount of Saving : " << Bank1->getAccount(AccountNum1)->Deposit(InputAmount) << endl;
+	} else {
+	        cout << "Failed to Deposit." << endl;
+	}
+	cout << "===Thanks for Using Deposit Service of this ATM====" << endl;
+	}
+
 }
 
 
@@ -193,34 +212,7 @@ Session::CheckCash() {
 	        InputAmount+=(iter->second * iter->first);//원화 단위 * 개수     
 	};
 	
-//Receiving Account
-	cout << "====================Cash Deposit====================" << endl;
-	cout << "Which Bank do you want to deposit?" << endl;
-	cin >> Bank1;
-	cout <<"What is your name?" << endl;
-	cin >> Username1;
-	cout << "Please write your Account Number and Password" << endl;
-	cin >> AccountNum1, Password1;
-	
-	cout << "Authorizing your account..." << endl;
-	if Authorize(Username1, AccountNum1, Password1) {
-	        cout << "Successfully Authorized Your Account!" << endl;  
-	        //Saving Cash
-	        if (Bank1 == this->PrimaryBank){
-	            Bank1->getAccount(AccountNum1)->Amount += InputAmount; 
-	        }else{
-	            Bank1->getAccount(AccountNum1)->Amount += (InputAmount-this->2_DP);
-	        }
-	        cout << "Successfully Deposited!" << endl;
-	        cout << "Bank : " << Bank1->getName();
-	        cout << " Account Number : " << AccountNum1;
-	        cout << " Total Amount of Saving : " << Bank1->getAccount(AccountNum1)->Amount << endl;
-	} else {
-	        cout << "Failed to Deposit." << endl;
-	}
-	cout << "===Thanks for Using Deposit Service of this ATM====" << endl;
-	}
-
+};
 Session::CheckCheck() {
 	//declaration
     	int NumCheck2;
@@ -270,9 +262,6 @@ Session::Authorize(string Username, int AccountNum, string Password, Bank* Bank)
     	};
     
 };
-
-int& ATM::operator[](int index){    
-	if(idx<0 || idx>=arrlen)    {      cout<<"Array index out of bound exception"<<endl;      exit(1);    }    return arr[idx];  }
 
 
 ///황지영
