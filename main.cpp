@@ -4,6 +4,11 @@
 
 using namespace std;
 
+class Card{
+private:
+public:
+}
+
 class Session{
 private: 
 
