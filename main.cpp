@@ -301,6 +301,10 @@ class Card {
 class Account;
 
 class Bank {
+//어디 은행인지 알려주는 기능 
+// 뱅크가 어카운트에 대한 포인터가 있어야함. 
+
+
 private:
     unordered_map<string, Account> accounts; // 계좌 번호를 키로 사용
     Card bankCard;
@@ -344,6 +348,7 @@ public:
 };
 
 class Account {
+
 private:
     string accountNum;
     string password;
