@@ -97,7 +97,16 @@ int ATM::get_SerialNumber() {
 bool ATM::get_IsMultiBank() {
     return IsMultiBank;
 }
-void ATM::Withdraw(int, string, string, int, string) {
+
+
+//Youri
+
+
+
+
+
+
+void Session::Withdraw(int, string, string, int, string) {
     //amount, bank, username, AccountNum, password
     //bank에서 계좌 확인 후 limit 안넘으면 출금, bank 확인해 fee 결정해 빼고 출금, ATM의 available_cash 감소, 최대 50만원 withdraw 가능
     cout << "출금하실 금액을 입력하세요." << endl;
@@ -115,7 +124,7 @@ void ATM::Withdraw(int, string, string, int, string) {
         cout << w << "원이 인출되었습니다." << endl;
     }
 }
-void ATM::Transfer(string, string, int, string, string, int) {
+void Session::Transfer(string, string, int, string, string, int) {
     //bank1, username, AccountNum, password, bank2, amount
     //fee 고려, amount+fee 잔액 확인
     cout << "이체하실 금액을 입력하세요." << endl;
@@ -133,7 +142,7 @@ void ATM::Transfer(string, string, int, string, string, int) {
         cout << t << "원 송금이 완료되었습니다." << endl;
     }
 }
-void ATM::Open_Account(string, string, int, string, int) {
+void Session::Open_Account(string, string, int, string, int) {
     //bank, username, AccountNum, password, (account number->있었는데 삭제, available fund
     cout << "은행 이름을 입력하세요." << endl;
     cin << string bankName << endl;
@@ -143,7 +152,7 @@ void ATM::Open_Account(string, string, int, string, int) {
     cin << int pw << endl;
     Account(bankName, userName, pw);
 }
-void ATM::Deposit(int, account*) {
+void Session::Deposit(int, account*) {
     //cash total 개수, 계좌
     cout << "입금하실 금액을 입력하세요." << endl;
     cin >> int d;
@@ -156,6 +165,7 @@ void ATM::Deposit(int, account*) {
         cout << d << "원이 입금되었습니다." << endl;
     }
 }
+
 
 //Youri
 Session::CheckCash() {
@@ -231,6 +241,7 @@ Session::CheckCheck() {
         	cin >> inputCheck;
         	InputAmount2 += inputCheck;
     	}
+
     
 };
 
@@ -262,7 +273,6 @@ Session::Authorize(string Username, int AccountNum, string Password, Bank* Bank)
 
 int& ATM::operator[](int index){    
 	if(idx<0 || idx>=arrlen)    {      cout<<"Array index out of bound exception"<<endl;      exit(1);    }    return arr[idx];  }
-
 
 
 ///황지영
