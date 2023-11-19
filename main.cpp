@@ -104,7 +104,7 @@ ATM::~ATM() {
 	NumberOfATM--;
 	//detach?
 }
-int ATM::get_SerialNumber() {
+int ATM::get_SerialNumber() { 
     return SerialNumber;
 }
 bool ATM::get_IsMultiBank() {
@@ -131,32 +131,32 @@ void Session::Withdraw(int, string, string, int, string) {
     }
 }
 void Session::Transfer(string, string, int, string, string, int) {
-    //bank1, username, AccountNum, password, bank2, amount
-    //fee 고려, amount+fee 잔액 확인
-    cout << "이체하실 금액을 입력하세요." << endl;
-    cin >> int t;
-    cout << "출금하실 계좌번호를 입력하세요." << endl;
-    cin >> int acc_out;
-    cout << "입금하실 계좌번호를 입력하세요." << endl;
-    cin >> int acc_in;
-    if (t > limit) {
-        cout << "입금가능한 금액을 초과하였습니다." << endl;
-    }
-    else {
-        acc_out.Deposit(t+fee);
-        acc_in.Withdraw(t);
-        cout << t << "원 송금이 완료되었습니다." << endl;
-    }
+	//bank1, username, AccountNum, password, bank2, amount
+	//fee 고려, amount+fee 잔액 확인
+	cout << "이체하실 금액을 입력하세요." << endl;
+	cin >> int t;
+	cout << "출금하실 계좌번호를 입력하세요." << endl;
+	cin >> int acc_out;
+	cout << "입금하실 계좌번호를 입력하세요." << endl;
+	cin >> int acc_in;
+	if (t > limit) {
+	        cout << "입금가능한 금액을 초과하였습니다." << endl;
+	}
+	else {
+		acc_out.Deposit(t+fee);
+	        acc_in.Withdraw(t);
+	        cout << t << "원 송금이 완료되었습니다." << endl;
+	}
 }
 void Session::Open_Account(string, string, int, string, int) {
-    //bank, username, AccountNum, password, (account number->있었는데 삭제, available fund
-    cout << "은행 이름을 입력하세요." << endl;
-    cin << string bankName << endl;
-    cout << "사용자 이름을 입력하세요." << endl;
-    cin << string userName << endl;
-    cout << "비밀번호를 입력하세요." << endl;
-    cin << int pw << endl;
-    Account(bankName, userName, pw);
+	//bank, username, AccountNum, password, (account number->있었는데 삭제, available fund
+	cout << "은행 이름을 입력하세요." << endl;
+	cin << string bankName << endl;
+	cout << "사용자 이름을 입력하세요." << endl;
+	cin << string userName << endl;
+	cout << "비밀번호를 입력하세요." << endl;
+	cin << int pw << endl;
+	Account(bankName, userName, pw);
 }
 void Session::Deposit(int, account*) {
     //Receiving Account
@@ -278,6 +278,7 @@ class Account;
 class Bank {
 //어디 은행인지 알려주는 기능 
 // 뱅크가 어카운트에 대한 포인터가 있어야함. 
+// [유리] Bank constructor/destructor가 필요합니다!
 
 
 private:
@@ -378,7 +379,50 @@ public:
 };
 
 int main() {
-	//bank list
+	//<bank 이름 string,bank pointer>로 구성된 map 형성
+	//[수정 필요]Bank constructor가 지정되면 그에 맞춰 수정되어야 할 부분!
+	//[수정 필요]은행의 이름이 한국어로 들어오는 input도 고려해야 하는가?
+	int BankNum;
+	string InputBankName1;
+	map <string, Bank*> InputBankMap;
+	cout << "BANK를 선언하겠습니다" << endl;
+	cout << "몇개의 은행을 만드시겠습니까? << endl;
+	cin >> BankNum;
+	for (int i=0; i<BankNum; i++){
+		cout << "은행의 이름을 입력해주세요" << endl;
+		cin >> BankName1;
+		Bank new = Bank BankName1+"BANK";
+		InputBankMap.insert({BankName1,new});
+	};
+
+	//ATM 선언
+	//[수정 필요]논의 후 수정
+	int ATMNum;
+	string InputPrimaryBank;
+	cout << "ATM을 설정하겠습니다" << endl;
+	cout << "몇개의 ATM을 만드시겠습니까?" << endl;
+	cin >> ATMNum;
+	for (int i=0; i<ATMNum; i++){
+
+		//============================This?====================================
+		//Primary Bank Setting
+		cout << "아래 중 ATM의 주거래 은행을 선택하세요" << endl;
+		cout << "[";
+		for (int iter=InputBankMap.begin(); iter != InputBankMap.end() ; iter++){
+			cout << iter->first << ",";
+		};
+		cout << "]" << endl;
+		cin >> InputPrimaryBank;
+
+		//Single? Multi?
+		bool InputSingle
+		cout << "Single ATM은 1, Multi ATM은 2를 선택해주세요" << endl;
+		cin >> InputSingle;
+		//============================OR this?=================================
+		cout << "serial number, primary bank 이름, multibank 여부, bilingual 여부를 입력해주세요" << endl;
+		//ATM(int snum, Bank* primary, bool maltibank=false, bool bilingual=false)
+		//=====================================================================
+	}
 	ATM ShinhanATM;
 	ATM DaeguATM;
 	
