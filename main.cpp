@@ -288,6 +288,14 @@ private:
     Card bankCard;
 
 public:
+
+    // Bank 클래스의 생성자
+    Bank(const std::string& name) : bankName(name) {
+	// 생성자에서 필요한 초기화 작업 수행
+        // 예: 특정 멤버 변수 초기화, 메모리 할당 등
+    }
+
+
     // Account 생성 및 추가
     void createAccount(const string& accountNum, const string& password, const string& ownerName) {
         // 이미 존재하는 계좌인지 확인하고 추가
@@ -330,6 +338,12 @@ public:
     }
 
  //session withdraw에서 if (bank->accountExists(accountNum))  이런식으로 하면 될합니다.
+
+    // Bank 클래스의 소멸자
+    ~Bank() {
+        // 소멸자에서 리소스 정리 작업 수행
+        // 예: 동적으로 할당된 메모리 해제 등
+    }
 
 
 };
