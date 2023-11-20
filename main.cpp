@@ -9,7 +9,7 @@ class Session;
 class Card;
 class Transaction;
 class Bank;
-class Accout;
+class Account;
 
 class Session {
 private:
