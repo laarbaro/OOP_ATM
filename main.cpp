@@ -4,8 +4,12 @@
 
 using namespace std;
 
+class Session {
+private:
+public:
+};
 
-class Session{
+class Transaction{
 private: 
 	ATM* CurrentATM;
 public:
