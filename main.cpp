@@ -119,6 +119,8 @@ map<int, int> ATM::get_AvailableCash(){
 }
 //-------------------------------------Session---------------------------------------
 void Session::Withdraw(int, string, string, int, string) {
+    // 현금 확인하여 인출가능 금액인지 확인
+	
     //amount, bank, username, AccountNum, password
     //bank에서 계좌 확인 후 limit 안넘으면 출금, bank 확인해 fee 결정해 빼고 출금, ATM의 available_cash 감소, 최대 50만원 withdraw 가능
     cout << "출금하실 금액을 입력하세요." << endl;
