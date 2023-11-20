@@ -285,6 +285,8 @@ Session::Authorize(string Username, int AccountNum, string Password, Bank* Bank)
 ///황지영
 
 class Card {
+//admin 여부, bank, account 정보
+
 private:
     string cardNumber;
     string accountNumber;
