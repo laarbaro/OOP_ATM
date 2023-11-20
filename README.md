@@ -1,6 +1,8 @@
 # OOP_ATM
 # ATM
   private : 
+    bool IsMultiBank
+    
   public : 
 
 # Session
