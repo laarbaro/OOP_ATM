@@ -1,42 +1,42 @@
 # OOP_ATM
-ATM
+# ATM
   private : 
   public : 
 
-Session
+# Session
   private :
   public :
 
   # Session Childs
-  KoreanSession
+  # KoreanSession
     private :
     public :
     
-  EnglishSession
+  # EnglishSession
     private :
     public :
 
-Bank
+# Bank
   private :
   public :
 
-Account
+# Account
   private :
   public :
 
-Card
+# Card
   private :
   public :
 
-Transaction
+# Transaction
   private :
   public :
   # Transaction Childs
-  Withdraw
+  # Withdraw
     private :
     public :
     
-  Deposit
+  # Deposit
     private :
     public :
 
