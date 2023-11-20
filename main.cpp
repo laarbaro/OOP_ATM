@@ -323,6 +323,15 @@ public:
         auto it = accounts.find(accountNum);
         return (it != accounts.end() && it->second.verifyPW(password));
     }
+
+    // 계좌 존재 여부 확인
+    bool accountExists(int accountNum) {
+        return accounts.find(accountNum) != accounts.end();
+    }
+
+ //session withdraw에서 if (bank->accountExists(accountNum))  이런식으로 하면 될합니다.
+
+
 };
 
 class Account {
