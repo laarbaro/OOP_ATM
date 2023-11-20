@@ -4,37 +4,86 @@
 
 using namespace std;
 
-class ATM;
-class Session;
-class Card;
-class Transaction;
-class Bank;
-class Account;
 
+// -------------------------------[Session] class-----------------------------------
+// -------------------------------[Session] class-----------------------------------
 class Session {
 private:
 public:
 };
 
+
+
+// -------------child of Session class ---------------
+class KoreanSession {
+private:
+public:
+
+};
+
+class EnglishSession {
+private:
+public:
+
+};
+
+
+
+
+// -------------------------------[Transaction] class-----------------------------------
+// -------------------------------[Transaction] class-----------------------------------
 class Transaction{
 private: 
 	ATM* CurrentATM;
 public:
-	void Withdraw(int, string, string, int, string);//amount, bank, username, AccountNum, password //bank에서 계좌 확인 후 limit 안넘으면 출금, bank 확인해 fee 결정해 빼고 출금, ATM의 available_cash 감소, 최대 50만원 withdraw 가능    
-	void Transfer(string, string, int, string, string, int); //bank1, username, AccountNum, password, bank2, amount//fee 고려, amount+fee 잔액 확인
-	void Open_Account(string, string, int, string, int, int);//bank, username, AccountNum, password, account number, available fund
+	void Withdraw(int, string, string, int, string)//amount, bank, username, AccountNum, password //bank에서 계좌 확인 후 limit 안넘으면 출금, bank 확인해 fee 결정해 빼고 출금, ATM의 available_cash 감소, 최대 50만원 withdraw 가능    
+	void Transfer(string, string, int, string, string, int) //bank1, username, AccountNum, password, bank2, amount//fee 고려, amount+fee 잔액 확인
+	void Open_Account(string, string, int, string, int, int)//bank, username, AccountNum, password, account number, available fund
 	void Deposit(int, account*);//cash total 개수, 계좌
 	
 	//유리의 일거리
 	void CheckInput();//cash인지 check인지 확인해 CheckCash 또는 CheckCheck 호출
 	void CheckCash(mapset, string, string, string, string);//cash 종류별 개수, bank, username, accountnum, password
-	void CheckCheck(int[], string, int, string); //amount, username, accountnum, password
-	void Display(int, string, int, int, string, bool); //이동한 금액, username, AccountNum, card number, bank, externalFile=False 필요여부//이름 받아 transaction 결과 보여줌, 각 transaction에서 호출, external file True면 external file로 출력
-	void Authorize(int, string, int); //card number, username, AccountNum//함수 내에서 password 요구 및 확인 필요, 최대 3번 요구 후 return card
-	void EndSession(); // History에서 withdraw 3번 넘으면 session 종료
+	void CheckCheck(int[], string, int, string);//amount, username, accountnum, password
+	void Display(int, string, int, int, string, bool)//이동한 금액, username, AccountNum, card number, bank, externalFile=False 필요여부//이름 받아 transaction 결과 보여줌, 각 transaction에서 호출, external file True면 external file로 출력
+	void Authorize(int, string, int)//card number, username, AccountNum//함수 내에서 password 요구 및 확인 필요, 최대 3번 요구 후 return card
+	void EndSession() // History에서 withdraw 3번 넘으면 session 종료
 	
 };
 
+
+//----------------child of Transaction----------------------
+
+
+
+class withdrawTransaction {
+private :
+
+public:
+
+
+};
+
+
+class DepositTransaction {
+private :
+
+public:
+
+};
+
+
+class Transfer {
+private :
+
+public:
+
+} ;
+
+
+
+// -------------------------------[ATM] class-----------------------------------
+// -------------------------------[ATM] class-----------------------------------
 class ATM{
 private: 
 	const int SerialNumber;
@@ -64,6 +113,216 @@ public:
 	static string* get_History();
 	//card 받는 함수 추가하기!
 };
+
+
+
+// -------------------------------[Card] class-----------------------------------
+// -------------------------------[Card] class-----------------------------------
+
+///황지영
+
+class Card {
+//admin 여부, bank, account 정보
+
+private:
+    string cardNumber;
+    string accountNumber;
+    bool isAdmin;
+    bool isBilingual; // 양 언어 구성이 카드와 관련이 있다고 가정
+
+public:
+    // 생성자
+    Card(const string& cardNumber, const string& accountNumber, bool isAdmin, bool isBilingual)
+        : cardNumber(cardNumber), accountNumber(accountNumber), isAdmin(isAdmin), isBilingual(isBilingual) {}
+
+    // 카드 번호를 가져오는 함수
+    const string& getCardNumber() const {
+        return cardNumber;
+    }
+
+    // 계정 번호를 가져오는 함수
+    const string& getAccountNumber() const {
+        return accountNumber;
+    }
+
+    // 카드가 관리자 카드인지 확인
+    bool isAdminCard() const {
+        return isAdmin;
+    }
+
+    // 카드가 양 언어 지원으로 구성되어 있는지 확인
+    bool isBilingualCard() const {
+        return isBilingual;
+    }
+
+    // 카드 유효성 검사, 인증과 관련된 다른 함수들도 추가할 수 있음
+};
+
+
+// -------------------------------[Bank] class-----------------------------------
+// -------------------------------[Bank] class-----------------------------------
+
+class Account; //전방 선언 
+
+class Bank {
+//어디 은행인지 알려주는 기능 
+// 뱅크가 어카운트에 대한 포인터가 있어야함.  ( 어카운트가 뱅크에 대한 포인터로 변경 ! ->  )
+// [유리] Bank constructor/destructor가 필요합니다!
+// fee 도 필요 ?
+
+
+
+private:
+    unordered_map<string, Account> accounts; // 계좌 번호를 키로 사용
+    Card bankCard;
+    string bankName;
+
+public:
+
+    // Bank 클래스의 생성자
+    Bank(const std::string& name) : bankName(name) {
+	// 생성자에서 필요한 초기화 작업 수행
+        // 예: 특정 멤버 변수 초기화, 메모리 할당 등
+    }
+
+
+    // Account 생성 및 추가
+    void createAccount(const string& accountNum, const string& password, const string& ownerName) {
+        // 이미 존재하는 계좌인지 확인하고 추가
+        if (accounts.find(accountNum) == accounts.end()) {
+            accounts[accountNum] = Account(accountNum, password, ownerName, this);
+        }
+    }
+
+    // 사용자 정보를 모두 출력하는 함수 (특정 사용자의 모든 계정 정보를 출력하는 함수)
+    void allAccount(const string& username) {
+        cout << "사용자 " << username << "의 모든 계정 정보:" << endl;
+        for (const auto& entry : accounts) {
+            const Account& account = entry.second;
+            if (account.getOwnerName() == username) {
+                cout << "계좌 번호: " << account.getAccountNum() << ", ";
+                cout << "잔액: " << account.getBalance() << endl;
+            }
+        }
+    }
+
+    // 사용자 정보를 확인하는 함수 (사용자 정보를 확인하고, 주어진 사용자 이름, 계좌 번호, 비밀번호와 일치하는지 여부를 반환하는 함수) 
+    bool verifyUser(const string& username, const string& accountNum, const string& password) {
+        auto it = accounts.find(accountNum);
+        if (it != accounts.end()) {
+            const Account& account = it->second;
+            return (account.getOwnerName() == username && account.verifyPW(password));
+        }
+        return false; // 사용자 확인 실패
+    }
+
+    // 계정 정보를 확인하는 함수(계정 정보를 확인하고, 주어진 계좌 번호와 비밀번호가 일치하는지 여부를 반환하는 함수입니다.)
+    bool verifyAccount(const string& accountNum, const string& password) {
+        auto it = accounts.find(accountNum);
+        return (it != accounts.end() && it->second.verifyPW(password));
+    }
+
+    // 계좌 존재 여부 확인 (주어진 계좌 번호가 은행에 존재하는지 여부를 확인하는 함수)
+    bool accountExists(int accountNum) {
+        return accounts.find(accountNum) != accounts.end();
+    }
+
+	
+    // 은행 이름 리턴 함수
+    string getBankName() const {
+        return bankName;
+    }
+
+ //session withdraw에서 if (bank->accountExists(accountNum))  이런식으로 하면 될합니다.
+
+
+}
+
+
+
+    // Bank 클래스의 소멸자
+    ~Bank() {
+        // 소멸자에서 리소스 정리 작업 수행
+        // 예: 동적으로 할당된 메모리 해제 등
+    }
+
+
+};
+
+
+// -------------------------------[Account] class-----------------------------------
+// -------------------------------[Account] class-----------------------------------
+
+class  {
+
+private:
+    string accountNum;
+    string password;
+    string ownerName;
+    Card associatedCard;
+    int balance;
+    Bank* myBank; // Bank 클래스의 전방 선언 사용 ,  포인터 연결은 여기서 해주는게 맞음 
+
+public:
+    // 생성자: AccountNum, Password, OwnerName 설정
+    Account(const string& accountNum, const string& password, const string& ownerName, Bank* bank)
+        : accountNum(accountNum), password(password), ownerName(ownerName), myBank(bank), balance(0) {}
+
+    // Password 검증 함수
+    bool verifyPW(const string& enteredPassword) const {
+        return (password == enteredPassword);
+    }
+
+    // AccountNum 반환 함수
+    const string& getAccountNum() const {
+        return accountNum;
+    }
+
+    // OwnerName 반환 함수
+    const string& getOwnerName() const {
+        return ownerName;
+    }
+
+    // Bank 반환 함수
+    Bank* getBank() const {
+        return myBank;
+    }
+
+    // 잔액 조회 함수
+    int getBalance() const {
+        return balance;
+    }
+
+    // 입금 함수
+    void deposit(int amount) {
+        balance += amount;
+    }
+
+    // 출금 함수
+    void withdraw(int amount) {
+        if (amount <= balance) {
+            balance -= amount;
+        } else {
+            cout << "잔액이 부족합니다." << std::endl;
+        }
+    }
+};
+
+
+
+
+
+
+
+
+///--------------------------------method-------------------------------------
+
+///--------------------------------method-------------------------------------
+
+///--------------------------------method-------------------------------------
+
+
+
 
 //-------------------------------------ATM-------------------------------------------
 //Youngwoo
@@ -293,188 +552,8 @@ Session::Authorize(string Username, int AccountNum, string Password, Bank* Bank)
 };
 
 
-///황지영
-
-class Card {
-//admin 여부, bank, account 정보
-
-private:
-    string cardNumber;
-    string accountNumber;
-    bool isAdmin;
-    bool isBilingual; // 양 언어 구성이 카드와 관련이 있다고 가정
-
-public:
-    // 생성자
-    Card(const string& cardNumber, const string& accountNumber, bool isAdmin, bool isBilingual)
-        : cardNumber(cardNumber), accountNumber(accountNumber), isAdmin(isAdmin), isBilingual(isBilingual) {}
-
-    // 카드 번호를 가져오는 함수
-    const string& getCardNumber() const {
-        return cardNumber;
-    }
-
-    // 계정 번호를 가져오는 함수
-    const string& getAccountNumber() const {
-        return accountNumber;
-    }
-
-    // 카드가 관리자 카드인지 확인
-    bool isAdminCard() const {
-        return isAdmin;
-    }
-
-    // 카드가 양 언어 지원으로 구성되어 있는지 확인
-    bool isBilingualCard() const {
-        return isBilingual;
-    }
-
-    // 카드 유효성 검사, 인증과 관련된 다른 함수들도 추가할 수 있음
-};
 
 
-class Account;
-
-class Bank {
-//어디 은행인지 알려주는 기능 
-// 뱅크가 어카운트에 대한 포인터가 있어야함.  ( 어카운트가 뱅크에 대한 포인터로 변경 ! ->  )
-// [유리] Bank constructor/destructor가 필요합니다!
-// fee 도 필요 ?
-
-
-
-private:
-    unordered_map<string, Account> accounts; // 계좌 번호를 키로 사용
-    Card bankCard;
-    string bankName;
-
-public:
-
-    // Bank 클래스의 생성자
-    Bank(const std::string& name) : bankName(name) {
-	// 생성자에서 필요한 초기화 작업 수행
-        // 예: 특정 멤버 변수 초기화, 메모리 할당 등
-    }
-
-
-    // Account 생성 및 추가
-    void createAccount(const string& accountNum, const string& password, const string& ownerName) {
-        // 이미 존재하는 계좌인지 확인하고 추가
-        if (accounts.find(accountNum) == accounts.end()) {
-            accounts[accountNum] = Account(accountNum, password, ownerName, this);
-        }
-    }
-
-    // 사용자 정보를 모두 출력하는 함수 (특정 사용자의 모든 계정 정보를 출력하는 함수)
-    void allAccount(const string& username) {
-        cout << "사용자 " << username << "의 모든 계정 정보:" << endl;
-        for (const auto& entry : accounts) {
-            const Account& account = entry.second;
-            if (account.getOwnerName() == username) {
-                cout << "계좌 번호: " << account.getAccountNum() << ", ";
-                cout << "잔액: " << account.getBalance() << endl;
-            }
-        }
-    }
-
-    // 사용자 정보를 확인하는 함수 (사용자 정보를 확인하고, 주어진 사용자 이름, 계좌 번호, 비밀번호와 일치하는지 여부를 반환하는 함수) 
-    bool verifyUser(const string& username, const string& accountNum, const string& password) {
-        auto it = accounts.find(accountNum);
-        if (it != accounts.end()) {
-            const Account& account = it->second;
-            return (account.getOwnerName() == username && account.verifyPW(password));
-        }
-        return false; // 사용자 확인 실패
-    }
-
-    // 계정 정보를 확인하는 함수(계정 정보를 확인하고, 주어진 계좌 번호와 비밀번호가 일치하는지 여부를 반환하는 함수입니다.)
-    bool verifyAccount(const string& accountNum, const string& password) {
-        auto it = accounts.find(accountNum);
-        return (it != accounts.end() && it->second.verifyPW(password));
-    }
-
-    // 계좌 존재 여부 확인 (주어진 계좌 번호가 은행에 존재하는지 여부를 확인하는 함수)
-    bool accountExists(int accountNum) {
-        return accounts.find(accountNum) != accounts.end();
-    }
-
-	
-    // 은행 이름 리턴 함수
-    string getBankName() const {
-        return bankName;
-    }
-
- //session withdraw에서 if (bank->accountExists(accountNum))  이런식으로 하면 될합니다.
-
-
-}
-
-
-
-    // Bank 클래스의 소멸자
-    ~Bank() {
-        // 소멸자에서 리소스 정리 작업 수행
-        // 예: 동적으로 할당된 메모리 해제 등
-    }
-
-
-};
-
-
-class Account {
-
-private:
-    string accountNum;
-    string password;
-    string ownerName;
-    Card associatedCard;
-    int balance;
-    Bank* myBank; // Bank 클래스의 전방 선언 사용 ,  포인터 연결은 여기서 해주는게 맞음 
-
-public:
-    // 생성자: AccountNum, Password, OwnerName 설정
-    Account(const string& accountNum, const string& password, const string& ownerName, Bank* bank)
-        : accountNum(accountNum), password(password), ownerName(ownerName), myBank(bank), balance(0) {}
-
-    // Password 검증 함수
-    bool verifyPW(const string& enteredPassword) const {
-        return (password == enteredPassword);
-    }
-
-    // AccountNum 반환 함수
-    const string& getAccountNum() const {
-        return accountNum;
-    }
-
-    // OwnerName 반환 함수
-    const string& getOwnerName() const {
-        return ownerName;
-    }
-
-    // Bank 반환 함수
-    Bank* getBank() const {
-        return myBank;
-    }
-
-    // 잔액 조회 함수
-    int getBalance() const {
-        return balance;
-    }
-
-    // 입금 함수
-    void deposit(int amount) {
-        balance += amount;
-    }
-
-    // 출금 함수
-    void withdraw(int amount) {
-        if (amount <= balance) {
-            balance -= amount;
-        } else {
-            cout << "잔액이 부족합니다." << std::endl;
-        }
-    }
-};
 
 int main() {
 	//<bank 이름 string,bank pointer>로 구성된 map 형성
