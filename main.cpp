@@ -7,7 +7,7 @@ using namespace std;
 
 class Session{
 private: 
-
+	ATM* CurrentATM;
 public:
 	void Withdraw(int, string, string, int, string)//amount, bank, username, AccountNum, password //bank에서 계좌 확인 후 limit 안넘으면 출금, bank 확인해 fee 결정해 빼고 출금, ATM의 available_cash 감소, 최대 50만원 withdraw 가능    
 	void Transfer(string, string, int, string, string, int) //bank1, username, AccountNum, password, bank2, amount//fee 고려, amount+fee 잔액 확인
@@ -29,24 +29,25 @@ private:
 	const int SerialNumber;
 	string PrimaryBank;
 	string NonPrimaryBank = [];
-	int AvailableCash = 0;
+	map<int, int> AvailableCash;
 	Account* admin;
 	static string* History = [];
 	bool IsBilingual = false;
 	bool IsMultiBank = false;
 	static int NumberOfATM;
 	map<string, Bank*> BankMap; 
+	
 
 //int DP_2 = 1000; int WD_1 = 1000; int WD_2 = 2000;int TR_1_1 = 2000;int TR_1_2 = 3000;int TR_2_2 = 4000;int Cash_TR = 5000;
 
 public:
 //영우의 일거리
 	ATM()//기본값으로 설정, Bank는 아무거나 설정
-	ATM(int, Bank*, bool=false, bool=false);//SerialNumber, PrimaryBank, multibank 여부, bilingual 여부
+	ATM(int, Bank*, map, bool=false, bool=false, map);//SerialNumber, PrimaryBank, NonPrimaryBank map, multibank 여부, bilingual 여부, initial fund map
 	~ATM();
 	int get_SerialNumber();
 	bool get_IsMultiBank();
-	int get_AvailableCash();
+	map<int, int> get_AvailableCash();
 	void check_admin(int)//card number //admin이면 transaction history 메뉴 보여줌
 	int get_cash();
 	static string* get_History();
@@ -85,21 +86,24 @@ ATM::ATM() : ATM(NumberOfATM, "Default", false, false) {
 	            cout << "You should input the value y or n. Case sensitive." << endl;
 	            cout << "Multibank? y or n" << endl;
 	            cin >> tmp;
-	        }
+		}
 	};
 
 }
-ATM::ATM(int snum, Bank* primary, bool maltibank=false, bool bilingual=false) {
-	//SerialNumber, PrimaryBank, multibank 여부, bilingual 여부
+ATM::ATM(int snum, Bank* primary, map allmap, bool multibank=false, bool bilingual=false, map InitialFund) {
+	//SerialNumber, PrimaryBank, NonPrimaryBank map, multibank 여부, bilingual 여부, initial fund map
 	SerialNumber = snum;
 	PrimaryBank = primary;
 	IsMultiBank = multibank;
 	//main함수의 banklist에 들어있는 다른 은행들을 nonprimarybank list와 bankmap에 넣기
 	IsBilingual = bilingual;
+	BankMap = allmap;
+	//[논의 필요]string NonPrimaryBank list를 만들어야 하는지?
 	NumberOfATM++;
 
 }
 ATM::~ATM() {
+	//[유리] 완성해주세요
 	//
 	NumberOfATM--;
 	//detach?
@@ -110,7 +114,9 @@ int ATM::get_SerialNumber() {
 bool ATM::get_IsMultiBank() {
     return IsMultiBank;
 }
-
+map<int, int> ATM::get_AvailableCash(){
+	return AvailableCash;
+}
 //-------------------------------------Session---------------------------------------
 void Session::Withdraw(int, string, string, int, string) {
     //amount, bank, username, AccountNum, password
@@ -120,6 +126,7 @@ void Session::Withdraw(int, string, string, int, string) {
     if (w < account.getBalance()) {
         cout << "잔액이 부족합니다." << endl;
     }
+/*여기 좀 수정했습니다
     else if (AvailableCash < w) {
         cout << "기기의 인출 가능 금액이 부족합니다. 관리자에게 문의하세요." << endl;
     }
@@ -129,6 +136,14 @@ void Session::Withdraw(int, string, string, int, string) {
         withdrawalN--;
         cout << w << "원이 인출되었습니다." << endl;
     }
+	*/
+
+	else {
+		map<int, int> ATM_AvailableCash = this->CurrentATM->get_AvailableCash();
+		//현금 권수에 따른 계산 필요
+	}
+
+	
 }
 void Session::Transfer(string, string, int, string, string, int) {
 	//bank1, username, AccountNum, password, bank2, amount
