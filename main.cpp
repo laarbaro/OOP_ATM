@@ -277,7 +277,7 @@ class Account;
 
 class Bank {
 //어디 은행인지 알려주는 기능 
-// 뱅크가 어카운트에 대한 포인터가 있어야함. 
+// 뱅크가 어카운트에 대한 포인터가 있어야함.  ( 어카운트가 뱅크에 대한 포인터로 변경 ! ->  )
 // [유리] Bank constructor/destructor가 필요합니다!
 // fee 도 필요 ?
 
@@ -286,6 +286,7 @@ class Bank {
 private:
     unordered_map<string, Account> accounts; // 계좌 번호를 키로 사용
     Card bankCard;
+    string bankName;
 
 public:
 
@@ -304,7 +305,7 @@ public:
         }
     }
 
-    // 사용자 정보를 출력하는 함수
+    // 사용자 정보를 모두 출력하는 함수 (특정 사용자의 모든 계정 정보를 출력하는 함수)
     void allAccount(const string& username) {
         cout << "사용자 " << username << "의 모든 계정 정보:" << endl;
         for (const auto& entry : accounts) {
@@ -316,7 +317,7 @@ public:
         }
     }
 
-    // 사용자 정보를 확인하는 함수
+    // 사용자 정보를 확인하는 함수 (사용자 정보를 확인하고, 주어진 사용자 이름, 계좌 번호, 비밀번호와 일치하는지 여부를 반환하는 함수) 
     bool verifyUser(const string& username, const string& accountNum, const string& password) {
         auto it = accounts.find(accountNum);
         if (it != accounts.end()) {
@@ -326,18 +327,29 @@ public:
         return false; // 사용자 확인 실패
     }
 
-    // 계정 정보를 확인하는 함수
+    // 계정 정보를 확인하는 함수(계정 정보를 확인하고, 주어진 계좌 번호와 비밀번호가 일치하는지 여부를 반환하는 함수입니다.)
     bool verifyAccount(const string& accountNum, const string& password) {
         auto it = accounts.find(accountNum);
         return (it != accounts.end() && it->second.verifyPW(password));
     }
 
-    // 계좌 존재 여부 확인
+    // 계좌 존재 여부 확인 (주어진 계좌 번호가 은행에 존재하는지 여부를 확인하는 함수)
     bool accountExists(int accountNum) {
         return accounts.find(accountNum) != accounts.end();
     }
 
+	
+    // 은행 이름 리턴 함수
+    string getBankName() const {
+        return bankName;
+    }
+
  //session withdraw에서 if (bank->accountExists(accountNum))  이런식으로 하면 될합니다.
+
+
+}
+
+
 
     // Bank 클래스의 소멸자
     ~Bank() {
@@ -347,6 +359,7 @@ public:
 
 
 };
+
 
 class Account {
 
