@@ -279,6 +279,8 @@ class Bank {
 //어디 은행인지 알려주는 기능 
 // 뱅크가 어카운트에 대한 포인터가 있어야함. 
 // [유리] Bank constructor/destructor가 필요합니다!
+// fee 도 필요 ?
+
 
 
 private:
