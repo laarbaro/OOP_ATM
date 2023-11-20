@@ -64,7 +64,7 @@ public:
 
 
 class withdrawTransaction {
-private :
+private:
 
 public:
 
@@ -73,7 +73,7 @@ public:
 
 
 class DepositTransaction {
-private :
+private:
 
 public:
 
@@ -81,7 +81,7 @@ public:
 
 
 class Transfer {
-private :
+private:
 
 public:
 
@@ -346,7 +346,8 @@ ATM::ATM() : ATM(NumberOfATM, "Default", false, false) {
 	        if (tmp == "y") {
 			IsMultiBank = true; 
 			//main함수의 banklist에 들어있는 다른 은행들을 nonprimarybank list와 bankmap에 넣기
-			break;}
+			break;
+		}
 	        else if(tmp == "n") {IsMultiBank = false; break;}
 	        else{
 	            cout << "You should input the value y or n. Case sensitive." << endl;
