@@ -394,8 +394,8 @@ bool ATM::get_IsMultiBank() {
 map<int, int> ATM::get_AvailableCash(){
 	return AvailableCash;
 }
-//-------------------------------------Session---------------------------------------
-void Session::Withdraw(int, string, string, int, string) {
+//-------------------------------------Transaction---------------------------------------
+void Transaction::Withdraw(int, string, string, int, string) {
     // 현금 확인하여 인출가능 금액인지 확인
 	
     //amount, bank, username, AccountNum, password
@@ -424,7 +424,7 @@ void Session::Withdraw(int, string, string, int, string) {
 
 	
 }
-void Session::Transfer(string, string, int, string, string, int) {
+void Transaction::Transfer(string, string, int, string, string, int) {
 	//bank1, username, AccountNum, password, bank2, amount
 	//fee 고려, amount+fee 잔액 확인
 	cout << "이체하실 금액을 입력하세요." << endl;
@@ -442,7 +442,7 @@ void Session::Transfer(string, string, int, string, string, int) {
 	        cout << t << "원 송금이 완료되었습니다." << endl;
 	}
 }
-void Session::Open_Account(string, string, int, string, int) {
+void Transaction::Open_Account(string, string, int, string, int) {
 	//bank, username, AccountNum, password, (account number->있었는데 삭제, available fund
 	cout << "은행 이름을 입력하세요." << endl;
 	cin << string bankName << endl;
@@ -452,7 +452,7 @@ void Session::Open_Account(string, string, int, string, int) {
 	cin << int pw << endl;
 	Account(bankName, userName, pw);
 }
-void Session::Deposit(int, account*) {
+void Transaction::Deposit(int, account*) {
     //Receiving Account
 	cout << "====================Cash Deposit====================" << endl;
 	cout << "Which Bank do you want to deposit?" << endl;
@@ -482,7 +482,7 @@ void Session::Deposit(int, account*) {
 	}
 
 }
-Session::CheckCash() {
+Transaction::CheckCash() {
 //declaration
     	map<int, int>inputmap;
     	int NumCash1;
@@ -508,7 +508,7 @@ Session::CheckCash() {
 	};
 	
 };
-Session::CheckCheck() {
+Transaction::CheckCheck() {
 	//declaration
     	int NumCheck2;
    	int inputCheck;
@@ -532,7 +532,7 @@ Session::CheckCheck() {
     
 };
 
-Session::Display(int TransactionAmount, string Username, AccountNum, CardNum, myBank, ExternalFile=false){
+Transaction::Display(int TransactionAmount, string Username, AccountNum, CardNum, myBank, ExternalFile=false){
 //이름 받아 transaction 결과 보여줌, 각 transaction에서 호출, external file True면 external file로 출력
 
     	cout << "=================Transaction Result=================" << endl;
@@ -542,7 +542,7 @@ Session::Display(int TransactionAmount, string Username, AccountNum, CardNum, my
     	cout << "From "<< myBank << " " << TransactionAmount << "Won" << endl;
 }
 
-Session::Authorize(string Username, int AccountNum, string Password, Bank* Bank){
+Transaction::Authorize(string Username, int AccountNum, string Password, Bank* Bank){
     	string UsernameFromBank = Bank->getAccount(AccountNum)->getUserName
     	string UserPassword = Bank->getAccount(AccountNum)->getPassword
     	if (UsernameFromBank==Username){
