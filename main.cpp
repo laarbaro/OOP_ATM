@@ -4,6 +4,13 @@
 
 using namespace std;
 
+class ATM;
+class Session;
+class Card;
+class Transaction;
+class Bank;
+class Account;
+
 
 // -------------------------------[Session] class-----------------------------------
 // -------------------------------[Session] class-----------------------------------
