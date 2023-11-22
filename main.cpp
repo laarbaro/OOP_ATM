@@ -94,27 +94,24 @@ public:
 class ATM{
 private: 
 	const int SerialNumber;
-	string PrimaryBank;
-	string NonPrimaryBank = [];
-	map<int, int> AvailableCash;
-	Account* admin;
-	Card* AdminCard ;
-	static string* History = [];
+	map<string, Bank*> PrimaryBank;
+	map<string, Bank*> NonPrimaryBank;
+	map<int, int> AvailableCash;//현금 단위, 갯수
+	Card* AdminCard;
+	vector History;
 	bool IsBilingual = false;
 	bool IsMultiBank = false;
 	static int NumberOfATM;
 	map<string, int> fee ;
-	map<string, Bank*> BankMap; 
+	ATM(int, map, map, map, Card*, bool=false, bool=false, map);//serial number, primary bank, nonprimarybank, availablecash, admincard, isbilingual, ismultibank, fee
 
-	
-
-//int DP_2 = 1000; int WD_1 = 1000; int WD_2 = 2000;int TR_1_1 = 2000;int TR_1_2 = 3000;int TR_2_2 = 4000;int Cash_TR = 5000;
 
 public:
-//영우의 일거리
-	ATM();//기본값으로 설정, Bank는 아무거나 설정
-	ATM(int, Bank*, map, bool=false, bool=false, map);//SerialNumber, PrimaryBank, NonPrimaryBank map, multibank 여부, bilingual 여부, initial fund map
+	ATM();
 	~ATM();
+	void OpenSession();
+	void EndSession();
+	//Set 함수
 	int get_SerialNumber();
 	bool get_IsMultiBank();
 	map<int, int> get_AvailableCash();
@@ -122,8 +119,7 @@ public:
 	int get_cash();
 	static string* get_History();
 	//card 받는 함수 추가하기!
-	void OpenSession();
-	void EndSession(); // History에서 withdraw 3번 넘으면 session 종료
+	 // History에서 withdraw 3번 넘으면 session 종료
 };
 
 
