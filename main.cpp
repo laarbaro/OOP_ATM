@@ -16,24 +16,78 @@ class Account;
 // -------------------------------[Session] class-----------------------------------
 class Session {
 private:
+	ATM * atm; // ATM 객체 가리키는 포인터
+	Account* account; // 계좌 객체 가리키는 포인터
+	vector<Transaction> transctionHistoryOfSession; // 세션 동안 거래 내역 저장 -> 하고 뭐햇는지 display 해야함. 하나 저장 후 보여주기 (이걸 함수로먼들지 그냥 코드를 짤지는선택 ) + 백터 구조가 어떤지 알려줘서 ATM에 할수 있게 하기
+	bool authorizationSignal; // 계좌 비밀번호 인증 결과 나타내는 bool값
+	int aouthorizationCount; // 비밀번호 인증 실패 횟수
+	int withdrawalCount; // 출금 횟수 기록
+	bool primarySignal; // 현재 계좌 은행 정보와 ATM 주거래 은행이 동일한지 여부를 나타내는 bool 값
+
 public:
+/*
 	void Open_Account(string, string, int, string, int, int); //bank, username, AccountNum, password, account number, available fund
 	void Display(int, string, int, int, string, bool); //이동한 금액, username, AccountNum, card number, bank, externalFile=False 필요여부//이름 받아 transaction 결과 보여줌, 각 transaction에서 호출, external file True면 external file로 출력
 	void Authorize(int, string, int); //card number, username, AccountNum//함수 내에서 password 요구 및 확인 필요, 최대 3번 요구 후 return card
+*/
+    Session() {}
+    void CashDeposit(unsigned long long amount, int x);
+    void CheckDeposit(unsigned long long amount, int x);
+    void Withdrawal(unsigned long long amount, int x);
+    void CashTransfer(unsigned long long amount, Account* destination, int x);
+    void AccountTransfer(unsigned long long amount, Account* destination, int x);
+    bool Authorization(string password) {return account->check_pw(password);}
+	
 };
 
 
 	 // History에서 withdraw 3번 넘으면 session 종료
 
 // -------------child of Session class ---------------
-class KoreanSession {
-private:
+class KoreanSession : public Session {
 public:
+	KoreanSession(ATM* iatm) {
+	atm = iatm;
+        primarySignal = true;
+        authorizationCount = 0;
+        withdrawalCount = 0;
+        authorizationSignal = true;
+
+        bool validAccount = true; // 계좌 정보 유무 
+        string inputAccount;
+        atm-> ?? (); //ATM 객체의 어떤 메서드호출하여 한국어로 메인 화면을 출력 (     " << this->getPrimaryBankInfo() " 은행" 출력 ,  if (this->getSingleInfo() == 0) -> 주은행 거래만 가능  else "타은행 거래 가능" 출력 )
+       
+        cout << " 계좌 번호를 입력해주세요\n" << endl;
+        cout << "계좌 번호 : ";
+        cin >> inputAccount;
+
+	if (findAccount(inputAccount) == nullptr) {
+            atm->?? (); ////ATM 객체의 어떤 메서드호출하여 한국어로 메인 화면을 출력
+            cout << "입력한 계좌번호가 존재하지 않습니다." << endl;
+            validAccount = false;
+        }
+        else {
+            Bank* temp = findAccount(inputAccount); //findAccount 함수를 사용하여 입력된 계좌 번호에 해당하는 Bank 객체를 찾아서 temp 포인터에 저장
+            if ( (atm->getPrimaryBankInfo()).compare(temp->getBankName()) == 0 ) { //현재 세션에서 사용 중인 ATM 객체(atm)의 기본 은행 정보와, 입력된 계좌 번호에 해당하는 Bank 객체의 은행 이름을 비교 ! 두 은행 이름이 같다면, 현재 세션에서 사용 중인 은행이라는 것을 의미
+                account = temp->findAccountOfBank(inputAccount); //같다면, 해당 은행에서 입력된 계좌 번호에 해당하는 Account 객체를 찾아서 account 포인터에 저장합니다. 이렇게 하면 현재 세션에서 사용할 수 있는 계좌를 설정
+            } else {
+                if (atm->getSingleInfo() == 0) { //타은행 계좌를 사용할 수 없다면
+                    atm-> ?? ();
+                    cout << "타은행 계좌는 사용하실 수 없습니다\n" << endl;
+                    validAccount = false;
+                } else {
+                    primarySignal = false;
+                    account = temp->findAccountOfBank(inputAccount);
+                }
+            }
+        }
+
+	}
+
 
 };
 
 class EnglishSession {
-private:
 public:
 
 };
@@ -271,6 +325,8 @@ public:
 // -------------------------------[Account] class-----------------------------------
 // -------------------------------[Account] class-----------------------------------
 
+//account 를 여는, 만드는 constroctor 필요. 입력 받으면 그걸
+
 class  {
 
 private:
@@ -338,6 +394,24 @@ public:
 ///--------------------------------method-------------------------------------
 
 ///--------------------------------method-------------------------------------
+
+/*-------------- Methods of Session Class --------------*/
+void Session::CashDeposit(unsigned long long amount, int x) {
+}
+
+
+void Session::CheckDeposit(unsigned long long amount, int x) {
+}
+
+void Session::Withdrawal(unsigned long long amount, int x) {
+}
+
+
+void Session::CashTransfer(unsigned long long amount, Account* destination, int x) {
+}
+
+void Session::AccountTransfer(unsigned long long amount, Account* destination, int x) {
+}
 
 
 
