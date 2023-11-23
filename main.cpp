@@ -108,36 +108,36 @@ public:
         CashInATM = CurrentATM->GetAvailableCash();
     };//cash 종류별 개수, bank, username, accountnum, password
     void CheckCheck() {
-        CheckInAccount = CurrentAccout->GetBalance();
+        CheckInAccount = CurrentAccout->getBalance();
     };//amount, username, accountnum, password
 };
 
 
 //----------------child of Transaction----------------------
-
-
+class DepositTransaction : public Transaction {
+public:
+    void Deposit(bool isCash, int depositMoney) {
+        if (isCash == true) {
+	    //ATM-> availablecash += depositMoney + fee
+	    //Acc-> balance -= depositMoney + fee
+	}
+	else {
+	    //Acc-> balance -= depositMoney + fee
+	}
+	//history, display information
+    };
+};
 
 class withdrawTransaction : public Transaction {
 public:
-	void Withdraw(int, string, string, int, string); //amount, bank, username, AccountNum, password //bank에서 계좌 확인 후 limit 안넘으면 출금, bank 확인해 fee 결정해 빼고 출금, ATM의 available_cash 감소, 최대 50만원 withdraw 가능    
-
-
+    void Withdraw(int, string, string, int, string); //amount, bank, username, AccountNum, password //bank에서 계좌 확인 후 limit 안넘으면 출금, bank 확인해 fee 결정해 빼고 출금, ATM의 available_cash 감소, 최대 50만원 withdraw 가능
 };
-
-
-class DepositTransaction : public Transaction {
-public:
-	void Deposit(int, account*);//cash total 개수, 계좌
-
-};
-
 
 class TransferTransaction :  : public Transaction {
-
 public:
-	void Transfer(string, string, int, string, string, int); //bank1, username, AccountNum, password, bank2, amount//fee 고려, amount+fee 잔액 확인
+    void Transfer(string, string, int, string, string, int); //bank1, username, AccountNum, password, bank2, amount//fee 고려, amount+fee 잔액 확인
 
-} ;
+};
 
 
 
