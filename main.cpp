@@ -53,13 +53,14 @@ public:
 
         bool validAccount = true; // 계좌 정보 유무 
         string inputAccount;
-        atm->mainKoreanDisplay();
+        atm-> ?? (); //ATM 객체의 어떤 메서드호출하여 한국어로 메인 화면을 출력 (     " << this->getPrimaryBankInfo() " 은행" 출력 ,  if (this->getSingleInfo() == 0) -> 주은행 거래만 가능  else "타은행 거래 가능" 출력 )
+       
         cout << " 계좌 번호를 입력해주세요\n" << endl;
         cout << "계좌 번호 : ";
         cin >> inputAccount;
 
 	if (findAccount(inputAccount) == nullptr) {
-            atm->mainKoreanDisplay();
+            atm->?? (); ////ATM 객체의 어떤 메서드호출하여 한국어로 메인 화면을 출력
             cout << "입력한 계좌번호가 존재하지 않습니다." << endl;
             validAccount = false;
         }
