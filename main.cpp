@@ -50,7 +50,8 @@ public:
         authorizationCount = 0;
         withdrawalCount = 0;
         authorizationSignal = true;
-        bool validAccount = true;
+
+        bool validAccount = true; // 계좌 정보 유무 
         string inputAccount;
         atm->mainKoreanDisplay();
         cout << " 계좌 번호를 입력해주세요\n" << endl;
