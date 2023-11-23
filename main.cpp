@@ -16,6 +16,14 @@ class Account;
 // -------------------------------[Session] class-----------------------------------
 class Session {
 private:
+	ATM * atm // ATM 객체 가리키는 포인터
+	Account* account // 계좌 객체 가리키는 포인터
+	vector<Transaction> transctionHistoryOfSession // 세션 동안 거래 내역 저장
+	bool authorizationSignal // 계좌 비밀번호 인증 결과 나타내는 bool값
+	int aouthorizationCount // 비밀번호 인증 실패 횟수
+	int withdrawalCount // 출금 횟수 기록
+	bool primarySignal // 현재 계좌 은행 정보와 ATM 주거래 은행이 동일한지 여부를 나타내는 bool 값
+
 public:
 	void Open_Account(string, string, int, string, int, int); //bank, username, AccountNum, password, account number, available fund
 	void Display(int, string, int, int, string, bool); //이동한 금액, username, AccountNum, card number, bank, externalFile=False 필요여부//이름 받아 transaction 결과 보여줌, 각 transaction에서 호출, external file True면 external file로 출력
