@@ -28,6 +28,15 @@ public:
 	void Open_Account(string, string, int, string, int, int); //bank, username, AccountNum, password, account number, available fund
 	void Display(int, string, int, int, string, bool); //이동한 금액, username, AccountNum, card number, bank, externalFile=False 필요여부//이름 받아 transaction 결과 보여줌, 각 transaction에서 호출, external file True면 external file로 출력
 	void Authorize(int, string, int); //card number, username, AccountNum//함수 내에서 password 요구 및 확인 필요, 최대 3번 요구 후 return card
+
+    Session() {}
+    void CashDeposit(unsigned long long amount, int x);
+    void CheckDeposit(unsigned long long amount, int x);
+    void Withdrawal(unsigned long long amount, int x);
+    void CashTransfer(unsigned long long amount, Account* destination, int x);
+    void AccountTransfer(unsigned long long amount, Account* destination, int x);
+    bool Authorization(string password) {return account->check_pw(password);}
+	
 };
 
 
@@ -337,10 +346,28 @@ public:
 
 ///--------------------------------method-------------------------------------
 
+/*-------------- Methods of Session Class --------------*/
+void Session::CashDeposit(unsigned long long amount, int x) {
+}
+
+
+void Session::CheckDeposit(unsigned long long amount, int x) {
+}
+
+void Session::Withdrawal(unsigned long long amount, int x) {
+}
+
+
+void Session::CashTransfer(unsigned long long amount, Account* destination, int x) {
+}
+
+void Session::AccountTransfer(unsigned long long amount, Account* destination, int x) {
+}
 
 
 
-//-------------------------------------ATM-------------------------------------------
+
+//------------------------------------- method of ATM-------------------------------------------
 //Youngwoo
 ATM::ATM() : ATM(NumberOfATM, "Default", false, false) {
 	Bank* bankpointer;
