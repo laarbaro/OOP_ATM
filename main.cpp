@@ -23,6 +23,7 @@ public:
 };
 
 
+	 // History에서 withdraw 3번 넘으면 session 종료
 
 // -------------child of Session class ---------------
 class KoreanSession {
@@ -102,24 +103,33 @@ private:
 	bool IsBilingual = false;
 	bool IsMultiBank = false;
 	static int NumberOfATM;
-	map<string, int> fee ;
 	ATM(int, map, map, map, Card*, bool=false, bool=false, map);//serial number, primary bank, nonprimarybank, availablecash, admincard, isbilingual, ismultibank, fee
 
 
 public:
 	ATM();
 	~ATM();
+	void Start();
+	bool CheckAdmin();
 	void OpenSession();
 	void EndSession();
 	//Set 함수
-	int get_SerialNumber();
-	bool get_IsMultiBank();
-	map<int, int> get_AvailableCash();
-	void check_admin(int)//card number //admin이면 transaction history 메뉴 보여줌
-	int get_cash();
-	static string* get_History();
-	//card 받는 함수 추가하기!
-	 // History에서 withdraw 3번 넘으면 session 종료
+	void SetAvailableCash(map);
+	void SetFee(map)
+	
+	//Get 함수
+	int GetSerialNum();
+	map<string, Bank*> GetPrimaryBank();
+	map<string, Bank*> GetNonPrimaryBank();
+	map<int, int> GetAvailableCash();
+	Card* GetAdminCard();
+	Vector GetHistory();
+	int GetFee(string);
+
+	//Iss 함수
+	bool IsMultiBank();
+	bool IsMBilingual();
+	
 };
 
 
@@ -333,8 +343,8 @@ public:
 
 
 //-------------------------------------ATM-------------------------------------------
-//Youngwoo
-ATM::ATM() : ATM(NumberOfATM, "Default", false, false) {
+ATM::ATM() : ATM() {
+	cout << "ATM을 생성합니다" << endl; 
 	Bank* bankpointer;
 	cout << "primary bank name: " << endl;
 	cin >> PrimaryBank;
@@ -369,15 +379,15 @@ ATM::ATM() : ATM(NumberOfATM, "Default", false, false) {
 	};
 
 }
-ATM::ATM(int snum, Bank* primary, map allmap, bool multibank=false, bool bilingual=false, map InitialFund) {
-	//SerialNumber, PrimaryBank, NonPrimaryBank map, multibank 여부, bilingual 여부, initial fund map
-	SerialNumber = snum;
-	PrimaryBank = primary;
-	IsMultiBank = multibank;
-	//main함수의 banklist에 들어있는 다른 은행들을 nonprimarybank list와 bankmap에 넣기
-	IsBilingual = bilingual;
-	BankMap = allmap;
-	//[논의 필요]string NonPrimaryBank list를 만들어야 하는지?
+ATM::ATM(int sn, map pb, map npb, map ac, Card* admin, bool bi = false, bool mul = false) {
+	//serial number, primary bank, nonprimarybank, availablecash, admincard, isbilingual, ismultibank
+	this -> SerialNumber = sn;
+	this -> PrimaryBank = pb;
+	this -> NonPrimaryBank = npb;
+	this -> AvailableCash = ac;
+	this -> AdminCard = admin;
+	this -> IsBilingual = bi;
+	this -> IsMultiBank = mul;
 	NumberOfATM++;
 
 }
