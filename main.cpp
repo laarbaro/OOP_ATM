@@ -65,14 +65,13 @@ public:
             validAccount = false;
         }
         else {
-            Bank* temp = findAccount(inputAccount);
-            if ( (atm->getPrimaryBankInfo()).compare(temp->getBankName()) == 0 ) {
-                account = temp->findAccountOfBank(inputAccount);
+            Bank* temp = findAccount(inputAccount); //findAccount 함수를 사용하여 입력된 계좌 번호에 해당하는 Bank 객체를 찾아서 temp 포인터에 저장
+            if ( (atm->getPrimaryBankInfo()).compare(temp->getBankName()) == 0 ) { //현재 세션에서 사용 중인 ATM 객체(atm)의 기본 은행 정보와, 입력된 계좌 번호에 해당하는 Bank 객체의 은행 이름을 비교 ! 두 은행 이름이 같다면, 현재 세션에서 사용 중인 은행이라는 것을 의미
+                account = temp->findAccountOfBank(inputAccount); //같다면, 해당 은행에서 입력된 계좌 번호에 해당하는 Account 객체를 찾아서 account 포인터에 저장합니다. 이렇게 하면 현재 세션에서 사용할 수 있는 계좌를 설정
             } else {
-                if (atm->getSingleInfo() == 0) {
-                    atm->mainKoreanDisplay();
+                if (atm->getSingleInfo() == 0) { //타은행 계좌를 사용할 수 없다면
+                    atm-> ?? ();
                     cout << "타은행 계좌는 사용하실 수 없습니다\n" << endl;
-                    cout << "==================================================" << endl;
                     validAccount = false;
                 } else {
                     primarySignal = false;
