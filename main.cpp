@@ -16,13 +16,13 @@ class Account;
 // -------------------------------[Session] class-----------------------------------
 class Session {
 private:
-	ATM * atm // ATM 객체 가리키는 포인터
-	Account* account // 계좌 객체 가리키는 포인터
-	vector<Transaction> transctionHistoryOfSession // 세션 동안 거래 내역 저장 -> 하고 뭐햇는지 display 해야함. 하나 저장 후 보여주기 (이걸 함수로먼들지 그냥 코드를 짤지는선택 ) + 백터 구조가 어떤지 알려줘서 ATM에 할수 있게 하기
-	bool authorizationSignal // 계좌 비밀번호 인증 결과 나타내는 bool값
-	int aouthorizationCount // 비밀번호 인증 실패 횟수
-	int withdrawalCount // 출금 횟수 기록
-	bool primarySignal // 현재 계좌 은행 정보와 ATM 주거래 은행이 동일한지 여부를 나타내는 bool 값
+	ATM * atm; // ATM 객체 가리키는 포인터
+	Account* account; // 계좌 객체 가리키는 포인터
+	vector<Transaction> transctionHistoryOfSession; // 세션 동안 거래 내역 저장 -> 하고 뭐햇는지 display 해야함. 하나 저장 후 보여주기 (이걸 함수로먼들지 그냥 코드를 짤지는선택 ) + 백터 구조가 어떤지 알려줘서 ATM에 할수 있게 하기
+	bool authorizationSignal; // 계좌 비밀번호 인증 결과 나타내는 bool값
+	int aouthorizationCount; // 비밀번호 인증 실패 횟수
+	int withdrawalCount; // 출금 횟수 기록
+	bool primarySignal; // 현재 계좌 은행 정보와 ATM 주거래 은행이 동일한지 여부를 나타내는 bool 값
 
 public:
 /*
