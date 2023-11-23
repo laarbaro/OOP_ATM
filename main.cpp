@@ -98,21 +98,18 @@ public:
 // -------------------------------[Transaction] class-----------------------------------
 // -------------------------------[Transaction] class-----------------------------------
 class Transaction{
-private: 
-	ATM* CurrentATM;
+private:
+    ATM* CurrentATM;
+    Account* CurrentAccout;
 public:
-	
-	
-	
-	
-	//유리의 일거리
-	void CheckInput();//cash인지 check인지 확인해 CheckCash 또는 CheckCheck 호출
-	void CheckCash(mapset, string, string, string, string);//cash 종류별 개수, bank, username, accountnum, password
-	void CheckCheck(int[], string, int, string);//amount, username, accountnum, password
-	
-	
-	
-	
+    
+    //void CheckInput();//cash인지 check인지 확인해 CheckCash 또는 CheckCheck 호출
+    void CheckCash() {
+        CashInATM = CurrentATM->GetAvailableCash();
+    };//cash 종류별 개수, bank, username, accountnum, password
+    void CheckCheck() {
+        CheckInAccount = CurrentAccout->GetBalance();
+    };//amount, username, accountnum, password
 };
 
 
