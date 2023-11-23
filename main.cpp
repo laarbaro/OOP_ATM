@@ -25,10 +25,11 @@ private:
 	bool primarySignal // 현재 계좌 은행 정보와 ATM 주거래 은행이 동일한지 여부를 나타내는 bool 값
 
 public:
+/*
 	void Open_Account(string, string, int, string, int, int); //bank, username, AccountNum, password, account number, available fund
 	void Display(int, string, int, int, string, bool); //이동한 금액, username, AccountNum, card number, bank, externalFile=False 필요여부//이름 받아 transaction 결과 보여줌, 각 transaction에서 호출, external file True면 external file로 출력
 	void Authorize(int, string, int); //card number, username, AccountNum//함수 내에서 password 요구 및 확인 필요, 최대 3번 요구 후 return card
-
+*/
     Session() {}
     void CashDeposit(unsigned long long amount, int x);
     void CheckDeposit(unsigned long long amount, int x);
