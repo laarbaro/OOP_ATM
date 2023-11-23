@@ -118,7 +118,13 @@ class DepositTransaction : public Transaction {
 public:
     void Deposit(bool isCash, int depositMoney) {
         if (isCash == true) {
+	    if (CurrentAccount->getBank() == CurrentATM->getPrimaryBank()) {
+		int fee == 0;
+	    }
+	    else { int fee == 1000; }
+		
 	    //ATM-> availablecash += depositMoney + fee
+	    CurrentAccount->Withdraw(depositMoney+)
 	    //Acc-> balance -= depositMoney + fee
 	}
 	else {
