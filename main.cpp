@@ -116,19 +116,27 @@ public:
 //----------------child of Transaction----------------------
 class DepositTransaction : public Transaction {
 public:
-    void Deposit(bool isCash, int depositMoney) {
+    void Deposit(bool isCash, map depositCash) {
         if (isCash == true) {
 	    if (CurrentAccount->getBank() == CurrentATM->getPrimaryBank()) {
 		int fee == 0;
 	    }
 	    else { int fee == 1000; }
+
+	    for (const auto& pair : cashInATM) {
+	        cashInATM.second += depositCash.second
+	    }
 		
-	    //ATM-> availablecash += depositMoney + fee
-	    CurrentAccount->Withdraw(depositMoney+)
-	    //Acc-> balance -= depositMoney + fee
+	    int depositCash_sum = 0;
+	    for (const auto& pair : depositCash) {
+	        depositCash_sum += pair.first * pair.second;
+	    }
+		
+	    CurrentATM->SetAvailableCash(s - depositCash)
+	    CurrentAccount->Withdraw(depositCash_sum + fee)
 	}
 	else {
-	    //Acc-> balance -= depositMoney + fee
+	    CurrentAccount->Withdraw(depositMoneyAmount+fee)
 	}
 	//history, display information
     };
