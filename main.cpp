@@ -42,14 +42,49 @@ public:
 
 
 // -------------child of Session class ---------------
-class KoreanSession {
-private:
+class KoreanSession : public Session {
 public:
+	KoreanSession(ATM* iatm) {
+	atm = iatm;
+        primarySignal = true;
+        authorizationCount = 0;
+        withdrawalCount = 0;
+        authorizationSignal = true;
+        bool validAccount = true;
+        string inputAccount;
+        atm->mainKoreanDisplay();
+        cout << " 계좌 번호를 입력해주세요\n" << endl;
+        cout << "계좌 번호 : ";
+        cin >> inputAccount;
+
+	if (findAccount(inputAccount) == nullptr) {
+            atm->mainKoreanDisplay();
+            cout << "입력한 계좌번호가 존재하지 않습니다." << endl;
+            validAccount = false;
+        }
+        else {
+            Bank* temp = findAccount(inputAccount);
+            if ( (atm->getPrimaryBankInfo()).compare(temp->getBankName()) == 0 ) {
+                account = temp->findAccountOfBank(inputAccount);
+            } else {
+                if (atm->getSingleInfo() == 0) {
+                    atm->mainKoreanDisplay();
+                    cout << "타은행 계좌는 사용하실 수 없습니다\n" << endl;
+                    cout << "==================================================" << endl;
+                    validAccount = false;
+                } else {
+                    primarySignal = false;
+                    account = temp->findAccountOfBank(inputAccount);
+                }
+            }
+        }
+
+	}
+
 
 };
 
 class EnglishSession {
-private:
 public:
 
 };
