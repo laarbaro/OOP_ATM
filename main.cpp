@@ -327,7 +327,7 @@ public:
 
 //account 를 여는, 만드는 constroctor 필요. 입력 받으면 그걸
 
-class  {
+class account {
 
 private:
     string accountNum;
