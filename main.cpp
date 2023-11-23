@@ -407,7 +407,51 @@ public:
 ///--------------------------------method-------------------------------------
 
 /*-------------- Methods of Session Class --------------*/
-void Session::CashDeposit(unsigned long long amount, int x) {
+void Session::CashDeposit(map<int, int> amount, int x) { // 한국어 인지 아닌지
+
+    unsigned long long fee = 0;
+    if (!primarySignal) fee = 1000;
+
+    // ATM에 화폐를 추가합니다.
+    atm->plusMoney(amount);
+
+    // 계좌에 입금합니다.
+    unsigned long long totalAmount = 0;
+    for (const auto& entry : amount) {
+        int denomination = entry.first;
+        int count = entry.second;
+        totalAmount += (denomination * count);
+    }
+    account->plusMoney(totalAmount - fee);
+
+    // 거래를 생성하고 계좌에 추가합니다.
+	
+    //////////////////// 이부분 !!
+   ///////////////DepositTransaction클래스에 새 객체 생성 .
+    DepositTransaction newTransaction(account, amount, findAccount(account->getAccountNumber())->getBankName()); 
+
+
+
+	
+    //(계좌, 현금 ( 맵 ) , 뱅크 이름)
+    account->addTransaction(&newTransaction); // 계좌자체의 거래내역.
+    // 계좌에 새 거래 추가 *addTrnascation은 account의 함수.
+    
+    transactionHistoryOfSession.push_back(newTransaction); //세션 전체 동안의 거래 내역
+    // 거래 정보를 출력합니다.
+    
+    if (x == 0) cout << newTransaction.getKoreanInformation() << endl;
+    else cout << newTransaction.getEnglishInformation() << endl;
+
+    // 현재 잔액을 출력합니다.
+    if (x == 0) cout << "/n현재 잔액 : ";
+    else cout << "\nCurrent Available Cash : ";
+    cout << account->getBalance();
+    
+    if (x == 0) cout << " 원" << endl;
+    else cout << " won" << endl;
+
+    cout << "\n";
 }
 
 
