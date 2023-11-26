@@ -117,34 +117,6 @@ public:
 
 //----------------child of Transaction----------------------
 class DepositTransaction : public Transaction {
-public:
-    void Deposit(bool isCash, map depositCash) {
-        if (isCash == true) {
-	    if (CurrentAccount->getBank() == CurrentATM->getPrimaryBank()) {
-		int fee == 0;
-	    }
-	    else { int fee == 1000; }
-
-	    for (const auto& pair : cashInATM) {
-	        cashInATM.second += depositCash.second
-	    }
-		
-	    int depositCash_sum = 0;
-	    for (const auto& pair : depositCash) {
-	        depositCash_sum += pair.first * pair.second;
-	    }
-		
-	    CurrentATM->SetAvailableCash(s - depositCash)
-	    CurrentAccount->Withdraw(depositCash_sum + fee)
-	}
-	else {
-	    CurrentAccount->Withdraw(depositMoneyAmount+fee)
-	}
-	//history, display information
-    };
-};
-
-class DepositTransaction : public Transaction {
 //아직 미구현: There is a limit in the number of cash or checks that can be deposited per transaction (e.g., 50 papercashes, 30 paper checks)
 public:
     string Deposit(account* acc, bool isCash, map depositCash) {
