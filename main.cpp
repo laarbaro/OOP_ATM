@@ -168,6 +168,7 @@ private:
 	bool Bilingual = false;
 	bool MultiBank = false;
 	static int NumberOfATM;
+	Session* CurrentSession;
 	
 public:
 	ATM();
@@ -177,6 +178,7 @@ public:
 	bool CheckAdmin();
 	void OpenSession();
 	void EndSession();
+	
 	//Set 함수
 	void SetAvailableCash(map);
 
@@ -192,6 +194,10 @@ public:
 	bool IsMultiBank(){return this->MultiBank}
 	bool IsMBilingual(){return this->Bilingual}
 
+
+	//Show 함수
+	void ShowHistory();
+	void ShowAvailableCash(){};
 };
 
 
@@ -226,6 +232,7 @@ public:
     }
 
     // 카드가 관리자 카드인지 확인
+    //[유리] card number와 password를 받아서 Admin인지 확인해주세요
     bool isAdminCard() const {
         return isAdmin;
     }
@@ -570,26 +577,57 @@ void Start(){
 	//카드 invalid 확인해서 error 띄우기
 	//카드 return 표시하기
 	//ATM 잔고 보여주기
-	//
-	while (1) {
-		cout << "Welcome" << endl;
-		cout << "To start a session, please insert your debit card" << endl;
-
-
-		cout << "[1] Card insert [2] Language Select [3] Make New Account" << endl;
-		cin >> int a;
-		if (a==1){
-		} else if (a==2){
-		} else if (a==3){
+	
+	cout << "Welcome" << endl;
+	cout << "To start a session, please insert your debit card" << endl;
+	int CN, PW;
+	cout << "Insert card number and password" << endl;
+	if CheckAdmin(CN, PW){
+		int sel;
+		cout << "Welcome Administrator" << endl;
+		cout << "[1] Show me history [etc] Show me Available Cash" << endl;
+		cin >> sel;
+		if (sel == 1){
+			ShowHistory();
 		} else {
-			cout << "You entered the wrong number. Please enter the write number.	
+			ShowAvailableCash();
 		}
+	} else {
+		OpenSession();//언어는?
 	};
 };
-bool CheckAdmin(){};
-bool OpenSession(){};
+bool CheckAdmin(int cardnum, int pw){
+	return this->AdminCard->isAdminCard(cardnum, pw);
+};
+bool OpenSession(){
+	if (this->Bilingual){
+		int sel;
+		cout << "Select Language" << endl;
+		cout << "[1] English [etc] Korean" << endl;
+		if (sel==1){
+			this->CurrentSession = new EnglishSession();
+		} else {
+			this->CurrentSession = new KoreanSession();
+		}
+	}
+};
 void EndSession(){};
 void SetAvailableCash(map<int, int> inputcash){};
+void ShowHistory(){
+	//
+	//History에서 Transaction id, card number, transaction type, amount, 
+};
+void ShowAvailableCash(){
+	int total = 0;
+	cout << " Remaining Cash: ( "
+	for ( auto iter = this->AvailableCash.begin(); iter != this->AvailableCash.end();iter++){
+		cout << iter->first << "원X"<<iter->second << "장  ";
+		total += iter->first*iter->second
+	};
+	cout << ") total : " << total << endl;
+};
+
+
 //-------------------------------------Transaction---------------------------------------
 void Transaction::Withdraw(int, string, string, int, string) {
     // 현금 확인하여 인출가능 금액인지 확인
