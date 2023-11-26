@@ -253,13 +253,6 @@ public:
 class Account; //전방 선언 
 
 class Bank {
-//어디 은행인지 알려주는 기능 
-// 뱅크가 어카운트에 대한 포인터가 있어야함.  ( 어카운트가 뱅크에 대한 포인터로 변경 ! ->  )
-// [유리] Bank constructor/destructor가 필요합니다!
-// fee 도 필요 ?
-
-
-
 private:
     map<string, Account*> accounts; // 계좌 번호를 키로 사용
     string bankName;
@@ -267,66 +260,56 @@ private:
 public:
 
     Bank(string name) : bankName(name) {}; // Bank name 설정
+
+    // 현재 account 있는지 확인하 없으면 생성
     void createAccount(string accountNum, string password, string ownerName) {
-        // 이미 존재하는 계좌인지 확인하고 추가
-        if (accounts.find(accountNum) == accounts.end()) {
+        if (!accountExists()) {
             accounts[accountNum] = Account(accountNum, password, ownerName, this);
         }
     }
 
     // 사용자 정보를 모두 출력하는 함수 (특정 사용자의 모든 계정 정보를 출력하는 함수)
-    void allAccount(const string& username) {
+    void allAccount(string username) {
         cout << "사용자 " << username << "의 모든 계정 정보:" << endl;
-        for (const auto& entry : accounts) {
-            const Account& account = entry.second;
-            if (account.getOwnerName() == username) {
-                cout << "계좌 번호: " << account.getAccountNum() << ", ";
-                cout << "잔액: " << account.getBalance() << endl;
+        for (auto entry : accounts) {
+            if (entry.second->getOwnerName() == username) {
+                cout << "계좌 번호: " << entry.second->getAccountNum() << ", ";
+                cout << "잔액: " << entry.second->getBalance() << endl;
             }
         }
     }
 
     // 사용자 정보를 확인하는 함수 (사용자 정보를 확인하고, 주어진 사용자 이름, 계좌 번호, 비밀번호와 일치하는지 여부를 반환하는 함수) 
-    bool verifyUser(const string& username, const string& accountNum, const string& password) {
+    bool verifyUser(string username, string accountNum, string password) {
         auto it = accounts.find(accountNum);
         if (it != accounts.end()) {
-            const Account& account = it->second;
-            return (account.getOwnerName() == username && account.verifyPW(password));
+            Account* account = it->second;
+            return (account->getOwnerName() == username && account->verifyPW(password));
         }
         return false; // 사용자 확인 실패
     }
 
-    // 계정 정보를 확인하는 함수(계정 정보를 확인하고, 주어진 계좌 번호와 비밀번호가 일치하는지 여부를 반환하는 함수입니다.)
-    bool verifyAccount(const string& accountNum, const string& password) {
+    // 계정 정보를 확인하는 함수(계정 정보를 확인하고, 주어진 계좌 번호와 비밀번호가 일치하는지 여부를 반환하는 함수)
+    bool verifyAccount(string accountNum, string password) {
         auto it = accounts.find(accountNum);
-        return (it != accounts.end() && it->second.verifyPW(password));
+        return (it != accounts.end() && it->second->verifyPW(password));
     }
 
     // 계좌 존재 여부 확인 (주어진 계좌 번호가 은행에 존재하는지 여부를 확인하는 함수)
     bool accountExists(int accountNum) {
-        return accounts.find(accountNum) != accounts.end();
+        return {accounts.find(accountNum) != accounts.end()};
     }
 
 	
     // 은행 이름 리턴 함수
-    string getBankName() const {
-        return bankName;
-    }
-
- //session withdraw에서 if (bank->accountExists(accountNum))  이런식으로 하면 될합니다.
-
-
+    string getBankName(){ return bankName; };
 }
-
-
 
     // Bank 클래스의 소멸자
     ~Bank() {
         // 소멸자에서 리소스 정리 작업 수행
         // 예: 동적으로 할당된 메모리 해제 등
     }
-
-
 };
 
 
