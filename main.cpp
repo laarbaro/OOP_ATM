@@ -102,7 +102,7 @@ public:
 class Transaction{
 private:
     ATM* CurrentATM;
-    Account* CurrentAccout;
+    Account* CurrentAccount;
 public:
     
     //void CheckInput();//cash인지 check인지 확인해 CheckCash 또는 CheckCheck 호출
