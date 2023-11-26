@@ -792,22 +792,43 @@ Transaction::Authorize(string Username, int AccountNum, string Password, Bank* B
 
 
 int main() {
-	//<bank 이름 string,bank pointer>로 구성된 map 형성
-	//[수정 필요]Bank constructor가 지정되면 그에 맞춰 수정되어야 할 부분!
-	//[수정 필요]은행의 이름이 한국어로 들어오는 input도 고려해야 하는가?
-	int BankNum;
+
+	//Bank 선언
+	int NumofBank;
 	string InputBankName1;
 	map <string, Bank*> InputBankMap;
 	cout << "BANK를 선언하겠습니다" << endl;
 	cout << "몇개의 은행을 만드시겠습니까? << endl;
-	cin >> BankNum;
-	for (int i=0; i<BankNum; i++){
+	cin >> NumofBank;
+	for (int i=0; i<NumofBank; i++){
 		cout << "은행의 이름을 입력해주세요" << endl;
 		cin >> BankName1;
-		Bank new = Bank BankName1+"BANK";
-		InputBankMap.insert({BankName1,new});
+		InputBankMap.insert({BankName1,new Bank(BankName1)}); 
 	};
 
+	//Account 선언
+	int NumofAccount;
+	string pb;
+	int AccountNum;
+	string pw;
+	string ownername;
+	cout << "Account를 선언하겠습니다" << endl;
+	cout << "몇개의 Account를 만드시겠습니까? << endl;
+	cin >> NumofAccount;
+	for (int i=0; i<NumofAccount; i++){
+		cout << "계좌의 주거래 은행을 알려주세요" << endl;
+		cin >> pb;
+		cout << "계좌번호를 입력해주세요" << endl;
+		cin >> AccountNum;
+		cout << "계좌 소유주의 성명을 입력해주세요" << endl;
+		cin >> ownername;
+		cout << "계좌 비밀번호를 입력해주세요" << endl;
+		cin >> pw;
+		Account(AccountNum, pw, ownername, //수정중
+	
+	//Card 선언
+	
+	//ATM선언 전 primary bank pointer, bankmap, card pointer가 준비되어 있어야 함
 	//ATM 선언
 	//[수정 필요]논의 후 수정
 	int ATMNum;
@@ -836,12 +857,6 @@ int main() {
 		//ATM(int snum, Bank* primary, bool maltibank=false, bool bilingual=false)
 		//=====================================================================
 	}
-	ATM ShinhanATM;
-	ATM DaeguATM;
-	
-	cout << "All ATM : " <<
-		선택하세요
-
 		
 	
     // 지영 예제 사용법:
