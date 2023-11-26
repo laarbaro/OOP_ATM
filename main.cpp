@@ -119,44 +119,98 @@ public:
 class DepositTransaction : public Transaction {
 //아직 미구현: There is a limit in the number of cash or checks that can be deposited per transaction (e.g., 50 papercashes, 30 paper checks)
 public:
-    string Deposit(account* CurrentAccount, bool isCash, map depositCash) {
-	    //수수료 책정
-	    if (CurrentAccount->getBank() == CurrentATM->getPrimaryBank()) {
-	    	int fee == 0;
-	    }
-	    else { int fee == 1000; }
+    string Deposit(ATM* CurrentATM, account* CurrentAccount, bool isCash, map depositCash) {
+        //수수료 책정
+        if (CurrentAccount->getBank() == CurrentATM->getPrimaryBank()) {
+            int fee == 0;
+        }
+        else { int fee == 1000; }
 
-		//예치금 액수 계산
-	    int depositCash_sum = 0;
-	    for (const auto& pair : depositCash) {
-        	depositCash_sum += pair.first * pair.second;
-		}
-		
-		//cash or check
-		if (isCash == true) {
-	        //ATM available cash 증가
-	        map<int, int> available1 = CurrentATM->getAvailableCash();
-	        map<int, int> available2;
-	        for (const auto& entry :  available1) {
-	            availabl2[available1.first] = available1.second + depositCash[available1.first];
-	        }
-	        CurrentATM->SetAvailableCash(available2)
-	        
-	        //account 액수 증가
-	        CurrentAccount->Deposit(depositCash_sum + fee)
-	    }
-	    else {
-	        CurrentAccount->Deposit(depositCash_sum + fee)
-	    }
+        //예치금 액수 계산
+        int depositCash_sum = 0;
+        for (const auto& entry : depositCash) {
+            depositCash_sum += entry.first * entry.second;
+        }
+        
+        //cash or check
+        if (isCash == true) {
+            //ATM available cash 증가
+            map<int, int> available1 = CurrentATM->getAvailableCash();
+            map<int, int> available2;
+            for (const auto& entry :  available1) {
+                availabl2[available1.first] = available1.second + depositCash[available1.first];
+            }
+            CurrentATM->SetAvailableCash(available2)
+        }
+        
+        //account 액수 증가
+        CurrentAccount->Deposit(depositCash_sum + fee)
         
         //history return
-	    return "cash deposit $" + to_string(depositCash_sum) + "(balance: $" + to_string(CurrentAccount->getBalance() + depositCash_sum) + ")";
+        return "cash deposit $" + to_string(depositCash_sum) + "(balance now: $" + to_string(CurrentAccount->getBalance()) + ")";
     };
 };
 
 class withdrawTransaction : public Transaction {
 public:
-    void Withdraw(int, string, string, int, string); //amount, bank, username, AccountNum, password //bank에서 계좌 확인 후 limit 안넘으면 출금, bank 확인해 fee 결정해 빼고 출금, ATM의 available_cash 감소, 최대 50만원 withdraw 가능
+    void Withdraw(ATM* CurrentATM, account* CurrentAccount, int Amount) {
+        //bank에서 계좌 확인 후 limit 안넘으면 출금, bank 확인해 fee 결정해 빼고 출금, ATM의 available_cash 감소, 최대 50만원 withdraw 가능
+        map<int, int> AvailableNow = CurrentATM->getAvailableCash();
+        
+        //ATM available money amount
+        int ATMCash_sum = 0;
+        for (const auto& entry : AvailableNow) {
+            ATMCash_sum += entry.first * entry.second;
+        }
+        
+        //int out_50000 = 0; int out_10000 = 0; int out_5000 = 0; int out_1000 = 0;
+        map<int,int> out;
+        tmp_amount = Amount;
+        //인출 가능한가?
+        if (ATMCash_sum >= tmp_amount) {
+            //금액권 개수 산정
+            if (AvailableNow[50000] >= int(tmp_amount / 50000)) {
+                out[50000] = int(tmp_amount / 50000);
+                tmp_amount -= 50000 * out[50000];
+            }
+            else {
+                out_50000 = AvailableNow[50000];
+            }
+            if (AvailableNow[10000] >= int(tmp_amount / 10000)) {
+                out[10000] = int(tmp_amount / 10000);
+                tmp_amount -= 10000 * out[10000];
+            }
+            else {
+                out_10000 = AvailableNow[10000];
+            }
+            if (AvailableNow[5000] >= int(tmp_amount / 5000)) {
+                out[5000] = int(tmp_amount / 5000);
+                tmp_amount -= 5000 * out[5000];
+            }
+            else {
+                out_5000 = AvailableNow[5000];
+            }
+            out[1000] = int(tmp_amount / 1000);
+            tmp_amount -= 1000 * out[1000];
+            
+            //ATM available cash 감소
+            map<int, int> AvailableUpdate;
+            for (const auto& entry :  AvailableNow) {
+                AvailableUpdate[AvailableNow.first] = AvailableNow.second - out[AvailableNow.first];
+            }
+            CurrentATM->SetAvailableCash(AvailableUpdate);
+            
+            //Account balance 감소
+            CurrentAccount->Withdraw(Amount + fee);
+            
+            //history return
+            return "cash withdrawal $" + to_string(Amount) + "(balance now: $" + to_string(CurrentAccount->getBalance()) + ")";
+            
+        }
+        else { //인출 불가능
+            return "error: The user ordered withdrawal of an amount that exceeds the amount currently available from the ATM"
+        }
+    };
 };
 
 class TransferTransaction :  : public Transaction {
