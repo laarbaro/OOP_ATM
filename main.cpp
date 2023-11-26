@@ -119,7 +119,7 @@ public:
 class DepositTransaction : public Transaction {
 //아직 미구현: There is a limit in the number of cash or checks that can be deposited per transaction (e.g., 50 papercashes, 30 paper checks)
 public:
-    string Deposit(account* acc, bool isCash, map depositCash) {
+    string Deposit(account* CurrentAccount, bool isCash, map depositCash) {
 	    //수수료 책정
 	    if (CurrentAccount->getBank() == CurrentATM->getPrimaryBank()) {
 	    	int fee == 0;
@@ -144,14 +144,13 @@ public:
 	        
 	        //account 액수 증가
 	        CurrentAccount->Deposit(depositCash_sum + fee)
-	        
-	        //history return
-	        return "cash deposit $" + to_string(depositCash_sum) + "(balance: $" + to_string(acc->getBalance() + depositCash_sum) + ")";
 	    }
 	    else {
-			CurrentAccount->Withdraw(depositCash_sum + fee)
-			return "cash deposit $" + to_string(d) + "(balance: $" + to_string(acc->getBalance() + depositCash_sum) + ")";
+	        CurrentAccount->Deposit(depositCash_sum + fee)
 	    }
+        
+        //history return
+	    return "cash deposit $" + to_string(depositCash_sum) + "(balance: $" + to_string(CurrentAccount->getBalance() + depositCash_sum) + ")";
     };
 };
 
