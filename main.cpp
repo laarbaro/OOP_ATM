@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string.h>
 #include <unordered_map>
+#include <vector>
+#include <fstream>
 
 using namespace std;
 
@@ -177,7 +179,6 @@ public:
 	void Start();
 	bool CheckAdmin();
 	void OpenSession();
-	void EndSession();
 	
 	//Set 함수
 	void SetAvailableCash(map);
@@ -260,21 +261,13 @@ class Bank {
 
 
 private:
-    unordered_map<string, Account> accounts; // 계좌 번호를 키로 사용
-    Card bankCard;
+    map<string, Account*> accounts; // 계좌 번호를 키로 사용
     string bankName;
 
 public:
 
-    // Bank 클래스의 생성자
-    Bank(const std::string& name) : bankName(name) {
-	// 생성자에서 필요한 초기화 작업 수행
-        // 예: 특정 멤버 변수 초기화, 메모리 할당 등
-    }
-
-
-    // Account 생성 및 추가
-    void createAccount(const string& accountNum, const string& password, const string& ownerName) {
+    Bank(string name) : bankName(name) {}; // Bank name 설정
+    void createAccount(string accountNum, string password, string ownerName) {
         // 이미 존재하는 계좌인지 확인하고 추가
         if (accounts.find(accountNum) == accounts.end()) {
             accounts[accountNum] = Account(accountNum, password, ownerName, this);
@@ -564,12 +557,13 @@ ATM::ATM(Bank* pb, map<string, Bank*> allb, Card* admin) {
 }
 
 ATM::~ATM() {
+	delete this->CurrentSession;
 	NumberOfATM--;
 }
 void Start(){
 	//언어 받고 session열어주기
 	//ATM 초기 잔고 보여주기 받기
-	//account 개설 받기
+	//account 개설 받기 -> transaction에서 하던데
 	//카드 입력하세요 후 CheckAdmin()후 session 열어주기
 	//admin card면 transaction history 볼 수 있게 열어주기
 	//transaction history에서는 모든 transaction 보여주기, user명과 transaction id, card num, transaction type, amount 등 정보
@@ -593,7 +587,7 @@ void Start(){
 			ShowAvailableCash();
 		}
 	} else {
-		OpenSession();//언어는?
+		OpenSession();
 	};
 };
 bool CheckAdmin(int cardnum, int pw){
@@ -611,11 +605,29 @@ bool OpenSession(){
 		}
 	}
 };
-void EndSession(){};
-void SetAvailableCash(map<int, int> inputcash){};
+void SetAvailableCash(map<int, int> inputcash){
+	for ( auto iter = this->AvailableCash.begin(); iter != this->AvailableCash.end();iter++){
+		int currentnum = inputcash.find(iter->first)->second;
+		iter->second+=currentnum;
+	};
+};
 void ShowHistory(){
-	//
-	//History에서 Transaction id, card number, transaction type, amount, 
+	//map[<"TransactionID",int>,<"CardNumber",int>,<"TransactionType",string>,<"Amount",int>]
+	std::ofstream out("History.txt", std::ios::app);
+	if (out.is_open()){
+		cout << "----------------------History--------------------" << endl;
+		out << "----------------------History--------------------" << endl; 
+		for ( auto iter = this->History.begin(); iter != this->History.end(); iter++){ 
+			cout << iter->first << " : " << iter->second << endl;
+			out << iter->first << " : " << iter->second << endl;
+		};
+		cout << "------------------------------------------------" << endl;
+		out << "------------------------------------------------" << endl;
+	} else {
+		cout << "Error : history 파일 안열림" << endl;
+	};
+	
+	
 };
 void ShowAvailableCash(){
 	int total = 0;
