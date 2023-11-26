@@ -157,22 +157,21 @@ public:
 
 // -------------------------------[ATM] class-----------------------------------
 // -------------------------------[ATM] class-----------------------------------
-class ATM{
-private: 
+class ATM {
+private:
 	const int SerialNumber;
 	map<string, Bank*> PrimaryBank;
 	map<string, Bank*> NonPrimaryBank;
 	map<int, int> AvailableCash;//현금 단위, 갯수
 	Card* AdminCard;
 	vector History;
-	bool IsBilingual = false;
-	bool IsMultiBank = false;
+	bool Bilingual = false;
+	bool MultiBank = false;
 	static int NumberOfATM;
-	ATM(int, map, map, map, Card*, bool=false, bool=false, map);//serial number, primary bank, nonprimarybank, availablecash, admincard, isbilingual, ismultibank, fee
-
-
+	
 public:
 	ATM();
+	ATM(Bank* pb, map<string, Bank*> allb, Card* admin);//primary bank pointer, allbankmap, admincard
 	~ATM();
 	void Start();
 	bool CheckAdmin();
@@ -180,21 +179,19 @@ public:
 	void EndSession();
 	//Set 함수
 	void SetAvailableCash(map);
-	void SetFee(map)
-	
-	//Get 함수
-	int GetSerialNum();
-	map<string, Bank*> GetPrimaryBank();
-	map<string, Bank*> GetNonPrimaryBank();
-	map<int, int> GetAvailableCash();
-	Card* GetAdminCard();
-	Vector GetHistory();
-	int GetFee(string);
 
-	//Iss 함수
-	bool IsMultiBank();
-	bool IsMBilingual();
-	
+	//Get 함수
+	int GetSerialNum(){return this->SerialNumber}
+	map<string, Bank*> GetPrimaryBank(){return this->PrimaryBank}
+	map<string, Bank*> GetNonPrimaryBank(){return this->NonPrimaryBank}
+	map<int, int> GetAvailableCash(){return this->AvailableCash}
+	Card* GetAdminCard(){return this->AdminCard}
+	Vector GetHistory(){return this->History}
+
+	//Is 함수
+	bool IsMultiBank(){return this->MultiBank}
+	bool IsMBilingual(){return this->Bilingual}
+
 };
 
 
@@ -472,69 +469,127 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
 
 
 //-------------------------------------ATM-------------------------------------------
-ATM::ATM() : ATM() {
-	cout << "ATM을 생성합니다" << endl; 
+ATM::ATM() {
+	cout << "아무 input 없이 ATM을 생성할 수 없습니다." << endl;
+	cout << "primary bank의 pointer, 모든 bank의 map, admin card의 pointer를 넣어 ATM을 생성해주세요." << endl;
+	cout << "자동으로 이 ATM을 제거합니다." << endl;
+	delete this;
+
+}
+
+ATM::ATM(Bank* pb, map<string, Bank*> allb, Card* admin) {
+	//primary bank pointer, allbankmap, admincard
+	
+	//변수 선언
+	string bankname;
 	Bank* bankpointer;
-	cout << "primary bank name: " << endl;
-	cin >> PrimaryBank;
-	cout << "primary bank pointer: " << endl;
-	cin >> bankpointer;
-	BankMap.insert({PrimaryBank, bankpointer});
-	cout << "Multibank? y or n" << endl;
-	cin >> tmp;
-	while(1) {
-	        if (tmp == "y") {
-			IsMultiBank = true; 
-			//main함수의 banklist에 들어있는 다른 은행들을 nonprimarybank list와 bankmap에 넣기
+	int mul;
+	int bi;
+	int cash1000;
+	int cash5000;
+	int cash10000;
+	int cash50000;
+
+	//UI
+	cout << "ATM을 생성합니다" << endl;
+	cout << "Serial Number" << endl;
+	cin >> this->SerialNumber;
+	cout << "Primary Bank name :" << endl;
+	cin >> bankname;
+	this->PrimaryBank.insert({ bankname, pb });
+	allb.erase("bankname");
+	this->NonPrimaryBank.insert(allb);
+	cout << "Primary 및 Nonprimary bank 설정이 완료되었습니다" << endl;
+	this->AdminCard = admin;
+	cout << "Admin Card 설정이 완료되었습니다" << endl;
+	while (true) {
+		cout << "Bilingual ATM입니까?" << endl;
+		cout << "숫자로 입력해주세요" << endl;
+		cout << "[1]Yes    [2]No" << endl;
+		cin >> bi;
+
+		if (bi == 1) {
+			this->Bilingual = true;
 			break;
 		}
-	        else if(tmp == "n") {IsMultiBank = false; break;}
-	        else{
-	            cout << "You should input the value y or n. Case sensitive." << endl;
-	            cout << "Multibank? y or n" << endl;
-	            cin >> tmp;
-	        }
-	}
-	cout << "Bilingual? y or n" << endl;
-	cin >> tmp;
-	while(1) {
-	        if (tmp == "y") {IsBilingual = true; break;}
-	        else if(tmp == "n") {IsBilingual = false; break;}
-	        else{
-	            cout << "You should input the value y or n. Case sensitive." << endl;
-	            cout << "Multibank? y or n" << endl;
-	            cin >> tmp;
+		else if (bi == 2) {
+			this->Bilingual = false;
+			break;
+		}
+		else {
+			cout << "올바르지 않은 숫자입니다. 다시 입력해주세요" << endl;
+		};
+	};
+	
+	while (true) {
+		cout << "MultiBank ATM입니까?" << endl;
+		cout << "숫자로 입력해주세요" << endl;
+		cout << "[1]Yes    [2]No" << endl;
+		cin >> mul;
+
+		if (mul == 1) {
+			this->MultiBank = true;
+			break;
+		}
+		else if (mul == 2) {
+			this->MultiBank = false;
+			break;
+		}
+		else {
+			cout << "올바르지 않은 숫자입니다. 다시 입력해주세요" << endl;
+
+		};
+	};
+	cout << "초기 Cash를 입금해주세요" << endl;
+	cout << "1000원권 몇 장을 입금하시겠습니까?" << endl;
+	cin >> cash1000;
+	this->AvailableCash.insert({ 1000,cash1000 });
+	cout << "5000원권 몇 장을 입금하시겠습니까?" << endl;
+	cin >> cash5000;
+	this->AvailableCash.insert({ 5000,cash5000 });
+	cout << "10000원권 몇 장을 입금하시겠습니까?" << endl;
+	cin >> cash10000;
+	this->AvailableCash.insert({ 10000,cash10000 });
+	cout << "50000원권 몇 장을 입금하시겠습니까?" << endl;
+	cin >> cash50000;
+	this->AvailableCash.insert({ 50000,cash50000 });
+	++NumberOfATM;
+}
+
+ATM::~ATM() {
+	NumberOfATM--;
+}
+void Start(){
+	//언어 받고 session열어주기
+	//ATM 초기 잔고 보여주기 받기
+	//account 개설 받기
+	//카드 입력하세요 후 CheckAdmin()후 session 열어주기
+	//admin card면 transaction history 볼 수 있게 열어주기
+	//transaction history에서는 모든 transaction 보여주기, user명과 transaction id, card num, transaction type, amount 등 정보
+	//필요시 파일로 transaction history 뽑기
+	//카드 invalid 확인해서 error 띄우기
+	//카드 return 표시하기
+	//ATM 잔고 보여주기
+	//
+	while (1) {
+		cout << "Welcome" << endl;
+		cout << "To start a session, please insert your debit card" << endl;
+
+
+		cout << "[1] Card insert [2] Language Select [3] Make New Account" << endl;
+		cin >> int a;
+		if (a==1){
+		} else if (a==2){
+		} else if (a==3){
+		} else {
+			cout << "You entered the wrong number. Please enter the write number.	
 		}
 	};
-
-}
-ATM::ATM(int sn, map pb, map npb, map ac, Card* admin, bool bi = false, bool mul = false) {
-	//serial number, primary bank, nonprimarybank, availablecash, admincard, isbilingual, ismultibank
-	this -> SerialNumber = sn;
-	this -> PrimaryBank = pb;
-	this -> NonPrimaryBank = npb;
-	this -> AvailableCash = ac;
-	this -> AdminCard = admin;
-	this -> IsBilingual = bi;
-	this -> IsMultiBank = mul;
-	NumberOfATM++;
-
-}
-ATM::~ATM() {
-	//[유리] 완성해주세요
-	//
-	NumberOfATM--;
-	//detach?
-}
-int ATM::get_SerialNumber() { 
-    return SerialNumber;
-}
-bool ATM::get_IsMultiBank() {
-    return IsMultiBank;
-}
-map<int, int> ATM::get_AvailableCash(){
-	return AvailableCash;
-}
+};
+bool CheckAdmin(){};
+bool OpenSession(){};
+void EndSession(){};
+void SetAvailableCash(map<int, int> inputcash){};
 //-------------------------------------Transaction---------------------------------------
 void Transaction::Withdraw(int, string, string, int, string) {
     // 현금 확인하여 인출가능 금액인지 확인
