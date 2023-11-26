@@ -144,6 +144,45 @@ public:
     };
 };
 
+class DepositTransaction : public Transaction {
+//아직 미구현: There is a limit in the number of cash or checks that can be deposited per transaction (e.g., 50 papercashes, 30 paper checks)
+public:
+    string Deposit(account* acc, bool isCash, map depositCash) {
+	    //수수료 책정
+	    if (CurrentAccount->getBank() == CurrentATM->getPrimaryBank()) {
+	    	int fee == 0;
+	    }
+	    else { int fee == 1000; }
+
+		//예치금 액수 계산
+	    int depositCash_sum = 0;
+	    for (const auto& pair : depositCash) {
+        	depositCash_sum += pair.first * pair.second;
+		}
+		
+		//cash or check
+		if (isCash == true) {
+	        //ATM available cash 증가
+	        map<int, int> available1 = CurrentATM->getAvailableCash();
+	        map<int, int> available2;
+	        for (const auto& entry :  available1) {
+	            availabl2[available1.first] = available1.second + depositCash[available1.first];
+	        }
+	        CurrentATM->SetAvailableCash(available2)
+	        
+	        //account 액수 증가
+	        CurrentAccount->Deposit(depositCash_sum + fee)
+	        
+	        //history return
+	        return "cash deposit $" + to_string(depositCash_sum) + "(balance: $" + to_string(acc->getBalance() + depositCash_sum) + ")";
+	    }
+	    else {
+			CurrentAccount->Withdraw(depositCash_sum + fee)
+			return "cash deposit $" + to_string(d) + "(balance: $" + to_string(acc->getBalance() + depositCash_sum) + ")";
+	    }
+    };
+};
+
 class withdrawTransaction : public Transaction {
 public:
     void Withdraw(int, string, string, int, string); //amount, bank, username, AccountNum, password //bank에서 계좌 확인 후 limit 안넘으면 출금, bank 확인해 fee 결정해 빼고 출금, ATM의 available_cash 감소, 최대 50만원 withdraw 가능
