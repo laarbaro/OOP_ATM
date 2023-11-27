@@ -881,7 +881,7 @@ Transaction::CheckCheck() {
 
     
 };
-
+/*
 Transaction::Display(int TransactionAmount, string Username, AccountNum, CardNum, myBank, ExternalFile=false){
 //이름 받아 transaction 결과 보여줌, 각 transaction에서 호출, external file True면 external file로 출력
 
@@ -907,7 +907,7 @@ Transaction::Authorize(string Username, int AccountNum, string Password, Bank* B
     	};
     
 };
-
+*/
 
 
 
