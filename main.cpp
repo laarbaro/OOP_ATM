@@ -764,17 +764,7 @@ void Transaction::Withdraw(int, string, string, int, string) {
     if (w < account.getBalance()) {
         cout << "잔액이 부족합니다." << endl;
     }
-/*여기 좀 수정했습니다
-    else if (AvailableCash < w) {
-        cout << "기기의 인출 가능 금액이 부족합니다. 관리자에게 문의하세요." << endl;
-    }
-    else {
-        account.Withdraw(w+fee);
-        AvailableCash -= w;
-        withdrawalN--;
-        cout << w << "원이 인출되었습니다." << endl;
-    }
-	*/
+
 
 	else {
 		map<int, int> ATM_AvailableCash = this->CurrentATM->get_AvailableCash();
