@@ -67,6 +67,8 @@ public:
 
 
 /*-------------- Methods of Session Class --------------*/
+
+
 void Session::CashDeposit(map<int, int> amount, int x) { // 한국어 인지 아닌지
 
     unsigned long long fee = 0;
