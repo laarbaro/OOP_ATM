@@ -43,8 +43,6 @@ public:
     void displayMainKoreanScreen() {
         // getPrimaryBankInfo()의 반환 타입이 map<string, Bank*> 라고 가정
         map<string, Bank*> bankInfo = atm->getPrimaryBankInfo();
-
-        cout << "\n==================================================" << endl;
         
         // 아래 코드에서 사용할 뱅크 이름을 얻어옵니다.
         string bankName = ; /* 어떻게든 뱅크 이름을 가져오는 코드 */
@@ -55,7 +53,7 @@ public:
         
         if (bankPtr->getSingleInfo() == 0) cout << "주거래 은행 전용>" << endl;
         else cout << "타은행 거래 가능>" << endl;
-        cout << "--------------------------------------------------\n" << endl;
+        cout << "--------------------------------------------------" << endl;
     }
 
 
