@@ -949,18 +949,20 @@ int main() {
 		Account(AccountNum, pw, ownername, //수정중
 	
 	//Card 선언
+//적어도 admin card는 여기에서 선언되어 ATM을 생성할 때 넣어줘야 함.
 	
 	//ATM선언 전 primary bank pointer, bankmap, card pointer가 준비되어 있어야 함
 	//ATM 선언
 	//[수정 필요]논의 후 수정
+	map<string, ATM*> ATMmap;
 	int ATMNum;
+	string ATMname;
+	string AdminCard;
 	string InputPrimaryBank;
 	cout << "ATM을 설정하겠습니다" << endl;
 	cout << "몇개의 ATM을 만드시겠습니까?" << endl;
 	cin >> ATMNum;
 	for (int i=0; i<ATMNum; i++){
-
-		//============================This?====================================
 		//Primary Bank Setting
 		cout << "아래 중 ATM의 주거래 은행을 선택하세요" << endl;
 		cout << "[";
@@ -969,15 +971,12 @@ int main() {
 		};
 		cout << "]" << endl;
 		cin >> InputPrimaryBank;
+		cout << "ATM의 이름을 설정하세요." << endl;
+		cin >> ATMname;
+		cout << "Admin Card를 정하세요." << endl;
+		cin >> AdminCard;
+		ATMmap.insert({ATMname, new ATM(InputBankMap.find(InputPrimaryBank), InputBankMap, AdminCard);
 
-		//Single? Multi?
-		bool InputSingle
-		cout << "Single ATM은 1, Multi ATM은 2를 선택해주세요" << endl;
-		cin >> InputSingle;
-		//============================OR this?=================================
-		cout << "serial number, primary bank 이름, multibank 여부, bilingual 여부를 입력해주세요" << endl;
-		//ATM(int snum, Bank* primary, bool maltibank=false, bool bilingual=false)
-		//=====================================================================
 	}
 		
 	
