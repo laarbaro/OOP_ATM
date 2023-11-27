@@ -953,11 +953,14 @@ int main() {
 		cin >> char makeCard;
 		if (makeCard == "y") {
 			cout << "카드번호를 입력하세요" << endl;
-			cin >> int cardNumber;
+			int cardNumber;
+			cin >> cardNumber;
 			cout << "관리자 권한을 부여하시겠습니까? (y, n)" << endl;
-			cin >> char askAdmin;
-			if (askAdmin = "y") { bool isAdmin = true; }
-			else { bool isAdmin = false; }
+			char askAdmin;
+			cin >> askAdmin;
+			bool isAdmin;
+			if (askAdmin = "y") { isAdmin = true; }
+			else { isAdmin = false; }
 			
 			Card(cardNumber, NumofAccount, isAdmin);
 		}
