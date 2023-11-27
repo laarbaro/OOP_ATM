@@ -948,11 +948,25 @@ int main() {
 		cin >> ownername;
 		cout << "계좌 비밀번호를 입력해주세요" << endl;
 		cin >> pw;
-		Account(AccountNum, pw, ownername, //수정중
+		Account(AccountNum, pw, ownername, ); //수정중
+
+		//Card 선언
+		//적어도 admin card는 여기에서 선언되어 ATM을 생성할 때 넣어줘야 함.
+		cout << "카드를 만드시겠습니까? (y, n)" << endl;
+		cin >> char makeCard;
+		if (makeCard == "y") {
+			cout << "카드번호를 입력하세요" << endl;
+			cin >> int cardNumber;
+			cout << "관리자 권한을 부여하시겠습니까? (y, n)" << endl;
+			cin >> char askAdmin;
+			if (askAdmin = "y") { bool isAdmin = true; }
+			else { bool isAdmin = false; }
+			
+			Card(cardNumber, NumofAccount, isAdmin);
+		}
+	}
 	
-	//Card 선언
-//적어도 admin card는 여기에서 선언되어 ATM을 생성할 때 넣어줘야 함.
-	
+
 	//ATM선언 전 primary bank pointer, bankmap, card pointer가 준비되어 있어야 함
 	//ATM 선언
 	//[수정 필요]논의 후 수정
@@ -978,7 +992,6 @@ int main() {
 		cout << "Admin Card를 정하세요." << endl;
 		cin >> AdminCard;
 		ATMmap.insert({ATMname, new ATM(InputBankMap.find(InputPrimaryBank), InputBankMap, AdminCard);
-
 	}
 		
 	
