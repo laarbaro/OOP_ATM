@@ -1292,6 +1292,7 @@ int main() {
 	};
 
 	//Account 선언
+	map<int, Account*> AccountMap;
 	int NumofAccount;
 	string pb;
 	int AccountNum;
@@ -1310,6 +1311,7 @@ int main() {
 		cout << "계좌 비밀번호를 입력해주세요" << endl;
 		cin >> pw;
 		Account(AccountNum, pw, ownername, InputBankMap[pb]()); //수정중
+		AccountMap.insert({AccountNum, new Account(AccountNum, pw, ownername, InputBankMap[pb]())});
 
 		//Card 선언
 		//적어도 admin card는 여기에서 선언되어 ATM을 생성할 때 넣어줘야 함.
@@ -1355,8 +1357,36 @@ int main() {
 		cin >> ATMname;
 		cout << "Admin Card를 정하세요." << endl;
 		cin >> AdminCard;
-		ATMmap.insert({ATMname, new ATM(InputBankMap.find(InputPrimaryBank), InputBankMap, AdminCard);
+		ATMmap.insert({ATMname, new ATM(InputBankMap.find(InputPrimaryBank), InputBankMap, AdminCard)});
 	}
-		
+
+	bool isATMworiking = true;
+	while (isATMworking) {
+		//display
+		for (const auto& pair : AccountMap) {
+	        	cout << "[Account " << pair.first << "] Remaining Cash: KRW " << pair.second->getBalance() << endl;
+	    	}
+		for (const auto& pair : ATMmap) {
+	        	cout << "[ATM " << pair.first << "];
+			pair.second->showAvailableCash();
+	    	}
 	
+		//select ATM
+		string UsedATM;
+		cout << "Write the name of an ATM that you want to use." << endl;
+		cin << UsedATM;
+		ATMmap[UsedATM]->Start();
+
+		//quit?
+		char isQuit;
+		cout << "Do you want to terminate current program? (y, n)" << endl;
+		cin << isQuit;
+		if (isQuit == "n") {
+			isATMworking = true;
+		}
+		else { isATMworking = false; }
+	}
+
+		
+	return 0;
 }
