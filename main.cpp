@@ -339,11 +339,11 @@ private:
     string cardNumber;
     string accountNumber;
     bool isAdmin;
-    bool isBilingual; // 양 언어 구성이 카드와 관련이 있다고 가정
+    //bool isBilingual; // 양 언어 구성이 카드와 관련이 있다고 가정
 
 public:
     // 생성자
-    Card(const string& cardNumber, const string& accountNumber, bool isAdmin, bool isBilingual)
+    Card(const string& cardNumber, const string& accountNumber, bool isAdmin)
         : cardNumber(cardNumber), accountNumber(accountNumber), isAdmin(isAdmin), isBilingual(isBilingual) {}
 
     // 카드 번호를 가져오는 함수
