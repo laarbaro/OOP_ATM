@@ -121,7 +121,7 @@ public:
 class DepositTransaction : public Transaction {
     //아직 미구현: There is a limit in the number of cash or checks that can be deposited per transaction (e.g., 50 papercashes, 30 paper checks)
 public:
-    string Deposit(ATM* CurrentATM, Account* CurrentAccount, bool isCash, map depositCash) {
+    string Deposit(ATM* CurrentATM, Account* CurrentAccount, bool isCash, map depositCash//error : map의 타입을 지정하세요) {
         //수수료 책정
         if (CurrentAccount->getBank() == CurrentATM->GetPrimaryBank()) {
             int fee = 0;
