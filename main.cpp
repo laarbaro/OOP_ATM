@@ -65,7 +65,7 @@ public:
 
 
 
-/*-------------- Methods of Session Class --------------*/
+//-------------- Methods of Session Class --------------
 
 
 void Session::CashDeposit(map<int, int> amount, int x) { // 한국어 인지 아닌지
