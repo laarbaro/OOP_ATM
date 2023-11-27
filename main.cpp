@@ -180,21 +180,21 @@ public:
                 tmp_amount -= 50000 * out[50000];
             }
             else {
-                out_50000 = AvailableNow[50000];
+                out[50000] = AvailableNow[50000];
             }
             if (AvailableNow[10000] >= int(tmp_amount / 10000)) {
                 out[10000] = int(tmp_amount / 10000);
                 tmp_amount -= 10000 * out[10000];
             }
             else {
-                out_10000 = AvailableNow[10000];
+                out[10000] = AvailableNow[10000];
             }
             if (AvailableNow[5000] >= int(tmp_amount / 5000)) {
                 out[5000] = int(tmp_amount / 5000);
                 tmp_amount -= 5000 * out[5000];
             }
             else {
-                out_5000 = AvailableNow[5000];
+                out[5000] = AvailableNow[5000];
             }
             out[1000] = int(tmp_amount / 1000);
             tmp_amount -= 1000 * out[1000];
