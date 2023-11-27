@@ -123,7 +123,7 @@ class DepositTransaction : public Transaction {
 public:
     string Deposit(ATM* CurrentATM, Account* CurrentAccount, bool isCash, map depositCash//error : map의 타입을 지정하세요) {
         //수수료 책정
-        if (CurrentAccount->getBank() == CurrentATM->GetPrimaryBank()) {
+        if (CurrentAccount->getBank() == CurrentATM->GetPrimaryBank()) {//error : ==연산자 사용 불가
             int fee = 0;
         }
         else { int fee = 1000; }
@@ -227,15 +227,15 @@ public:
         //transfer 가능한가?
         if (Account1->getBalance() >= Amount) {
             //수수료 책정
-            if (Account1->getBank() == CurrentATM->GetPrimaryBank() && Account2->getBank() == CurrentATM->GetPrimaryBank()) {
+            if (Account1->getBank() == CurrentATM->GetPrimaryBank() && Account2->getBank() == CurrentATM->GetPrimaryBank()) {//error : ==연산자 사용 불가
                 int fee = 3000;
             }
-            else if (Account1->getBank() == CurrentATM->GetPrimaryBank() || Account2->getBank() == CurrentATM->GetPrimaryBank()) {
+            else if (Account1->getBank() == CurrentATM->GetPrimaryBank() || Account2->getBank() == CurrentATM->GetPrimaryBank()) {//error : ==연산자 사용 불가
                 int fee = 4000;
             }
             else { int fee = 5000; }
 
-            Account1->Withdraw(Amount + fee);//error : fee가 정의되어있지 않습니다
+            Account1->Withdraw(Amount + fee);//error : fee가 정의되어있지 않습니다 //error : 
             Account2->Deposit(Amount);
 
             //return history
