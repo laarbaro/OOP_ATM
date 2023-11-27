@@ -1369,7 +1369,7 @@ int main() {
 		cin >> ownername;
 		cout << "계좌 비밀번호를 입력해주세요" << endl;
 		cin >> pw;
-		Account(AccountNum, pw, ownername, ); //수정중
+		Account(AccountNum, pw, ownername, InputBankMap[pb]()); //수정중
 
 		//Card 선언
 		//적어도 admin card는 여기에서 선언되어 ATM을 생성할 때 넣어줘야 함.
