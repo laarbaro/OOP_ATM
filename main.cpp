@@ -51,7 +51,6 @@ public:
         
         cout << " << bankName << " 은행" << endl;
 
-        // 여기서 bankInfo를 사용하여 뱅크 이름에 대한 포인터를 얻어옵니다.
         Bank* bankPtr = bankInfo[bankName];
         
         if (bankPtr->getSingleInfo() == 0) cout << "주거래 은행 전용>" << endl;
