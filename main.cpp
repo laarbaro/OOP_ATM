@@ -1426,27 +1426,4 @@ int main() {
 	}
 		
 	
-    // 지영 예제 사용법:
-	
-    Bank myBank;
-
-    // 계정 생성 및 추가
-    myBank.createAccount("123", "password123", "JohnDoe");
-    myBank.createAccount("456", "pass456", "JaneDoe");
-    myBank.allAccount("JohnDoe"); // JohnDoe의 계정 출력
-
-    // 사용자 및 계정 확인
-    if (myBank.verifyUser("JohnDoe", "123", "password123")) {
-        std::cout << "사용자 확인 성공." << std::endl;
-    } else {
-        std::cout << "사용자 확인 실패." << std::endl;
-    }
-
-    if (myBank.verifyAccount("123", "password123")) {
-        std::cout << "계정 확인 성공." << std::endl;
-    } else {
-        std::cout << "계정 확인 실패." << std::endl;
-    }
-
-    return 0;
 }
