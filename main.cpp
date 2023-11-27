@@ -204,7 +204,7 @@ public:
             //ATM available cash 감소
             map<int, int> AvailableUpdate;
             for (const auto& entry : AvailableNow) {
-                AvailableUpdate[AvailableNow.first] = AvailableNow.second - out[AvailableNow.first];
+                AvailableUpdate[AvailableNow.first] = AvailableNow.second - out[AvailableNow.first];//error : first 멤버가 없습니다
             }
             CurrentATM->SetAvailableCash(AvailableUpdate);
 
