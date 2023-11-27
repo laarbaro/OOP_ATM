@@ -13,6 +13,115 @@ class Transaction;
 class Bank;
 class Account;
 
+// -------------------------------[Card] class-----------------------------------
+// -------------------------------[Card] class-----------------------------------
+
+///황지영
+
+class Card {
+    //admin 여부, bank, account 정보
+
+private:
+    string cardNumber;
+    string accountNumber;
+    bool isAdmin;
+    //bool isBilingual; // 양 언어 구성이 카드와 관련이 있다고 가정
+
+public:
+    Card ( ) {
+    }
+    // 생성자
+    Card(const string& cardNumber, const string& accountNumber, bool isAdmin)
+        : cardNumber(cardNumber), accountNumber(accountNumber), isAdmin(isAdmin), isBilingual(isBilingual) {}
+
+    // 카드 번호를 가져오는 함수
+    const string& getCardNumber() const {
+        return cardNumber;
+    }
+
+    // 계정 번호를 가져오는 함수
+    const string& getAccountNumber() const {
+        return accountNumber;
+    }
+
+    // 카드가 관리자 카드인지 확인
+    //[유리] card number와 password를 받아서 Admin인지 확인해주세요
+    bool isAdminCard() const {
+        return isAdmin;
+    }
+
+    // 카드가 양 언어 지원으로 구성되어 있는지 확인
+    bool isBilingualCard() const {
+        return isBilingual;
+    }
+
+    // 카드 유효성 검사, 인증과 관련된 다른 함수들도 추가할 수 있음
+};
+
+
+// -------------------------------[Account] class-----------------------------------
+// -------------------------------[Account] class-----------------------------------
+
+//account 를 여는, 만드는 constroctor 필요. 입력 받으면 그걸
+
+class Account {
+
+private:
+    string accountNum;
+    string password;
+    string ownerName;
+    Card associatedCard;
+    int balance;
+    Bank* myBank; // Bank 클래스의 전방 선언 사용 ,  포인터 연결은 여기서 해주는게 맞음 
+
+public:
+    // 생성자: AccountNum, Password, OwnerName 설정
+    Account(const string& accountNum, const string& password, const string& ownerName, Bank* bank)
+        : accountNum(accountNum), password(password), ownerName(ownerName), myBank(bank), balance(0) {}
+
+    // Password 검증 함수
+    bool verifyPW(const string& enteredPassword) const {
+        return (password == enteredPassword);
+    }
+
+    // AccountNum 반환 함수
+    const string& getAccountNum() const {
+        return accountNum;
+    }
+
+    // OwnerName 반환 함수
+    const string& getOwnerName() const {
+        return ownerName;
+    }
+
+    // Bank 반환 함수
+    Bank* getBank() const {
+        return myBank;
+    }
+
+    // 잔액 조회 함수
+    int getBalance() const {
+        return balance;
+    }
+
+    // 입금 함수
+    void deposit(int amount) {
+        balance += amount;
+    }
+
+    // 출금 함수
+    void withdraw(int amount) {
+        if (amount <= balance) {
+            balance -= amount;
+        }
+        else {
+            cout << "잔액이 부족합니다." << std::endl;
+        }
+    }
+};
+
+
+
 
 // -------------------------------[Session] class-----------------------------------
 // -------------------------------[Session] class-----------------------------------
@@ -751,48 +860,7 @@ public:
 
 
 
-// -------------------------------[Card] class-----------------------------------
-// -------------------------------[Card] class-----------------------------------
 
-///황지영
-
-class Card {
-    //admin 여부, bank, account 정보
-
-private:
-    string cardNumber;
-    string accountNumber;
-    bool isAdmin;
-    //bool isBilingual; // 양 언어 구성이 카드와 관련이 있다고 가정
-
-public:
-    // 생성자
-    Card(const string& cardNumber, const string& accountNumber, bool isAdmin)
-        : cardNumber(cardNumber), accountNumber(accountNumber), isAdmin(isAdmin), isBilingual(isBilingual) {}
-
-    // 카드 번호를 가져오는 함수
-    const string& getCardNumber() const {
-        return cardNumber;
-    }
-
-    // 계정 번호를 가져오는 함수
-    const string& getAccountNumber() const {
-        return accountNumber;
-    }
-
-    // 카드가 관리자 카드인지 확인
-    //[유리] card number와 password를 받아서 Admin인지 확인해주세요
-    bool isAdminCard() const {
-        return isAdmin;
-    }
-
-    // 카드가 양 언어 지원으로 구성되어 있는지 확인
-    bool isBilingualCard() const {
-        return isBilingual;
-    }
-
-    // 카드 유효성 검사, 인증과 관련된 다른 함수들도 추가할 수 있음
-};
 
 
 // -------------------------------[Bank] class-----------------------------------
@@ -859,67 +927,6 @@ public:
     // 예: 동적으로 할당된 메모리 해제 등
 };
 
-
-// -------------------------------[Account] class-----------------------------------
-// -------------------------------[Account] class-----------------------------------
-
-//account 를 여는, 만드는 constroctor 필요. 입력 받으면 그걸
-
-class Account {
-
-private:
-    string accountNum;
-    string password;
-    string ownerName;
-    Card associatedCard;
-    int balance;
-    Bank* myBank; // Bank 클래스의 전방 선언 사용 ,  포인터 연결은 여기서 해주는게 맞음 
-
-public:
-    // 생성자: AccountNum, Password, OwnerName 설정
-    Account(const string& accountNum, const string& password, const string& ownerName, Bank* bank)
-        : accountNum(accountNum), password(password), ownerName(ownerName), myBank(bank), balance(0) {}
-
-    // Password 검증 함수
-    bool verifyPW(const string& enteredPassword) const {
-        return (password == enteredPassword);
-    }
-
-    // AccountNum 반환 함수
-    const string& getAccountNum() const {
-        return accountNum;
-    }
-
-    // OwnerName 반환 함수
-    const string& getOwnerName() const {
-        return ownerName;
-    }
-
-    // Bank 반환 함수
-    Bank* getBank() const {
-        return myBank;
-    }
-
-    // 잔액 조회 함수
-    int getBalance() const {
-        return balance;
-    }
-
-    // 입금 함수
-    void deposit(int amount) {
-        balance += amount;
-    }
-
-    // 출금 함수
-    void withdraw(int amount) {
-        if (amount <= balance) {
-            balance -= amount;
-        }
-        else {
-            cout << "잔액이 부족합니다." << std::endl;
-        }
-    }
-};
 
 
 
