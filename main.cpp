@@ -209,10 +209,10 @@ public:
             CurrentATM->SetAvailableCash(AvailableUpdate);
 
             //Account balance 감소
-            CurrentAccount->Withdraw(Amount + fee);
+            CurrentAccount->Withdraw(Amount + fee);//error : fee가 정의되어있지 않습니다
 
             //history return
-            return "cash withdrawal KRW " + to_string(Amount) + "(balance now: KRW" + to_string(CurrentAccount->getBalance()) + ")";
+            return "cash withdrawal KRW " + to_string(Amount) + "(balance now: KRW" + to_string(CurrentAccount->getBalance()) + ")";//error : to_string이 정의되어있지 않습니다
 
         }
         else { //인출 불가능
@@ -235,18 +235,18 @@ public:
             }
             else { int fee = 5000; }
 
-            Account1->Withdraw(Amount + fee);
+            Account1->Withdraw(Amount + fee);//error : fee가 정의되어있지 않습니다
             Account2->Deposit(Amount);
 
             //return history
-            return "cash transfer KRW " + to_string(Amount) + ", from " + Account1->getAccountNum() + " to " + Account1->getAccountNum() + "(balance now: KRW" + to_string(CurrentAccount->getBalance()) + ")";
+            return "cash transfer KRW " + to_string(Amount) + ", from " + Account1->getAccountNum() + " to " + Account1->getAccountNum() + "(balance now: KRW" + to_string(CurrentAccount->getBalance()) + ")";//error : to_string이 정의되어있지 않습니다
         }
         else { // 잔액부족
             return "error: The user ordered transfer of an amount that exceeds the amount currently available from the account.";
         };
     };
 
-    string CashTransfer(ATM* CurrentATM, Account* Account1, Account* Account2, map Cash) {
+    string CashTransfer(ATM* CurrentATM, Account* Account1, Account* Account2, map Cash) {//error : map의 type이 정의되어있지 않습니다(ex. map<int,int> Cash)
         int Cash_sum = 0;
         for (const auto& entry : Cash) {
             Cash_sum += entry.first * entry.second;
@@ -268,14 +268,15 @@ public:
                 Account2->Deposit(Cash_sum);
 
                 //return history
-                return "cash transfer KRW " + to_string(Amount) + ", from " + Account1->getAccountNum() + " to " + Account1->getAccountNum() + "(balance now: KRW" + to_string(CurrentAccount->getBalance()) + ")";
-            }
+                return "cash transfer KRW " + to_string(Amount) + ", from " + Account1->getAccountNum() + " to " + Account1->getAccountNum() + "(balance now: KRW" + to_string(CurrentAccount->getBalance()) + ")";//error : CurrentAccount에 액세스할 수 없습니다, to_string이 정의되어 있지 않습니다, Amount가 정의되어있지 않습니다}
             else {
                 return "error: The amount came in ATM is not KRW 5000.";
             }
-        else { // 잔액부족
-            return "error: The user ordered transfer of an amount that exceeds the amount currently available from the account.";
-        }
+	        else { // 잔액부족
+	            return "error: The user ordered transfer of an amount that exceeds the amount currently available from the account.";
+	        }//error : if문이 필요합니다
+	    };
+	};
     };
 };
 
@@ -305,7 +306,7 @@ public:
     void OpenSession();
 
     //Set 함수
-    void SetAvailableCash(map);
+    void SetAvailableCash(map<int, int>);
 
     //Get 함수
     int GetSerialNum() { return this->SerialNumber; }
@@ -429,8 +430,8 @@ public:
     string getBankName() { return bankName; };
 };
 
-// Bank 클래스의 소멸자
-~Bank() {
+    // Bank 클래스의 소멸자
+    ~Bank() {
     // 소멸자에서 리소스 정리 작업 수행
     // 예: 동적으로 할당된 메모리 해제 등
 };
@@ -514,7 +515,7 @@ public:
 void Session::CashDeposit(map<int, int> amount, int x) { // 한국어 인지 아닌지
 
     unsigned long long fee = 0;
-    if (!primarySignal) fee = 1000;
+    if (!primarySignal) fee = 1000;//error : primarySignal이 정의되어있지 않습니다
 
     // ATM에 화폐를 추가합니다.
     atm->plusMoney(amount);
