@@ -13,6 +13,7 @@ class Transaction;
 class Bank;
 class Account;
 
+// 1. Card Class
 // -------------------------------[Card] class-----------------------------------
 // -------------------------------[Card] class-----------------------------------
 
@@ -59,6 +60,7 @@ public:
 };
 
 
+//2. Account Class
 // -------------------------------[Account] class-----------------------------------
 // -------------------------------[Account] class-----------------------------------
 
@@ -121,8 +123,54 @@ public:
 };
 
 
+//3. ATM Class
+// -------------------------------[ATM] class-----------------------------------
+// -------------------------------[ATM] class-----------------------------------
+class ATM {
+private:
+    const int SerialNumber;
+    map<string, Bank*> PrimaryBank;
+    map<string, Bank*> NonPrimaryBank;
+    map<int, int> AvailableCash;//현금 단위, 갯수
+    Card* AdminCard;
+    map<string, string> History;
+    bool Bilingual = false;
+    bool MultiBank = false;
+    static int NumberOfATM;
+    Session* CurrentSession;
+
+public:
+    ATM();
+    ATM(Bank* pb, map<string, Bank*> allb, Card* admin);//primary bank pointer, allbankmap, admincard
+    ~ATM();
+    void Start();
+    bool CheckAdmin();
+    void OpenSession();
+
+    //Set 함수
+    void SetAvailableCash(map<int, int>);
+
+    //Get 함수
+    int GetSerialNum() { return this->SerialNumber; }
+    map<string, Bank*> GetPrimaryBank() { return this->PrimaryBank; }
+    map<string, Bank*> GetNonPrimaryBank() { return this->NonPrimaryBank; }
+    map<int, int> GetAvailableCash() { return this->AvailableCash; }
+    Card* GetAdminCard() { return this->AdminCard; }
+    map<string, string> GetHistory() { return this->History; }
+
+    //Is 함수
+    bool IsMultiBank() { return this->MultiBank; }
+    bool IsMBilingual() { return this->Bilingual; }
 
 
+    //Show 함수
+    void ShowHistory();
+    void ShowAvailableCash();
+};
+
+
+
+//4. Session Class
 // -------------------------------[Session] class-----------------------------------
 // -------------------------------[Session] class-----------------------------------
 class Session {
@@ -814,59 +862,14 @@ public:
 
 
 
-// -------------------------------[ATM] class-----------------------------------
-// -------------------------------[ATM] class-----------------------------------
-class ATM {
-private:
-    const int SerialNumber;
-    map<string, Bank*> PrimaryBank;
-    map<string, Bank*> NonPrimaryBank;
-    map<int, int> AvailableCash;//현금 단위, 갯수
-    Card* AdminCard;
-    map<string, string> History;
-    bool Bilingual = false;
-    bool MultiBank = false;
-    static int NumberOfATM;
-    Session* CurrentSession;
-
-public:
-    ATM();
-    ATM(Bank* pb, map<string, Bank*> allb, Card* admin);//primary bank pointer, allbankmap, admincard
-    ~ATM();
-    void Start();
-    bool CheckAdmin();
-    void OpenSession();
-
-    //Set 함수
-    void SetAvailableCash(map<int, int>);
-
-    //Get 함수
-    int GetSerialNum() { return this->SerialNumber; }
-    map<string, Bank*> GetPrimaryBank() { return this->PrimaryBank; }
-    map<string, Bank*> GetNonPrimaryBank() { return this->NonPrimaryBank; }
-    map<int, int> GetAvailableCash() { return this->AvailableCash; }
-    Card* GetAdminCard() { return this->AdminCard; }
-    map<string, string> GetHistory() { return this->History; }
-
-    //Is 함수
-    bool IsMultiBank() { return this->MultiBank; }
-    bool IsMBilingual() { return this->Bilingual; }
-
-
-    //Show 함수
-    void ShowHistory();
-    void ShowAvailableCash();
-};
 
 
 
 
 
-
+//5.Bank class
 // -------------------------------[Bank] class-----------------------------------
 // -------------------------------[Bank] class-----------------------------------
-
-class Account; //전방 선언 
 
 class Bank {
 private:
@@ -935,78 +938,8 @@ public:
 
 
 
-///--------------------------------method-------------------------------------
+///--------------------------------method of ATM-------------------------------------
 
-///--------------------------------method-------------------------------------
-
-///--------------------------------method-------------------------------------
-
-/*-------------- Methods of Session Class --------------*/
-void Session::CashDeposit(map<int, int> amount, int x) { // 한국어 인지 아닌지
-
-    unsigned long long fee = 0;
-    if (!primarySignal) fee = 1000;//error : primarySignal이 정의되어있지 않습니다
-
-    // ATM에 화폐를 추가합니다.
-    atm->plusMoney(amount);
-
-    // 계좌에 입금합니다.
-    unsigned long long totalAmount = 0;
-    for (const auto& entry : amount) {
-        int denomination = entry.first;
-        int count = entry.second;
-        totalAmount += (denomination * count);
-    }
-    account->plusMoney(totalAmount - fee);
-
-    // 거래를 생성하고 계좌에 추가합니다.
-
-    //////////////////// 이부분 !!
-   ///////////////DepositTransaction클래스에 새 객체 생성 .
-    DepositTransaction newTransaction(account, amount, findAccount(account->getAccountNumber())->getBankName());
-
-
-
-
-    //(계좌, 현금 ( 맵 ) , 뱅크 이름)
-    account->addTransaction(&newTransaction); // 계좌자체의 거래내역.
-    // 계좌에 새 거래 추가 *addTrnascation은 account의 함수.
-
-    transactionHistoryOfSession.push_back(newTransaction); //세션 전체 동안의 거래 내역
-    // 거래 정보를 출력합니다.
-
-    if (x == 0) cout << newTransaction.getKoreanInformation() << endl;
-    else cout << newTransaction.getEnglishInformation() << endl;
-
-    // 현재 잔액을 출력합니다.
-    if (x == 0) cout << "/n현재 잔액 : ";
-    else cout << "\nCurrent Available Cash : ";
-    cout << account->getBalance();
-
-    if (x == 0) cout << " 원" << endl;
-    else cout << " won" << endl;
-
-    cout << "\n";
-}
-
-
-void Session::CheckDeposit(unsigned long long amount, int x) {
-}
-
-void Session::Withdrawal(unsigned long long amount, int x) {
-}
-
-
-void Session::CashTransfer(unsigned long long amount, Account* destination, int x) {
-}
-
-void Session::AccountTransfer(unsigned long long amount, Account* destination, int x) {
-}
-
-
-
-
-//-------------------------------------ATM-------------------------------------------
 ATM::ATM() {
     cout << "아무 input 없이 ATM을 생성할 수 없습니다." << endl;
     cout << "primary bank의 pointer, 모든 bank의 map, admin card의 pointer를 넣어 ATM을 생성해주세요." << endl;
