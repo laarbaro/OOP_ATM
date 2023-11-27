@@ -746,6 +746,7 @@ void ShowAvailableCash(){
 
 
 //-------------------------------------Transaction---------------------------------------
+/*
 void Transaction::Withdraw(int, string, string, int, string) {
     // 현금 확인하여 인출가능 금액인지 확인
 	
@@ -833,6 +834,7 @@ void Transaction::Deposit(int, account*) {
 	}
 
 }
+*/
 Transaction::CheckCash() {
 //declaration
     	map<int, int>inputmap;
