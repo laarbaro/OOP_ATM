@@ -850,10 +850,10 @@ Transaction::CheckCash() {
 	for (int i=0; i<NumCash1; i++){
 		cout << "Insert your cash(Unit, Number of the cash by type)" << endl;
 	        cin >> i,j;
-	        inputmap.insert({i, j});
+	        inputmap.insert(pair<int, int>(i, j));
 	}
     
-	for (int iter = inputmap.begin() ; iter !=  inputmap.end(); iter++){
+	for (int iter = inputmap.begin() ; iter !=  inputmap.end(); iter++){ //error
 	        InputAmount+=(iter->second * iter->first);//원화 단위 * 개수     
 	};
 	
