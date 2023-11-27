@@ -140,7 +140,7 @@ public:
             map<int, int> available1 = CurrentATM->GetAvailableCash();
             map<int, int> available2;
             for (const auto& entry : available1) {
-                available2[available1.first] = available1.second + depositCash[available1.first];
+                available2[available1.first] = available1.second + depositCash[available1.first];//error : available1.first에서 first member가 없다고 하는데 확인해주세요
             }
             CurrentATM->SetAvailableCash(available2);
         }
