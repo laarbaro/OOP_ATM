@@ -47,7 +47,7 @@ public:
         // 아래 코드에서 사용할 뱅크 이름을 얻어옵니다.
         string bankName = ; /* 어떻게든 뱅크 이름을 가져오는 코드 */
         
-        cout << " << bankName << " 은행" << endl;
+        cout  << bankName << " 은행" << endl;
 
         Bank* bankPtr = bankInfo[bankName];
         
