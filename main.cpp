@@ -146,7 +146,7 @@ public:
         }
 
         //account 액수 증가
-        CurrentAccount->Deposit(depositCash_sum + fee);
+        CurrentAccount->Deposit(depositCash_sum + fee);//error : fee가 정의되어있지 않습니다
 
             //history return
             return "cash deposit KRW " + to_string(depositCash_sum) + "(balance now: KRW " + to_string(CurrentAccount->getBalance()) + ")";
