@@ -145,10 +145,11 @@ public:
     ~ATM();
     void Start();
     bool CheckAdmin();
+    bool CheckInvalidCard();
     void OpenSession();
 
     //Set 함수
-    void SetAvailableCash(map<int, int>);
+    void SetAvailableCash(map<int, int>, bool);
 
     //Get 함수
     int GetSerialNum() { return this->SerialNumber; }
@@ -1032,41 +1033,92 @@ ATM::~ATM() {
     NumberOfATM--;
 }
 void Start() {
-    //언어 받고 session열어주기
-    //ATM 초기 잔고 보여주기 받기
-    //account 개설 받기 -> transaction에서 하던데
-    //카드 입력하세요 후 CheckAdmin()후 session 열어주기
-    //admin card면 transaction history 볼 수 있게 열어주기
-    //transaction history에서는 모든 transaction 보여주기, user명과 transaction id, card num, transaction type, amount 등 정보
-    //필요시 파일로 transaction history 뽑기
-    //카드 invalid 확인해서 error 띄우기
-    //카드 return 표시하기
-    //ATM 잔고 보여주기
-
+    
+    
+    //admin인 경우 선택 : (ATM 초기 잔고 보여주기 / Transaction History 보여주기 / Transaction History 파일로 뽑기)
+    //Session 종료 또는 invalid card : 카드 return 표시하기
+	
+    //기본 선택 : (Account 개설하기 / Card 입력받기)
+    int firstsel;
     cout << "Welcome" << endl;
     cout << "To start a session, please insert your debit card" << endl;
-    int CN, PW;
-    cout << "Insert card number and password" << endl;
-    if (CheckAdmin(CN, PW)) {
-        int sel;
-        cout << "Welcome Administrator" << endl;
-        cout << "[1] Show me history [etc] Show me Available Cash" << endl;
-        cin >> sel;
-        if (sel == 1) {
-            ShowHistory();
-        }
-        else {
-            ShowAvailableCash();
-        }
-    }
-    else {
-        OpenSession();
+    cout << "[1] Insert Card [etc] Make new account" << endl;
+    cin >> firstsel;
+
+    //Card 입력받기를 선택한 경우
+    if (firstsel == 1){
+	int CN, PW;
+    	cout << "Insert card number and password" << endl;
+        //Card 입력받은 경우 : admin인지, 올바른 카드인지 확인 후 session 열어주기
+    	if (CheckAdmin(CN, PW)) {
+        	int sel;
+        	cout << "Welcome Administrator" << endl;
+        	cout << "[1] Show me history [etc] Show me Available Cash" << endl;
+        	cin >> sel;
+        	if (sel == 1) {
+            	ShowHistory();
+        	}
+        	else {
+            	ShowAvailableCash();
+        	}
+	    }
+	    else {
+		if (CheckInvalidCard(CN, PW)){
+			
+		}else{ OpenSession();}
+	       
+	    };
+    } else {
+    //새로운 계정 만들기를 선택한 경우
+	map<int, Account*> AccountMap;
+	int NumofAccount;
+	string pb = this->PrimaryBank;
+	int AccountNum;
+	string pw;
+	string ownername;
+	cout << "계좌의 주거래 은행은 ATM의 primary bank입니다" << endl;
+	cout << "계좌번호를 입력해주세요" << endl;
+	cin >> AccountNum;
+	cout << "계좌 소유주의 성명을 입력해주세요" << endl;
+	cin >> ownername;
+	cout << "계좌 비밀번호를 입력해주세요" << endl;
+	cin >> pw;
+	Account(AccountNum, pw, ownername, InputBankMap[pb]()); //수정중
+	AccountMap.insert({AccountNum, new Account(AccountNum, pw, ownername, InputBankMap[pb]())});
+
+		//Card 선언
+		//적어도 admin card는 여기에서 선언되어 ATM을 생성할 때 넣어줘야 함.
+		cout << "카드를 만드시겠습니까? (y, n)" << endl;
+		cin >> char makeCard;
+		if (makeCard == "y") {/////////////////////////////////////여기서 stop
+			cout << "카드번호를 입력하세요" << endl;
+			int cardNumber;
+			cin >> cardNumber;
+			cout << "관리자 권한을 부여하시겠습니까? (y, n)" << endl;
+			char askAdmin;
+			cin >> askAdmin;
+			bool isAdmin;
+			if (askAdmin = "y") { isAdmin = true; }
+			else { isAdmin = false; }
+			
+			Card(cardNumber, NumofAccount, isAdmin);
+		}
+	
+    //기본 선택 - input type error가 있는 경우 
+	    
     };
+	
+    
 };
+bool CheckInvalidCard(int cardnum, int pw){
+	 ///////////////////////////////이 부분 어떻게 할지, bank에서 카드 맵 저장하는게 나을지도
+};
+
 bool CheckAdmin(int cardnum, int pw) {
     return this->AdminCard->isAdminCard(cardnum, pw);
 };
 bool OpenSession() {
+    //언어 받고 session열어주기
     if (this->Bilingual) {
         int sel;
         cout << "Select Language" << endl;
@@ -1079,13 +1131,19 @@ bool OpenSession() {
         }
     }
 };
-void SetAvailableCash(map<int, int> inputcash) {
-    for (auto iter = this->AvailableCash.begin(); iter != this->AvailableCash.end(); iter++) {
-        int currentnum = inputcash.find(iter->first)->second;
-        iter->second += currentnum;
+void SetAvailableCash(map<int, int> inputcash, bool Plus) {
+    if (Plus) {
+	    for (auto iter = this->AvailableCash.begin(); iter != this->AvailableCash.end(); iter++) {
+        	int currentnum = inputcash.find(iter->first)->second;
+        	iter->second += currentnum;
+    } else {
+	    for (auto iter = this->AvailableCash.begin(); iter != this->AvailableCash.end(); iter++) {
+        	int currentnum = inputcash.find(iter->first)->second;
+        	iter->second -= currentnum;
     };
 };
 void ShowHistory() {
+    //Transaction History 보여주기 - user명과 transaction id, card num, transaction type, amount 등 정보
     //map[<"TransactionID",int>,<"CardNumber",int>,<"TransactionType",string>,<"Amount",int>]
     std::ofstream out("History.txt", std::ios::app);
     if (out.is_open()) {
