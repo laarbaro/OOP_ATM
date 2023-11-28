@@ -178,41 +178,51 @@ class Session {
 private:
     ATM * atm ; // ATM 객체 가리키는 포인터
     Account* account ; // 계좌 객체 가리키는 포인터
+    Card* card ;
     vector<Transaction> transctionHistoryOfSession ; // 세션 동안 거래 내역 저장 -> 하고 뭐햇는지 display 해야함. 하나 저장 후 보여주기 (이걸 함수로먼들지 그냥 코드를 짤지는선택 ) + 백터 구조가 어떤지 알려줘서 ATM에 할수 있게 하기
     bool authorizationSignal ; // 계좌 비밀번호 인증 결과 나타내는 bool값
     int aouthorizationCount ; // 비밀번호 인증 실패 횟수
     int withdrawalCount ; // 출금 횟수 기록
     bool primarySignal ;  // 현재 계좌 은행 정보와 ATM 주거래 은행이 동일한지 여부를 나타내는 bool 값
+    int currentTransactionID;
 
 public:
-/*
-    void Open_Account(string, string, int, string, int, int); //bank, username, AccountNum, password, account number, available fund
-    void Display(int, string, int, int, string, bool); //이동한 금액, username, AccountNum, card number, bank, externalFile=False 필요여부//이름 받아 transaction 결과 보여줌, 각 transaction에서 호출, external file True면 external file로 출력
-    void Authorize(int, string, int); //card number, username, AccountNum//함수 내에서 password 요구 및 확인 필요, 최대 3번 요구 후 return card
-*/
-    Session() {}
-    void CashDeposit(map<int, int>, int x); //void Session::CashDeposit(map<int, int> amount, int x)
+
+    Session() : currentTransactionID(1) {}
+    void CashDeposit(map<int, int>, int x);
+    //void Session::CashDeposit(map<int, int> amount, int x)
     void CheckDeposit(unsigned long long amount, int x);
     void Withdrawal(unsigned long long amount, int x);
     void CashTransfer(map<int, int>, Account* destination, int x);
     void AccountTransfer(unsigned long long amount, Account* destination, int x);
-    bool Authorization(string password) {return account->check_pw(password);}
+    bool Authorization(string password) {return account->verifyPW(password);}
     
+    int GetNextTransactionID() {
+        return currentTransactionID++;
+    }
+    
+    
+    
+    // 여기가 왜 필요할까 ??
     void displayMainKoreanScreen() {
         // getPrimaryBankInfo()의 반환 타입이 map<string, Bank*> 라고 가정
-        map<string, Bank*> bankInfo = atm->getPrimaryBankInfo();
+        map<string, Bank*> bankInfo = atm->GetPrimaryBank();
+
+        cout << "\n==================================================" << endl;
         
         // 아래 코드에서 사용할 뱅크 이름을 얻어옵니다.
-        string bankName = ; /* 어떻게든 뱅크 이름을 가져오는 코드 */
+        string bankName = /* 어떻게든 뱅크 이름을 가져오는 코드 */;
         
         cout  << bankName << " 은행" << endl;
 
+        // 여기서 bankInfo를 사용하여 뱅크 이름에 대한 포인터를 얻어옵니다.
         Bank* bankPtr = bankInfo[bankName];
         
         if (bankPtr->getSingleInfo() == 0) cout << "주거래 은행 전용>" << endl;
         else cout << "타은행 거래 가능>" << endl;
-        cout << "--------------------------------------------------" << endl;
+        cout << "--------------------------------------------------\n" << endl;
     }
+
 
 
 
@@ -221,16 +231,14 @@ public:
 
 
 
-//-------------- Methods of Session Class --------------
-
-
+/*-------------- Methods of Session Class --------------*/
 void Session::CashDeposit(map<int, int> amount, int x) { // 한국어 인지 아닌지
 
     unsigned long long fee = 0;
     if (!primarySignal) fee = 1000;
 
     // ATM에 화폐를 추가합니다.
-    atm->plusMoney(amount); //plusMoney 가 아닌 다른 함수일 수도 있음 .  임의로 정한 이름임.
+    atm->SetAvailableCash(amount); //plusMoney 가 아닌 다른 함수일 수도 있음 .  임의로 정한 이름임. SetAvailableCash
 
     // 계좌에 입금합니다.
     unsigned long long totalAmount = 0;
@@ -239,19 +247,20 @@ void Session::CashDeposit(map<int, int> amount, int x) { // 한국어 인지 아
         int count = entry.second;
         totalAmount += (denomination * count);
     }
-    account->plusMoney(totalAmount - fee);
+    int transactionID = GetNextTransactionID();
+    account->deposit(totalAmount - fee);
 
-    // 거래를 생성하고 계좌에 추가합니다.
-    DepositTransaction newTransaction(account, amount, findAccount(account->getAccountNumber())->getBankName()); //DepositTransaction클래스에 새 거래 생성 .
-    //(계좌, 현금 ( 맵 ) , 뱅크 이름)
-    account->addTransaction(&newTransaction); // 계좌자체의 거래내역. 함수 이름 확인.
-    // 계좌에 새 거래 추가 *addTrnascation은 account의 함수.
+    Transaction CashDepositTransaction(transactionID, card->getCardNumber(), "CashDeposit", totalAmount) ;
     
-    transactionHistoryOfSession.push_back(newTransaction); //세션 전체 동안의 거래 내역
-    // 거래 정보를 출력합니다.
+
     
-    if (x == 0) cout << newTransaction.getKoreanInformation() << endl;
-    else cout << newTransaction.getEnglishInformation() << endl;
+    transctionHistoryOfSession.push_back(CashDepositTransaction);
+    
+    // 거래 정보를 출력합니다. ~에는 뱅크 이름이랑 어카운트 가져오기 ?
+    if (x == 0)
+        cout << "~에 " << totalAmount << " 원이 입금되었습니다." << endl;
+    else
+        cout << "~에 " << totalAmount << " won has been deposited." << endl;
 
     // 현재 잔액을 출력합니다.
     if (x == 0) cout << "/n현재 잔액 : ";
@@ -271,21 +280,28 @@ void Session::CashDeposit(map<int, int> amount, int x) { // 한국어 인지 아
 void Session::CheckDeposit(unsigned long long amount, int x) {
     unsigned long long fee = 0;
     if (!primarySignal) fee = 1000;
-        account->plusMoney(amount - fee);//plusMoney 가 아닌 다른 함수일 수도 있음 .  임의로 정한 이름임.
+    unsigned long long totalAmount = amount - fee ;
+        account->deposit(totalAmount);
     
-    DepositTransaction newTransaction(account, amount, findAccount(account->getAccountNumber())->getBankName());
     
-    account->addTransaction(&newTransaction);
+    //ATM에는 안넣음 ??
     
-    transactionHistoryOfSession.push_back(newTransaction);
+    int transactionID = GetNextTransactionID();
+    Transaction CheckDepositTransaction(transactionID, card->getCardNumber(), "CheckDeposit", totalAmount) ;
+        
+    transctionHistoryOfSession.push_back(CheckDepositTransaction);
     
-    if (x == 0) cout << newTransaction.getKoreanInformation() << endl;
-    else cout << newTransaction.getEnglishInformation() << endl;
+    // 거래 정보를 출력합니다. ~에는 뱅크 이름이랑 어카운트 가져오기 ?
+    if (x == 0)
+        cout << "~에 " << totalAmount << " 원이 입금되었습니다." << endl;
+    else
+        cout << "~에 " << totalAmount << " won has been deposited." << endl;
+
     
     //현재 잔액 출력
     if (x == 0) cout << "\n현재 잔액 : ";
     else cout << "\nCURRENT BALANCE : ";
-    cout << account->getFundInfo();
+    cout << account->getBalance();
     
     if (x == 0) cout << " 원" << endl;
     else cout << " won" << endl;
@@ -297,16 +313,28 @@ void Session::CheckDeposit(unsigned long long amount, int x) {
 
 
 
-void Session::Withdrawal(unsigned long long amount, int x) { //amount는 출금할 금액. // int는 영어인지 한국어인지
+void Session::Withdrawal(unsigned long long amount, int x) { // map을 받아야함.
     unsigned long long fee = 1000;
     if (!primarySignal) fee = 2000;
     
-    if (atm->getCashAmount() < amount) { // ATM내 현금 부족 여부 확인 (함수이름 변경해야함 )
+    
+    // ATM의 사용 가능한 현금을 가져옴
+    map<int, int> availableCash = atm->GetAvailableCash();
+    
+    unsigned long long totalAvailableCash = 0;
+    for (const auto& entry : availableCash) {
+        int denomination = entry.first;
+        int count = entry.second;
+        totalAvailableCash += (denomination * count);
+    }
+    
+    
+    if ( totalAvailableCash < amount + fee) {
         if (x == 0) cout << " 현재 기기 내 현금이 부족합니다\n" << endl;
         else cout << " OUR ATM DOESN'T HAVE ENOUGH MONEY\n" << endl;
         
     }
-    else if (amount + fee > account->getFundInfo())  // 졔좌잔액 부족 여부 확인  (함수이름 변경해야함 )
+    else if (amount + fee > account->getBalance())  // 졔좌잔액 부족 여부 확인
         if (x == 0) cout << "잔액 부족\n" << endl;
         else cout << " YOU DON'T HAVE ENOUGH MONEY\n" << endl;
     }
@@ -315,19 +343,28 @@ void Session::Withdrawal(unsigned long long amount, int x) { //amount는 출금�
     else { // 이제부터 출금 수행 !!
         
         // 출금금액과 수수료를 ATM과 계좌에서 각각 차감
-        atm->minusMoney(amount); // 함수이름 변경 필요
-        account->minusMoney(amount + fee); //함수 이름 변경 필요
+        totalAmount = ammount + fee
+        atm->minusMoney(totalAmount); //fee 포함해서 차감 해야하는가 ?  그리고 가능한 돈을 차감하는 함수 이름은 ???
         
+        account->withdraw(totalAmount);
         
-        // 거래 기록
-        WithdrawalTransaction newTransaction(account, amount, findAccount(account->getAccountNumber())->getBankName());
-        account->addTransaction(&newTransaction);
-        transactionHistoryOfSession.push_back(newTransaction);
+        int transactionID = GetNextTransactionID();
+        
+        Transaction withdrawTransaction(transactionID, card->getCardNumber(), "Withdraw", totalAmount) ;
+        
+        transctionHistoryOfSession.push_back(withdrawTransaction);
+        
+      
         
         //결과 출력
-        if (x == 0) cout << newTransaction.getKoreanInformation() << endl;
-        else cout << newTransaction.getEnglishInformation() << endl;
-        withdrawalCount ++;
+        // 거래 정보를 출력합니다. ~에는 뱅크 이름이랑 어카운트 가져오기 ?
+        if (x == 0)
+            cout << "~에 " << totalAmount << " 원이 입금되었습니다." << endl;
+        else
+            cout << "~에 " << totalAmount << " won has been deposited." << endl;
+        
+        withdrawalCount ++; // 세션 종료 !! 변수가 있음 ATM에서 가져가면 될듯 ??
+        
         if (x == 0) cout << "\n현재 잔액 : ";
         else cout << "\nCURRENT BALANCE : ";
         cout << account->getFundInfo();
@@ -338,33 +375,36 @@ void Session::Withdrawal(unsigned long long amount, int x) { //amount는 출금�
 }
 
 
+//이 친구는 뭔가 오류가 많음 ㅠ
 void Session::CashTransfer(map<int, int> amount, Account* destination, int x) { //destination는 이체하고 자 하는 계좌.
+    
+    //fee 보다 적으면 안됨.
     
     //이체 수수료 추가
     unsigned long long fee = 5000 ;
     
     // ATM에게 현금을 추가합니다.
-    atm->plusMoney(amount);
+    atm->SetAvailableCash(amount);
     
     
  // 수수료 빼고 계좌에 입금
     for (const auto& entry : amount) {
         int denomination = entry.first;
         int count = entry.second;
-        totalAmount += (denomination * count);
+        unsigned long long totalAmount = (denomination * count);
     }
     
-    destination->plusMoney ( totalAmount - fee ) ;
+    unsigned long long totaltotalAmount =  totalAmount - fee
+    destination-> deposit ( utotaltotalAmount ) ;
+    
+    int transactionID = GetNextTransactionID();
+    
+    Transaction CashTransferTransaction(transactionID, card->getCardNumber(), "CashTransfer", totaltotalAmount) ;
+    
+    
+    transctionHistoryOfSession.push_back(CashTransferTransaction);
 
-    // CashTransferTransaction 클래스의 객체를 생성합니다.
-    // 이 객체는 이체 거래에 대한 정보를 담고 있습니다.
-    CashTransferTransaction newTransaction(destination, account, amount,
-                                          findAccount(account->getAccountNumber())->getBankName(),
-                                          findAccount(destination->getAccountNumber())->getBankName());
-
-    // 이체를 받는 계좌(destination)의 거래 내역에 새로운 거래(newTransaction)를 추가합니다.
-    destination->addTransaction(&newTransaction);
-
+    
     // 현재 세션의 거래 내역에도 이체 거래를 추가합니다.
     transactionHistoryOfSession.push_back(newTransaction);
 
@@ -379,7 +419,7 @@ void Session::CashTransfer(map<int, int> amount, Account* destination, int x) { 
         cout << "\n현재 잔액 : ";
     else
         cout << "\nCURRENT BALANCE : ";
-    cout << account->getFundInfo();
+    cout << account->getBalance();
 
     // 통화 단위를 출력합니다.
     if (x == 0)
@@ -395,14 +435,17 @@ void Session::CashTransfer(map<int, int> amount, Account* destination, int x) { 
 
 
 
-
+// 이친구 history는 다시 손봐야함.
 void Session::AccountTransfer(unsigned long long amount, Account* destination, int x) {
+    
     // 이체 수수료(fee)를 초기화합니다.
     unsigned long long fee;
 
     // 송금 계좌와 수취 계좌의 은행 이름을 가져옵니다.
-    string accountNum = (findAccount(account->getAccountNumber()))->getBankName();
-    string destNum = (findAccount(destination->getAccountNumber()))->getBankName();
+    string accountNum = (findAccount(account->getAccountNum()))->getBankName();
+    
+    
+    string destNum = (findAccountOfBank(destination->getAccountNumber()))->getBankName();
 
     // 은행이 같고, 현재 세션이 주거래 은행인 경우 수수료는 2000원,
     // 은행이 같고, 현재 세션이 타은행 거래 가능인 경우 수수료는 3000원,
@@ -469,6 +512,7 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
 
 
 
+
 // History에서 withdraw 3번 넘으면 session 종료
 
 // -------------child of Session class ---------------
@@ -479,7 +523,7 @@ public:
         atm = iatm;
         primarySignal = true;
         authorizationCount = 0;
-        withdrawalCount = 0;
+        withdrawalCount = 0; // 이거 처리 !
         authorizationSignal = true;
         
         bool validAccount = true; // 계좌 정보 유무
@@ -490,17 +534,20 @@ public:
         cout << "계좌 번호 : ";
         cin >> inputAccount;
         
-        if (findAccount(inputAccount) == nullptr) {
-            mainKoreanDisplay();
-            cout << "입력한 계좌번호가 존재하지 않습니다." << endl;
-            validAccount = false;
+        //이 부분 어떻게 할지 .. ?
+        Bank* temp = this->myBank->findAccountOfBank(inputAccount);
+
+        
+        if (temp == nullptr) {
+                    mainKoreanDisplay();
+                    cout << "입력한 계좌번호가 존재하지 않습니다." << endl;
+                    validAccount = false;
         }
         else { //계좌가 존재하는 경우
-            Bank* temp = findAccount(inputAccount); //findAccount 함수를 사용하여 입력된 계좌 번호에 해당하는 Bank 객체를 찾아서 temp 포인터에 저장
-            if ( (atm->getPrimaryBankInfo()).compare(temp->getBankName()) == 0 ) { //현재 세션에서 사용 중인 ATM 객체(atm)의 기본 은행 정보와, 입력된 계좌 번호에 해당하는 Bank 객체의 은행 이름을 비교 ! 두 은행 이름이 같다면, 현재 세션에서 사용 중인 은행이라는 것을 의미
+            if ( (atm->GetPrimaryBank()).compare(temp->getBankName()) == 0 ) { //현재 세션에서 사용 중인 ATM 객체(atm)의 기본 은행 정보와, 입력된 계좌 번호에 해당하는 Bank 객체의 은행 이름을 비교 ! 두 은행 이름이 같다면, 현재 세션에서 사용 중인 은행이라는 것을 의미
                 account = temp->findAccountOfBank(inputAccount); //같다면, 해당 은행에서 입력된 계좌 번호에 해당하는 Account 객체를 찾아서 account 포인터에 저장합니다. 이렇게 하면 현재 세션에서 사용할 수 있는 계좌를 설정
             } else {
-                if (atm->getSingleInfo() == 0) { //타은행 계좌를 사용할 수 없다면
+                if (atm->IsMultiBank() == 0 ) { //타은행 계좌를 사용할 수 없다면
                     mainKoreanDisplay();
                     cout << "타은행 계좌는 사용하실 수 없습니다\n" << endl;
                     validAccount = false;
@@ -532,8 +579,8 @@ public:
             }
             
             if (authorizationSignal == false) {
-                atm->mainKoreanDisplay();
-                cout << "       비밀번호 입력을 3회 실패하여 세션이 종료됩니다" << endl;
+                mainKoreanDisplay();
+                cout << " 비밀번호 입력을 3회 실패하여 세션이 종료됩니다" << endl;
             }
             
             else { //비밀번호 인증 통과 후 로직들
@@ -541,7 +588,7 @@ public:
                 while (sessionExitSignal) {
                     mainKoreanDisplay();
                     cout << "원하시는 서비스를 선택해주세요\n" << endl;
-                    cout << "1. 입금    2. 출금   3. 송금   4. 거래 내역 조회   5. 서비스 종료\n" << endl;
+                    cout << "1. 입금    2. 출금   3. 송금   4. 거래 내역 조회   5. 서비스 종료\n" << endl; //거래 3번 이상 시 세션 새로 열기
                     cout << "번호 입력 : ";
                     int transactionNum = -1;
                     cin >> transactionNum;
@@ -552,10 +599,9 @@ public:
                         continue; //for문 다시 돌아가서 선택하게 하기.
                     }
                     
-                    if (transactionNum == 1) { // 입금
+                    if (transactionNum == 1) { // 입금 (1000월 , 5000원 , 10000원, 50000원을 받아야함. )
                         mainKoreanDisplay() ;
                         cout << " 입금 서비스 입니다. \n" << endl;
-                        cout << " 현금과 수표 중 하나를 선택하십시오\n" << endl;
                         cout << " 1. 현금 입금     2. 수표 입금\n" << endl;
                         cout << "번호 입력 : ";
                         int depositinput = -1;
@@ -569,35 +615,103 @@ public:
                         }
                         
                         
-                        unsigned long long inAmount;
+
+                        
+                        
+                
                         if ( depositinput == 1) {
                             while (true) {
                                 
                                 mainKoreanDisplay() ;
-                                cout << "입금하실 1만원권 지폐의 장 수를 입력해주세요\n" << endl;
-                                cout << "1만원권 지폐 장 수 : ";
-                                int numBill = -1;
-                                cin >> numBill;
-                                if (cin.fail() == true) { //잘못 입력 시
-                                    atm->invalidKoreanDisplay();
+                                map<int, int> billCounts; // 각 지폐의 갯수를 저장할 맵
+                                cout << "입금하실 지폐의 종류를 선택해주세요\n" << endl;
+                                cout << "1. 1000원  2. 5000원  3. 10000원  4. 50000원 5. 종료" << endl;
+                                cout << "번호 입력 : ";
+                                int bill = -1;
+                                cin >> bill;
+
+                                if (cin.fail() == true || bill < 1 || bill > 4) {
+                                    cout << "유효하지 않은 번호입니다." << endl;
                                     cin.clear();
                                     cin.ignore(100, '\n');
                                     continue;
                                 }
-                                if ((0 < numBill) && (numBill <= 50)) {inAmount = 10000 * numBill; break;}
                                 
-                                else if (numBill > 50) {
-                                    atm->mainKoreanDisplay();
-                                    cout << "       거래 1회 당 입금 가능한 장 수를 초과하셨습니다\n" << endl;
-                                    cout << "==================================================" << endl;
-                                } else atm->invalidKoreanDisplay();
+                                if (bill == 5) {
+                                    // 사용자가 종료를 선택했을 때 루프를 종료
+                                    break;
+                                }
+                                
+                                int billType = -1;
+                                
+                                if (bill == 1 ) {
+                                    
+                                    billType = 1000 ;
+                                    
+                                } else if ( bill == 2 ){
+                                    billType = 5000 ;
+                                    
+                                } else if (bill== 3){
+                                    billType = 10000 ;
+                                    
+                                } else if (bill == 4) {
+                                    billType = 50000 ;
+                                    
+                                }
+                                
+                                cout << "입금하실 지폐의 장 수를 입력해주세요: ";
+                                int numBill = -1;
+                                
+                                cin >> numBill;
+                                if (cin.fail() == true || numBill <= 0) {
+                                    cout << "유효하지 않은 번호입니다." << endl;
+                                    cin.clear();
+                                    cin.ignore(100, '\n');
+                                    continue;
+                                }
+                                
+                                // 각 지폐 종류와 갯수를 맵에 저장
+                                billCounts[billType] = numBill;
+   
+                                
+                                //-------한번에 거래 가능한 장수
+
+                                 if (numBill > 50) {
+                                    cout << " 거래 1회 당 입금 가능한 장 수를 초과하셨습니다\n" << endl;
+                                     break;
+                                    
+                                }
+                                
                             }
-                            atm->mainKoreanDisplay();
-                            CashDeposit(inAmount, 0); //void Session::CashDeposit(map<int, int> amount, int x)
+                                
+                                CashDeposit(billCounts, 0);
                             
                         } else if (depositinput == 2) {
                             // 수표 입금 처리
                             // 사용자에게 10만원권 수표의 장 수를 입력 받아 입금 처리합니다.
+                            
+                            cout << "수표를 입력해주세요\n" << endl;
+                            cout << "수표 : ";
+                            int numBill = -1;
+                            cin >> numBill;
+                            
+                            if (cin.fail() == true) { //잘못입력시
+                                cout << "유효하지 않은 번호입니다." << endl;
+                                cin.clear();
+                                cin.ignore(100, '\n');
+                                continue;
+                            }
+                            if ((0 < numBill) && (numBill <= 30)) {inAmount = 100000 * numBill; break;}
+                            else if (numBill > 30) {
+                                atm->mainKoreanDisplay();
+                                cout << "       거래 1회 당 입금 가능한 장 수를 초과하셨습니다\n" << endl;
+                            } else {
+                                cout << "유효하지 않은 번호입니다." << endl;
+                            }
+    
+                            CheckDeposit(inAmount, 0);
+                            
+                        
                         } else {
                             cout << "유효하지 않은 번호입니다." << endl;
                         }
@@ -606,7 +720,19 @@ public:
                         
                     }
                     
-                    eles if (transactionNum == 2) { // 출금
+                    eles if (transactionNum == 2) {// 출금
+                        if (withdrawalCount == 3) {
+                            atm->mainKoreanDisplay();
+                            cout << "       세션 1회 당 출금 가능한 액수를 초과하셨습니다\n" << endl;
+                        else {
+                                
+                                
+                            }
+                        
+                        
+                        
+                        
+                        
                     }
                     
                     
