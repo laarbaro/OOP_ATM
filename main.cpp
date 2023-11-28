@@ -1045,9 +1045,15 @@ void Start() {
 
     cout << "Welcome" << endl;
     cout << "To start a session, please insert your debit card" << endl;
-    int CN, PW;
-    cout << "Insert card number and password" << endl;
-    if (CheckAdmin(CN, PW)) {
+    int CN, PW; char AreYouAdmin;
+    cout << "Insert card number" << endl;
+    cin << CN;
+    cout << "Insert password" << endl;
+    cin << PW;
+    cout << "Are you an administrator? (y, n)" << endl;
+    cin << AreYouAdmin;
+	
+    if (CheckAdmin(CN, PW) || AreYouAdmin = "y") {
         int sel;
         cout << "Welcome Administrator" << endl;
         cout << "[1] Show me history [etc] Show me Available Cash" << endl;
