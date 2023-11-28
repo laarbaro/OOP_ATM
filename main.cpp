@@ -213,28 +213,6 @@ public:
     }
     void SetmyGlobal(Global* inglobal){this->myGlobal = inglobal};
     
-    
-    
-    // 여기가 왜 필요할까 ??
-    void displayMainKoreanScreen() {
-        // getPrimaryBankInfo()의 반환 타입이 map<string, Bank*> 라고 가정
-        map<string, Bank*> bankInfo = atm->GetPrimaryBank();
-
-        cout << "\n==================================================" << endl;
-        
-        // 아래 코드에서 사용할 뱅크 이름을 얻어옵니다.
-        string bankName = /* 어떻게든 뱅크 이름을 가져오는 코드 */;
-        
-        cout  << bankName << " 은행" << endl;
-
-        // 여기서 bankInfo를 사용하여 뱅크 이름에 대한 포인터를 얻어옵니다.
-        Bank* bankPtr = bankInfo[bankName];
-        
-        if (bankPtr->getSingleInfo() == 0) cout << "주거래 은행 전용>" << endl;
-        else cout << "타은행 거래 가능>" << endl;
-        cout << "--------------------------------------------------\n" << endl;
-    }
-
 
 
 
@@ -262,13 +240,15 @@ public:
 
 
 /*-------------- Methods of Session Class --------------*/
-void Session::CashDeposit(map<int, int> amount, int x) { // 한국어 인지 아닌지
+
+//1. 현금 입금 함수
+void Session::CashDeposit(map<int, int> amount, int x) { // 야기서 x 는 한국어 인지 아닌지
 
     unsigned long long fee = 0;
     if (!primarySignal) fee = 1000;
 
     // ATM에 화폐를 추가합니다.
-    atm->SetAvailableCash(amount); //plusMoney 가 아닌 다른 함수일 수도 있음 .  임의로 정한 이름임. SetAvailableCash
+    atm->SetAvailableCash(amount,true);  // ATM에 돈을 추가하는거면true, 빼는 거면 false 맞는지 확인 필요.
 
     // 계좌에 입금합니다.
     unsigned long long totalAmount = 0;
@@ -280,13 +260,16 @@ void Session::CashDeposit(map<int, int> amount, int x) { // 한국어 인지 아
     int transactionID = GetNextTransactionID();
     account->deposit(totalAmount - fee);
 
+    
+    
+    // ------[history 관리]
     Transaction CashDepositTransaction(transactionID, card->getCardNumber(), "CashDeposit", totalAmount) ;
-    
-
-    
     transctionHistoryOfSession.push_back(CashDepositTransaction);
+    //------------------
     
-    // 거래 정보를 출력합니다. ~에는 뱅크 이름이랑 어카운트 가져오기 ?
+    
+    
+    // 거래 정보를 출력합니다. ~에는 뱅크 이름이랑 어카운트 가져오기 기능을 추가 해야함.
     if (x == 0)
         cout << "~에 " << totalAmount << " 원이 입금되었습니다." << endl;
     else
@@ -306,7 +289,7 @@ void Session::CashDeposit(map<int, int> amount, int x) { // 한국어 인지 아
 
 
 
-
+// 2. 수표를 입금해주는 함수
 void Session::CheckDeposit(unsigned long long amount, int x) {
     unsigned long long fee = 0;
     if (!primarySignal) fee = 1000;
@@ -314,14 +297,15 @@ void Session::CheckDeposit(unsigned long long amount, int x) {
         account->deposit(totalAmount);
     
     
-    //ATM에는 안넣음 ??
+    //질문 , ATM에는 돈을 안넣나요. ? .?
     
+    // ------[history 관리]
     int transactionID = GetNextTransactionID();
     Transaction CheckDepositTransaction(transactionID, card->getCardNumber(), "CheckDeposit", totalAmount) ;
-        
     transctionHistoryOfSession.push_back(CheckDepositTransaction);
+    //-------------------
     
-    // 거래 정보를 출력합니다. ~에는 뱅크 이름이랑 어카운트 가져오기 ?
+    // 거래 정보를 출력합니다. ~에는 뱅크 이름이랑 어카운트 가져오도록 수정합니다.
     if (x == 0)
         cout << "~에 " << totalAmount << " 원이 입금되었습니다." << endl;
     else
@@ -340,16 +324,14 @@ void Session::CheckDeposit(unsigned long long amount, int x) {
 }
 
 
-
-
-
-void Session::Withdrawal(unsigned long long amount, int x) { // map을 받아야함.
+// 3. 출금해주는 함수
+void Session::Withdrawal(const map<int, int>& amount, int x) {
     unsigned long long fee = 1000;
     if (!primarySignal) fee = 2000;
-    
-    
+
     // ATM의 사용 가능한 현금을 가져옴
     map<int, int> availableCash = atm->GetAvailableCash();
+
     
     unsigned long long totalAvailableCash = 0;
     for (const auto& entry : availableCash) {
@@ -357,44 +339,42 @@ void Session::Withdrawal(unsigned long long amount, int x) { // map을 받아야
         int count = entry.second;
         totalAvailableCash += (denomination * count);
     }
-    
-    
-    if ( totalAvailableCash < amount + fee) {
+
+    unsigned long long totalAmount = 0;
+    for (const auto& entry : amount) {
+        int denomination = entry.first;
+        int count = entry.second;
+        totalAmount += (denomination * count);
+    }
+
+    if (totalAvailableCash < totalAmount + fee) {
         if (x == 0) cout << " 현재 기기 내 현금이 부족합니다\n" << endl;
         else cout << " OUR ATM DOESN'T HAVE ENOUGH MONEY\n" << endl;
-        
-    }
-    else if (amount + fee > account->getBalance())  // 졔좌잔액 부족 여부 확인
+    } else if (totalAmount + fee > account->getBalance()) {
         if (x == 0) cout << "잔액 부족\n" << endl;
         else cout << " YOU DON'T HAVE ENOUGH MONEY\n" << endl;
-    }
-
-
-    else { // 이제부터 출금 수행 !!
-        
+    } else {
         // 출금금액과 수수료를 ATM과 계좌에서 각각 차감
-        totalAmount = ammount + fee
-        atm->minusMoney(totalAmount); //fee 포함해서 차감 해야하는가 ?  그리고 가능한 돈을 차감하는 함수 이름은 ???
-        
-        account->withdraw(totalAmount);
-        
+        atm->SetAvailableCash(amount,false);  // 가능한 돈을 차감하는 함수로 가정
+        account->withdraw(totalAmount + fee);
+
         int transactionID = GetNextTransactionID();
+        account->deposit(totalAmount - fee);
+
         
-        Transaction withdrawTransaction(transactionID, card->getCardNumber(), "Withdraw", totalAmount) ;
-        
+        // ------[history 관리]
+        Transaction withdrawTransaction(transactionID, card->getCardNumber(), "Withdraw", totalAmount);
         transctionHistoryOfSession.push_back(withdrawTransaction);
-        
-      
-        
-        //결과 출력
+        //------------------
+
+        // 결과 출력
         // 거래 정보를 출력합니다. ~에는 뱅크 이름이랑 어카운트 가져오기 ?
         if (x == 0)
             cout << "~에 " << totalAmount << " 원이 입금되었습니다." << endl;
         else
             cout << "~에 " << totalAmount << " won has been deposited." << endl;
-        
-        withdrawalCount ++; // 세션 종료 !! 변수가 있음 ATM에서 가져가면 될듯 ??
-        
+
+        withdrawalCount++;  // 세션 종료 !! 변수가 있음 ATM에서 가져가면 될듯 ??
         if (x == 0) cout << "\n현재 잔액 : ";
         else cout << "\nCURRENT BALANCE : ";
         cout << account->getFundInfo();
@@ -405,16 +385,14 @@ void Session::Withdrawal(unsigned long long amount, int x) { // map을 받아야
 }
 
 
-//이 친구는 뭔가 오류가 많음 ㅠ
+
+// 4. 현금 송금하는 함수
 void Session::CashTransfer(map<int, int> amount, Account* destination, int x) { //destination는 이체하고 자 하는 계좌.
-    
-    //fee 보다 적으면 안됨.
-    
-    //이체 수수료 추가
+
     unsigned long long fee = 5000 ;
     
     // ATM에게 현금을 추가합니다.
-    atm->SetAvailableCash(amount);
+    atm->SetAvailableCash(amount, true);
     
     
  // 수수료 빼고 계좌에 입금
@@ -429,15 +407,12 @@ void Session::CashTransfer(map<int, int> amount, Account* destination, int x) { 
     
     int transactionID = GetNextTransactionID();
     
+    // ------[history 관리]
     Transaction CashTransferTransaction(transactionID, card->getCardNumber(), "CashTransfer", totaltotalAmount) ;
-    
-    
     transctionHistoryOfSession.push_back(CashTransferTransaction);
+    //------------------
 
-    
-    // 현재 세션의 거래 내역에도 이체 거래를 추가합니다.
-    transactionHistoryOfSession.push_back(newTransaction);
-
+   
     // 이체 거래의 정보를 출력합니다. (x가 0이면 한국어, 1이면 영어 출력)
     if (x == 0)
         cout << newTransaction.getKoreanInformation() << endl;
@@ -462,10 +437,9 @@ void Session::CashTransfer(map<int, int> amount, Account* destination, int x) { 
 }
 
 
-
-
-
-// 이친구 history는 다시 손봐야함.
+//5. 계좌 송금하는 함수
+//수정이 많이 필요합니다.
+//계좌 포인터 건드는 법을 모르겠어요 ㅠ
 void Session::AccountTransfer(unsigned long long amount, Account* destination, int x) {
     
     // 이체 수수료(fee)를 초기화합니다.
@@ -488,30 +462,25 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
         fee = 4000;
 
     // 잔액이 충분하지 않으면 메시지 출력 후 종료합니다.
-    if (amount + fee > account->getFundInfo()) {
+    if (amount + fee > account->getBalance()()) {
         if (x == 0)
             cout << "잔액 부족\n" << endl;
         else
             cout << "YOU DON'T HAVE ENOUGH MONEY\n" << endl;
     } else {
         // 송금 계좌에서 송금액과 수수료를 차감합니다.
-        account->minusMoney(amount + fee);
+        account->withdraw(<#int amount#>)(amount + fee);
 
         // 수취 계좌에 송금액을 추가합니다.
-        destination->plusMoney(amount);
+        destination->deposit(<#int amount#>)(amount);
 
-        // AccountTransferTransaction 클래스의 객체를 생성합니다.
-        // 이 객체는 계좌 간 송금 거래에 대한 정보를 담고 있습니다.
+        // ------[history 관리]
         AccountTransferTransaction newTransaction(destination, account, amount, accountNum, destNum);
-
-        // 수취 계좌의 거래 내역에 새로운 거래(newTransaction)를 추가합니다.
         destination->addTransaction(&newTransaction);
 
-        // 송금 계좌의 거래 내역에도 새로운 거래(newTransaction)를 추가합니다.
-        account->addTransaction(&newTransaction);
-
-        // 현재 세션의 거래 내역에도 송금 거래를 추가합니다.
         transactionHistoryOfSession.push_back(newTransaction);
+        //------------------
+        
 
         // 송금 거래의 정보를 출력합니다. (x가 0이면 한국어, 1이면 영어 출력)
         if (x == 0)
