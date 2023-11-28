@@ -1037,14 +1037,14 @@ void Start() {
     
     //admin인 경우 선택 : (ATM 초기 잔고 보여주기 / Transaction History 보여주기 / Transaction History 파일로 뽑기)
     //Session 종료 또는 invalid card : 카드 return 표시하기
-	
+    bool 
+    while (
     //기본 선택 : (Account 개설하기 / Card 입력받기)
     int firstsel;
     cout << "Welcome" << endl;
     cout << "To start a session, please insert your debit card" << endl;
     cout << "[1] Insert Card [etc] Make new account" << endl;
     cin >> firstsel;
-
     //Card 입력받기를 선택한 경우
     if (firstsel == 1){
 	int CN, PW;
@@ -1064,8 +1064,8 @@ void Start() {
 	    }
 	    else {
 		if (CheckInvalidCard(CN, PW)){
-			
-		}else{ OpenSession();}
+			OpenSession();
+		}else{ cout << "올바르지 않은 카드입니다." << endl;}
 	       
 	    };
     } else {
