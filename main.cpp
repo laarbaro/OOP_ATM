@@ -229,6 +229,14 @@ public:
     
 };
 
+//5. Display Class
+class Global{
+public: 
+	Global();
+	Global(map<string, Account*>, map );
+	~Global();//////////////stop
+	
+};
 
 
 /*-------------- Methods of Session Class --------------*/
@@ -1041,7 +1049,7 @@ public:
         return (it != accounts.end() && it->second->verifyPW(password));
     }
 
-    // 계좌 존재 여부 확인 (주어진 계좌 번호가 은행에 존재하는지 여부를 확인하는 함수)
+    // 계좌 존재 여부 확인 (주어진 계좌 번호가 은행에 존재하는지 여부를 확인하는 함수) //Account의 pointer를 반환하면?
     bool accountExists(int accountNum) {
         return { accounts.find(accountNum) != accounts.end() };
     }
@@ -1159,34 +1167,30 @@ ATM::~ATM() {
     NumberOfATM--;
 }
 void Start() {
-    
-    
-    //admin인 경우 선택 : (ATM 초기 잔고 보여주기 / Transaction History 보여주기 / Transaction History 파일로 뽑기)
-    //Session 종료 또는 invalid card : 카드 return 표시하기
-    bool 
-    while (
-    //기본 선택 : (Account 개설하기 / Card 입력받기)
+//기본적인 모든 session 열기 전 수행을 하는 함수입니다. 
+	
+    //기본 선택 : (Card 입력받기)
     int firstsel;
     cout << "Welcome" << endl;
     cout << "To start a session, please insert your debit card" << endl;
-    cout << "[1] Insert Card [etc] Make new account" << endl;
-    cin >> firstsel;
-    //Card 입력받기를 선택한 경우
-    if (firstsel == 1){
-	int CN, PW;
+	int CN, PW; 
     	cout << "Insert card number and password" << endl;
         //Card 입력받은 경우 : admin인지, 올바른 카드인지 확인 후 session 열어주기
     	if (CheckAdmin(CN, PW)) {
-        	int sel;
+        	int sel = 1;
+		bool repeat = true;
         	cout << "Welcome Administrator" << endl;
-        	cout << "[1] Show me history [etc] Show me Available Cash" << endl;
-        	cin >> sel;
-        	if (sel == 1) {
-            	ShowHistory();
-        	}
-        	else {
-            	ShowAvailableCash();
-        	}
+		while (repeat){ 
+	        	cout << "[1] Transaction History" << endl;
+	        	cin >> sel;
+	        	if (sel == 1) {
+	            		ShowHistory();
+				repeat = false;
+	        	} 
+	        	else {
+	            		cout << "error : 올바른 input을 입력해주세요" << endl;
+	        	}
+		}
 	    }
 	    else {
 		if (CheckInvalidCard(CN, PW)){
@@ -1194,45 +1198,8 @@ void Start() {
 		}else{ cout << "올바르지 않은 카드입니다." << endl;}
 	       
 	    };
-    } else {
-    //새로운 계정 만들기를 선택한 경우
-	map<int, Account*> AccountMap;
-	int NumofAccount;
-	string pb = this->PrimaryBank;
-	int AccountNum;
-	string pw;
-	string ownername;
-	cout << "계좌의 주거래 은행은 ATM의 primary bank입니다" << endl;
-	cout << "계좌번호를 입력해주세요" << endl;
-	cin >> AccountNum;
-	cout << "계좌 소유주의 성명을 입력해주세요" << endl;
-	cin >> ownername;
-	cout << "계좌 비밀번호를 입력해주세요" << endl;
-	cin >> pw;
-	Account(AccountNum, pw, ownername, InputBankMap[pb]()); //수정중
-	AccountMap.insert({AccountNum, new Account(AccountNum, pw, ownername, InputBankMap[pb]())});
-
-		//Card 선언
-		//적어도 admin card는 여기에서 선언되어 ATM을 생성할 때 넣어줘야 함.
-		cout << "카드를 만드시겠습니까? (y, n)" << endl;
-		cin >> char makeCard;
-		if (makeCard == "y") {/////////////////////////////////////여기서 stop
-			cout << "카드번호를 입력하세요" << endl;
-			int cardNumber;
-			cin >> cardNumber;
-			cout << "관리자 권한을 부여하시겠습니까? (y, n)" << endl;
-			char askAdmin;
-			cin >> askAdmin;
-			bool isAdmin;
-			if (askAdmin = "y") { isAdmin = true; }
-			else { isAdmin = false; }
-			
-			Card(cardNumber, NumofAccount, isAdmin);
-		}
-	
-    //기본 선택 - input type error가 있는 경우 
+	//Session 종료 또는 invalid card : 카드 return 표시하기
 	    
-    
 };
 bool CheckInvalidCard(int cardnum, int pw){
 	 ///////////////////////////////이 부분 어떻게 할지, bank에서 카드 맵 저장하는게 나을지도
