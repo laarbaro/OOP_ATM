@@ -1106,8 +1106,6 @@ void Start() {
 	
     //기본 선택 - input type error가 있는 경우 
 	    
-    };
-	
     
 };
 bool CheckInvalidCard(int cardnum, int pw){
