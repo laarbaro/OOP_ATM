@@ -1049,12 +1049,13 @@ public:
 
     // 은행 이름 리턴 함수
     string getBankName() { return bankName; };
-};
 
     // Bank 클래스의 소멸자
     ~Bank() {
     // 소멸자에서 리소스 정리 작업 수행
     // 예: 동적으로 할당된 메모리 해제 등
+
+    map<string, Account*> AccountsInBank() { return accounts }
 };
 
 
@@ -1234,8 +1235,26 @@ void Start() {
 	    
     
 };
-bool CheckInvalidCard(int cardnum, int pw){
+bool (int cardnum, string pw){
 	 ///////////////////////////////이 부분 어떻게 할지, bank에서 카드 맵 저장하는게 나을지도
+	bool isExist = false;
+	for (const auto& pair : PrimaryBank) {
+		map<string, Account*> accs = PrimaryBank.second->AccountsinBank();
+		for (const auto& pair : accs) {
+			if(accs.second->getAccountNum() == cardnum && accs.second->verifyPW(pw)) {
+				isExist = true;
+			}
+		}
+	}
+	for (const auto& pair : NonPrimaryBank) {
+		map<string, Account*> accs = NonPrimaryBank.second->AccountsinBank();
+		for (const auto& pair : accs) {
+			if(accs.second->getAccountNum() == cardnum && accs.second->verifyPW(pw)) {
+				isExist = true;
+			}
+		}
+	}
+	return isExist;
 };
 
 bool CheckAdmin(int cardnum, int pw) {
