@@ -6,6 +6,7 @@
 
 using namespace std;
 
+class Global;
 class ATM;
 class Session;
 class Card;
@@ -132,12 +133,16 @@ private:
     map<string, Bank*> PrimaryBank;
     map<string, Bank*> NonPrimaryBank;
     map<int, int> AvailableCash;//현금 단위, 갯수
+    ////////////////////////////////////////change 11.28
+    int AvailableCashAmount;//현금 양
     Card* AdminCard;
     map<string, string> History;
     bool Bilingual = false;
     bool MultiBank = false;
     static int NumberOfATM;
     Session* CurrentSession;
+    ////////////////////////////////////////change 11.28
+    Global* myGlobal;
 
 public:
     ATM();
@@ -150,6 +155,8 @@ public:
 
     //Set 함수
     void SetAvailableCash(map<int, int>, bool);
+    ////////////////////////////////////////change 11.28
+    void SetmyGlobal(Global* inglobal){this->myGlobal = inglobal};
 
     //Get 함수
     int GetSerialNum() { return this->SerialNumber; }
@@ -158,6 +165,7 @@ public:
     map<int, int> GetAvailableCash() { return this->AvailableCash; }
     Card* GetAdminCard() { return this->AdminCard; }
     map<string, string> GetHistory() { return this->History; }
+    int GetAvailableCashAmount(){return this->AvailableCashAmount;}
 
     //Is 함수
     bool IsMultiBank() { return this->MultiBank; }
@@ -185,6 +193,9 @@ private:
     int withdrawalCount ; // 출금 횟수 기록
     bool primarySignal ;  // 현재 계좌 은행 정보와 ATM 주거래 은행이 동일한지 여부를 나타내는 bool 값
     int currentTransactionID;
+    ////////////////////////////////////////change 11.28
+    Global* myGlobal; 
+    
 
 public:
 
@@ -200,6 +211,7 @@ public:
     int GetNextTransactionID() {
         return currentTransactionID++;
     }
+    void SetmyGlobal(Global* inglobal){this->myGlobal = inglobal};
     
     
     
@@ -228,13 +240,23 @@ public:
 
     
 };
-
-//5. Display Class
+////////////////////////////////////////change 11.28
+//5. Global Class
 class Global{
+private: 
+	map<string, Account*> AccountMap;
+	map<string, ATM*> ATMMap;
+	char SecretCode = 'x';
 public: 
 	Global();
-	Global(map<string, Account*>, map );
-	~Global();//////////////stop
+	Global(map<string, Account*>, map<string, ATM*>);
+	~Global();
+	map<string, Account*> getAccountMap(){return this->AccountMap;}
+	map<string, ATM*> getATMMap(){return this->ATMMAP;}
+	char getSecretCode(){return this->SecretCode;}
+	void setAccountMap(map<string, Account*>);
+	void setATMMap(map<string, Account*>);
+	void Display();
 	
 };
 
@@ -1352,6 +1374,11 @@ void SetAvailableCash(map<int, int> inputcash, bool Plus) {
         	int currentnum = inputcash.find(iter->first)->second;
         	iter->second -= currentnum;
     };
+    int sum;
+    for(auto iter = this->AvailableCash.begin(); iter != this->AvailableCash.end(); iter++){
+	    sum+=((iter->first)*(iter->second));
+    };
+    this->AvailableCashAmount = sum;
 };
 void ShowHistory() {
     //Transaction History 보여주기 - user명과 transaction id, card num, transaction type, amount 등 정보
@@ -1382,8 +1409,28 @@ void ShowAvailableCash() {
         };
     cout << ") total : " << total << endl;
 };
+////////////////////////////////////////change 11.28
+//----------------------------methods of Global----------------------------------------
+//-------------------------------------------------------------------------------------
+void Global::setAccountMap(map<string,Account*> inmap){
+	this->AccountMap = inmap;
+};
+void Global::setATMMap(map<string,ATM*> inmap){
+	this->ATMMap = inmap;	
+};
+void Global::Display(){
+	//모든 ATM의 정보 출력
+	for (pair<string, ATM*> i : ATMMap){
+		cout << "(ATM [SN : "<<i.second->GetSerialNum();
+		cout << "] remaining cash: "<<i.second->AvailableCashAmount()<<" ) ";
+	};
 
-
+	//모든 Account의 정보 출력
+	for (pair<string, Account*> p: AccountMap){
+		cout << "(Account [Bank: "<<p.second->myBank->getBankName()<<", No: " <<p.first;
+		cout << ", Owner: "<<p.second->getOwnerName()<<"] balance: "<<p.second->getBalance()<<" ) ";	
+	};
+};
 
 //-------------------------------------Transaction---------------------------------------
 /*
@@ -1604,7 +1651,6 @@ int main() {
 
 	//ATM선언 전 primary bank pointer, bankmap, card pointer가 준비되어 있어야 함
 	//ATM 선언
-	//[수정 필요]논의 후 수정
 	map<string, ATM*> ATMmap;
 	int ATMNum;
 	string ATMname;
@@ -1628,7 +1674,7 @@ int main() {
 		cin >> AdminCard;
 		ATMmap.insert({ATMname, new ATM(InputBankMap.find(InputPrimaryBank), InputBankMap, AdminCard)});
 	}
-
+	////////////////////////////////////////question 11.28
 	bool isATMworiking = true;
 	while (isATMworking) {
 		//display
@@ -1655,7 +1701,14 @@ int main() {
 		}
 		else { isATMworking = false; }
 	}
-
+	////////////////////////////////////////change 11.28
+	Global myGlobal(AccountMap, ATMMap);
+	for (auto& i : ATMMap){
+		i.second->getGlobal();
+	};
+	for (auto& j : AccountMap){
+		i.second->getGlobal();
+	};
 		
 	return 0;
 }
