@@ -104,12 +104,11 @@ public:
     // 출금 함수
     void withdraw(int amount);
 };
+-------------methods of Account-----------
 
 // Password 검증 함수
 bool Account::verifyPW(const string& enteredPassword) const {
-    return (password == enteredPassword);
-}
-// AccountNum 반환 함수
+  
 const string& Account::getAccountNum() const {
     return accountNum;
 }
@@ -139,7 +138,7 @@ void Account::withdraw(int amount) {
         balance -= amount;
     }
     else {
-        cout << "잔액이 부족합니다." << std::endl;
+        cout << "잔액이 부족합니다. 이 cout은 출력되지 않는 것이 좋습니다." << std::endl; //stop
     }
 }
 
@@ -515,17 +514,15 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
     unsigned long long fee;
 
     // 송금 계좌와 수취 계좌의 은행 이름을 가져옵니다.
-    string accountNum = (findAccount(account->getAccountNum()))->getBankName();
-    
-    
-    string destNum = (findAccountOfBank(destination->getAccountNumber()))->getBankName();
+    string accountName = account->getBankName();    
+    string destName = destination->getBankName();
 
     // 은행이 같고, 현재 세션이 주거래 은행인 경우 수수료는 2000원,
     // 은행이 같고, 현재 세션이 타은행 거래 가능인 경우 수수료는 3000원,
     // 은행이 다른 경우 수수료는 4000원으로 설정합니다.
-    if ((accountNum.compare(destNum) == 0) && (primarySignal == true))
+    if ((accountName.compare(destName) == 0) && (primarySignal == true))
         fee = 2000;
-    else if ((accountNum.compare(destNum) == 0) && (primarySignal == false))
+    else if ((accountName.compare(destName) == 0) && (primarySignal == false))
         fee = 3000;
     else
         fee = 4000;
@@ -566,28 +563,29 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
         transactionHistoryOfSession.push_back(newTransaction);
         //------------------
         
-
-        // 송금 거래의 정보를 출력합니다. (x가 0이면 한국어, 1이면 영어 출력)
-        if (x == 0)
-            cout << newTransaction.getKoreanInformation() << endl;
+        // 거래 정보를 출력합니다.
+        if (x == 0)//
+            //출력 형태 : "Kakao 은행의 계좌 020202(계좌번호)에서 Kakao 은행의 계좌 020202(계좌번호)로 3000원이 송금되었습니다." 
+            cout << account->getBankName() << " 은행의 계좌 " account->getAccountNum() <<"에서 "<<destination->getBankName() << " 은행의 계좌 " destination->getAccountNum() <<"로 "<< totalAmount << "원이 출금되었습니다." << endl;
         else
-            cout << newTransaction.getEnglishInformation() << endl;
-
-        // 현재 송금 계좌의 잔액을 출력합니다.
-        if (x == 0)
-            cout << "\n현재 잔액 : ";
-        else
-            cout << "\nCURRENT BALANCE : ";
-        cout << account->getFundInfo();
-
-        // 통화 단위를 출력합니다.
-        if (x == 0)
-            cout << " 원" << endl;
-        else
-            cout << " won" << endl;
-
-        // 개행 문자를 출력합니다.
+            //출력 형태 : "3000 won has been transferred from the account 020202 of Kakao Bank to the account 020202 of Kakao Bank."
+            cout << totalAmount << "won has been transferred from the account " << account->getAccountNum() << " of " <<account->getBankName()<< " Bank to the account "<<destination->getAccountNum()<<" of "<<destination->getBankName()<<" Bank."<< endl;
+    
+        // 현재 잔액을 출력합니다.
+        if (x == 0) 
+            //출력 형태 : "현재 잔액 : 3000 원"
+            cout << "현재 잔액 : ";
+        else 
+            //출력 형태 : "Current Available Cash : 3000 won"
+            cout << "Current Available Cash : ";
+        cout << account->getBalance();
+        
+        if (x == 0) cout << " 원" << endl;
+        else cout << " won" << endl;
+    
         cout << "\n";
+        //-----------------
+
     }
 }
 
@@ -595,11 +593,10 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
 // -------------child of Session class ---------------
 class KoreanSession : public Session {
 public:
-    void mainKoreanDisplay() {
+    void mainKoreanDisplay() {//stop
         cout << atm->getPrimaryBank() << " 은행" << endl;
-        if (atm->getSingleInfo() == 0) cout << "주거래 은행 전용>" << endl;
-        else cout << "타은행 거래 가능>" << endl;
-    }
+        if (atm->IsMultiBank()) {cout << "주거래 은행 전용>" << endl; }
+        else {cout << "타은행 거래 가능>" << endl;}
     
     KoreanSession(ATM* iatm) {
         // 세션 파라미터 초기화
