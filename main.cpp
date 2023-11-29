@@ -440,15 +440,16 @@ public:
 /*-------------- Methods of Session Class --------------*/
 
 //1. 현금 입금 함수
-void Session::CashDeposit(map<int, int> amount, int x) { // 야기서 x 는 한국어 인지 아닌지
+void Session::CashDeposit(map<int, int> amount, int x) { // 여기서 x 는 한국어 인지 아닌지 ////////////question x는 int라서 상관없지 않을까요?
 
+    //Primary bank인지 확인하고 fee를 결정합니다.
     unsigned long long fee = 0;
     if (!primarySignal) fee = 1000;
 
     // ATM에 화폐를 추가합니다.
-    atm->SetAvailableCash(amount,true);  // ATM에 돈을 추가하는거면true, 빼는 거면 false 맞는지 확인 필요.
+    atm->SetAvailableCash(amount,true);  // ATM에 돈을 추가하는거면 true, 빼는 거면 false
 
-    // 계좌에 입금합니다.
+    // amount map에 있는 돈의 총량을 계산하고 계좌에 입금합니다.
     unsigned long long totalAmount = 0;
     for (const auto& entry : amount) {
         int denomination = entry.first;
@@ -459,11 +460,15 @@ void Session::CashDeposit(map<int, int> amount, int x) { // 야기서 x 는 한�
     account->deposit(totalAmount - fee);
 
     
-    
+    /////question History가 string으로 바뀌어 업데이트 했습니다. 삭제해도 될까요?
     // ------[history 관리]
-    Transaction CashDepositTransaction(transactionID, card->getCardNumber(), "CashDeposit", totalAmount) ;
-    transctionHistoryOfSession.push_back(CashDepositTransaction);
+    //Transaction CashDepositTransaction(transactionID, card->getCardNumber(), "CashDeposit", totalAmount) ;
+    //transctionHistoryOfSession.push_back(CashDepositTransaction);
     //------------------
+    /////
+//stop
+    
+
     
     
     
