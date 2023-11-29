@@ -34,7 +34,7 @@ public:
     }
     // 생성자
     Card(const string& cardNumber, const string& accountNumber, bool isAdmin)
-        : cardNumber(cardNumber), accountNumber(accountNumber), isAdmin(isAdmin), isBilingual(isBilingual) {}
+        : cardNumber(cardNumber), accountNumber(accountNumber), isAdmin(isAdmin) {}
 
     // 카드 번호를 가져오는 함수
     const string& getCardNumber() const {
@@ -51,12 +51,12 @@ public:
     bool isAdminCard() const {
         return isAdmin;
     }
-
+/*
     // 카드가 양 언어 지원으로 구성되어 있는지 확인
     bool isBilingualCard() const {
         return isBilingual;
     }
-
+*/
     // 카드 유효성 검사, 인증과 관련된 다른 함수들도 추가할 수 있음
 };
 
@@ -75,7 +75,7 @@ private:
     string ownerName;
     Card associatedCard;
     int balance;
-    Bank* myBank; // Bank 클래스의 전방 선언 사용 ,  포인터 연결은 여기서 해주는게 맞음 
+    Bank* myBank; // Bank 클래스의 전방 선언 사용 ,  포인터 연결은 여기서 해주는게 맞음
 
 public:
     // 생성자: AccountNum, Password, OwnerName 설정
@@ -156,7 +156,7 @@ public:
     //Set 함수
     void SetAvailableCash(map<int, int>, bool);
     ////////////////////////////////////////change 11.28
-    void SetmyGlobal(Global* inglobal){this->myGlobal = inglobal};
+    void SetmyGlobal(Global* inglobal){this->myGlobal = inglobal;};
 
     //Get 함수
     int GetSerialNum() { return this->SerialNumber; }
@@ -194,7 +194,7 @@ private:
     bool primarySignal ;  // 현재 계좌 은행 정보와 ATM 주거래 은행이 동일한지 여부를 나타내는 bool 값
     int currentTransactionID;
     ////////////////////////////////////////change 11.28
-    Global* myGlobal; 
+    Global* myGlobal;
     
 
 public:
@@ -203,7 +203,8 @@ public:
     void CashDeposit(map<int, int>, int x);
     //void Session::CashDeposit(map<int, int> amount, int x)
     void CheckDeposit(unsigned long long amount, int x);
-    void Withdrawal(unsigned long long amount, int x);
+    //void Withdrawal(unsigned long long amount, int x);
+    void Withdrawal(const map<int, int>& amount, int x);
     void CashTransfer(map<int, int>, Account* destination, int x);
     void AccountTransfer(unsigned long long amount, Account* destination, int x);
     bool Authorization(string password) {return account->verifyPW(password);}
@@ -211,7 +212,7 @@ public:
     int GetNextTransactionID() {
         return currentTransactionID++;
     }
-    void SetmyGlobal(Global* inglobal){this->myGlobal = inglobal};
+    void SetmyGlobal(Global* inglobal){this->myGlobal = inglobal;};
     
 
 
@@ -221,21 +222,21 @@ public:
 ////////////////////////////////////////change 11.28
 //5. Global Class
 class Global{
-private: 
-	map<string, Account*> AccountMap;
-	map<string, ATM*> ATMMap;
-	char SecretCode = 'x';
-public: 
-	Global();
-	Global(map<string, Account*>, map<string, ATM*>);
-	~Global();
-	map<string, Account*> getAccountMap(){return this->AccountMap;}
-	map<string, ATM*> getATMMap(){return this->ATMMAP;}
-	char getSecretCode(){return this->SecretCode;}
-	void setAccountMap(map<string, Account*>);
-	void setATMMap(map<string, Account*>);
-	void Display();
-	
+private:
+    map<string, Account*> AccountMap;
+    map<string, ATM*> ATMMap;
+    char SecretCode = 'x';
+public:
+    Global();
+    Global(map<string, Account*>, map<string, ATM*>);
+    ~Global();
+    map<string, Account*> getAccountMap(){return this->AccountMap;}
+    map<string, ATM*> getATMMap(){return this->ATMMap;}
+    char getSecretCode(){return this->SecretCode;}
+    void setAccountMap(map<string, Account*>);
+    void setATMMap(map<string, Account*>);
+    void Display();
+    
 };
 
 
@@ -396,14 +397,15 @@ void Session::CashTransfer(map<int, int> amount, Account* destination, int x) { 
     
     
  // 수수료 빼고 계좌에 입금
+    unsigned long long totalAmount;
     for (const auto& entry : amount) {
         int denomination = entry.first;
         int count = entry.second;
         unsigned long long totalAmount = (denomination * count);
     }
     
-    unsigned long long totaltotalAmount =  totalAmount - fee
-    destination-> deposit ( utotaltotalAmount ) ;
+    unsigned long long totaltotalAmount =  totalAmount - fee;
+    destination-> deposit ( totaltotalAmount ) ;
     
     int transactionID = GetNextTransactionID();
     
@@ -1040,7 +1042,7 @@ public:
             }
             else { int fee = 5000; }
 
-            Account1->Withdraw(Amount + fee);//error : fee가 정의되어있지 않습니다 //error : 
+            Account1->Withdraw(Amount + fee);//error : fee가 정의되어있지 않습니다 //error :
             Account2->Deposit(Amount);
 
             //return history
@@ -1077,11 +1079,11 @@ public:
             else {
                 return "error: The amount came in ATM is not KRW 5000.";
             }
-	        else { // 잔액부족
-	            return "error: The user ordered transfer of an amount that exceeds the amount currently available from the account.";
-	        }//error : if문이 필요합니다
-	    };
-	};
+            else { // 잔액부족
+                return "error: The user ordered transfer of an amount that exceeds the amount currently available from the account.";
+            }//error : if문이 필요합니다
+        };
+    };
     };
 };
 
@@ -1123,7 +1125,7 @@ public:
         }
     }
 
-    // 사용자 정보를 확인하는 함수 (사용자 정보를 확인하고, 주어진 사용자 이름, 계좌 번호, 비밀번호와 일치하는지 여부를 반환하는 함수) 
+    // 사용자 정보를 확인하는 함수 (사용자 정보를 확인하고, 주어진 사용자 이름, 계좌 번호, 비밀번호와 일치하는지 여부를 반환하는 함수)
     bool verifyUser(string username, string accountNum, string password) {
         auto it = accounts.find(accountNum);
         if (it != accounts.end()) {
@@ -1258,60 +1260,60 @@ ATM::~ATM() {
     NumberOfATM--;
 }
 void Start() {
-//기본적인 모든 session 열기 전 수행을 하는 함수입니다. 
-	
+//기본적인 모든 session 열기 전 수행을 하는 함수입니다.
+    
     //기본 선택 : (Card 입력받기)
     int firstsel;
     cout << "Welcome" << endl;
     cout << "To start a session, please insert your debit card" << endl;
-	int CN, PW; 
-    	cout << "Insert card number and password" << endl;
+    int CN, PW;
+        cout << "Insert card number and password" << endl;
         //Card 입력받은 경우 : admin인지, 올바른 카드인지 확인 후 session 열어주기
-    	if (CheckAdmin(CN, PW)) {
-        	int sel = 1;
-		bool repeat = true;
-        	cout << "Welcome Administrator" << endl;
-		while (repeat){ 
-	        	cout << "[1] Transaction History" << endl;
-	        	cin >> sel;
-	        	if (sel == 1) {
-	            		ShowHistory();
-				repeat = false;
-	        	} 
-	        	else {
-	            		cout << "error : 올바른 input을 입력해주세요" << endl;
-	        	}
-		}
-	    }
-	    else {
-		if (CheckInvalidCard(CN, PW)){
-			OpenSession();
-		}else{ cout << "올바르지 않은 카드입니다." << endl;}
-	       
-	    };
-	//Session 종료 또는 invalid card : 카드 return 표시하기
-	    
+        if (CheckAdmin(CN, PW)) {
+            int sel = 1;
+        bool repeat = true;
+            cout << "Welcome Administrator" << endl;
+        while (repeat){
+                cout << "[1] Transaction History" << endl;
+                cin >> sel;
+                if (sel == 1) {
+                        ShowHistory();
+                repeat = false;
+                }
+                else {
+                        cout << "error : 올바른 input을 입력해주세요" << endl;
+                }
+        }
+        }
+        else {
+        if (CheckInvalidCard(CN, PW)){
+            OpenSession();
+        }else{ cout << "올바르지 않은 카드입니다." << endl;}
+           
+        };
+    //Session 종료 또는 invalid card : 카드 return 표시하기
+        
 };
 bool (int cardnum, string pw){
-	 ///////////////////////////////이 부분 어떻게 할지, bank에서 카드 맵 저장하는게 나을지도
-	bool isExist = false;
-	for (const auto& pair : PrimaryBank) {
-		map<string, Account*> accs = PrimaryBank.second->AccountsinBank();
-		for (const auto& pair : accs) {
-			if(accs.second->getAccountNum() == cardnum && accs.second->verifyPW(pw)) {
-				isExist = true;
-			}
-		}
-	}
-	for (const auto& pair : NonPrimaryBank) {
-		map<string, Account*> accs = NonPrimaryBank.second->AccountsinBank();
-		for (const auto& pair : accs) {
-			if(accs.second->getAccountNum() == cardnum && accs.second->verifyPW(pw)) {
-				isExist = true;
-			}
-		}
-	}
-	return isExist;
+     ///////////////////////////////이 부분 어떻게 할지, bank에서 카드 맵 저장하는게 나을지도
+    bool isExist = false;
+    for (const auto& pair : PrimaryBank) {
+        map<string, Account*> accs = PrimaryBank.second->AccountsinBank();
+        for (const auto& pair : accs) {
+            if(accs.second->getAccountNum() == cardnum && accs.second->verifyPW(pw)) {
+                isExist = true;
+            }
+        }
+    }
+    for (const auto& pair : NonPrimaryBank) {
+        map<string, Account*> accs = NonPrimaryBank.second->AccountsinBank();
+        for (const auto& pair : accs) {
+            if(accs.second->getAccountNum() == cardnum && accs.second->verifyPW(pw)) {
+                isExist = true;
+            }
+        }
+    }
+    return isExist;
 };
 
 bool CheckAdmin(int cardnum, int pw) {
@@ -1333,17 +1335,17 @@ bool OpenSession() {
 };
 void SetAvailableCash(map<int, int> inputcash, bool Plus) {
     if (Plus) {
-	    for (auto iter = this->AvailableCash.begin(); iter != this->AvailableCash.end(); iter++) {
-        	int currentnum = inputcash.find(iter->first)->second;
-        	iter->second += currentnum;
+        for (auto iter = this->AvailableCash.begin(); iter != this->AvailableCash.end(); iter++) {
+            int currentnum = inputcash.find(iter->first)->second;
+            iter->second += currentnum;
     } else {
-	    for (auto iter = this->AvailableCash.begin(); iter != this->AvailableCash.end(); iter++) {
-        	int currentnum = inputcash.find(iter->first)->second;
-        	iter->second -= currentnum;
+        for (auto iter = this->AvailableCash.begin(); iter != this->AvailableCash.end(); iter++) {
+            int currentnum = inputcash.find(iter->first)->second;
+            iter->second -= currentnum;
     };
     int sum;
     for(auto iter = this->AvailableCash.begin(); iter != this->AvailableCash.end(); iter++){
-	    sum+=((iter->first)*(iter->second));
+        sum+=((iter->first)*(iter->second));
     };
     this->AvailableCashAmount = sum;
 };
@@ -1380,302 +1382,146 @@ void ShowAvailableCash() {
 //----------------------------methods of Global----------------------------------------
 //-------------------------------------------------------------------------------------
 void Global::setAccountMap(map<string,Account*> inmap){
-	this->AccountMap = inmap;
+    this->AccountMap = inmap;
 };
 void Global::setATMMap(map<string,ATM*> inmap){
-	this->ATMMap = inmap;	
+    this->ATMMap = inmap;
 };
 void Global::Display(){
-	//모든 ATM의 정보 출력
-	for (pair<string, ATM*> i : ATMMap){
-		cout << "(ATM [SN : "<<i.second->GetSerialNum();
-		cout << "] remaining cash: "<<i.second->AvailableCashAmount()<<" ) ";
-	};
+    //모든 ATM의 정보 출력
+    for (pair<string, ATM*> i : ATMMap){
+        cout << "(ATM [SN : "<<i.second->GetSerialNum();
+        cout << "] remaining cash: "<<i.second->AvailableCashAmount()<<" ) ";
+    };
 
-	//모든 Account의 정보 출력
-	for (pair<string, Account*> p: AccountMap){
-		cout << "(Account [Bank: "<<p.second->myBank->getBankName()<<", No: " <<p.first;
-		cout << ", Owner: "<<p.second->getOwnerName()<<"] balance: "<<p.second->getBalance()<<" ) ";	
-	};
+    //모든 Account의 정보 출력
+    for (pair<string, Account*> p: AccountMap){
+        cout << "(Account [Bank: "<<p.second->myBank->getBankName()<<", No: " <<p.first;
+        cout << ", Owner: "<<p.second->getOwnerName()<<"] balance: "<<p.second->getBalance()<<" ) ";
+    };
 };
-
-//-------------------------------------Transaction---------------------------------------
-/*
-void Transaction::Withdraw(int, string, string, int, string) {
-    // 현금 확인하여 인출가능 금액인지 확인
-	
-    //amount, bank, username, AccountNum, password
-    //bank에서 계좌 확인 후 limit 안넘으면 출금, bank 확인해 fee 결정해 빼고 출금, ATM의 available_cash 감소, 최대 50만원 withdraw 가능
-    cout << "출금하실 금액을 입력하세요." << endl;
-    cin >> int w;
-    if (w < account.getBalance()) {
-        cout << "잔액이 부족합니다." << endl;
-    }
-
-
-	else {
-		map<int, int> ATM_AvailableCash = this->CurrentATM->get_AvailableCash();
-		//현금 권수에 따른 계산 필요
-	}
-
-	
-}
-void Transaction::Transfer(string, string, int, string, string, int) {
-	//bank1, username, AccountNum, password, bank2, amount
-	//fee 고려, amount+fee 잔액 확인
-	cout << "이체하실 금액을 입력하세요." << endl;
-	cin >> int t;
-	cout << "출금하실 계좌번호를 입력하세요." << endl;
-	cin >> int acc_out;
-	cout << "입금하실 계좌번호를 입력하세요." << endl;
-	cin >> int acc_in;
-	if (t > limit) {
-	        cout << "입금가능한 금액을 초과하였습니다." << endl;
-	}
-	else {
-		acc_out.Deposit(t+fee);
-	        acc_in.Withdraw(t);
-	        cout << t << "원 송금이 완료되었습니다." << endl;
-	}
-}
-void Transaction::Open_Account(string, string, int, string, int) {
-	//bank, username, AccountNum, password, (account number->있었는데 삭제, available fund
-	cout << "은행 이름을 입력하세요." << endl;
-	cin << string bankName << endl;
-	cout << "사용자 이름을 입력하세요." << endl;
-	cin << string userName << endl;
-	cout << "비밀번호를 입력하세요." << endl;
-	cin << int pw << endl;
-	Account(bankName, userName, pw);
-}
-void Transaction::Deposit(int, account*) {
-    //Receiving Account
-	cout << "====================Cash Deposit====================" << endl;
-	cout << "Which Bank do you want to deposit?" << endl;
-	cin >> Bank1;
-	cout <<"What is your name?" << endl;
-	cin >> Username1;
-	cout << "Please write your Account Number and Password" << endl;
-	cin >> AccountNum1, Password1;
-	
-	cout << "Authorizing your account..." << endl;
-	if Authorize(Username1, AccountNum1, Password1) {
-	        cout << "Successfully Authorized Your Account!" << endl;  
-	        //Saving Cash
-	        if (Bank1 == this->PrimaryBank){
-	            Bank1->getAccount(AccountNum1)->Amount += InputAmount; 
-	        }else{
-	            Bank1->getAccount(AccountNum1)->Amount += (InputAmount-this->2_DP);
-	        }
-	        cout << "Successfully Deposited!" << endl;
-	        cout << "Bank : " << Bank1->getName();
-	        cout << " Account Number : " << AccountNum1;
-	        cout << " Total Amount of Saving : " << Bank1->getAccount(AccountNum1)->Deposit(InputAmount) << endl;
-	} else {
-	        cout << "Failed to Deposit." << endl;
-	}
-	cout << "===Thanks for Using Deposit Service of this ATM====" << endl;
-	}
-
-}
-*/
-Transaction::CheckCash() {
-//declaration
-    	map<int, int>inputmap;
-    	int NumCash1;
-    	int i,j;
-    	Bank* Bank1;
-    	string Username1;
-    	string AccountNum1;
-    	string Password1;
-    	int InputAmount = 0;
-    	int SavingAmount = 0;
-	//Receiving Cash
-	cout << "====================Cash Insert====================" << endl;
-	cout << "How many cash do you want to insert?" << endl;
-	cin >> NumCash1;
-	for (int i=0; i<NumCash1; i++){
-		cout << "Insert your cash(Unit, Number of the cash by type)" << endl;
-	        cin >> i,j;
-	        inputmap.insert(pair<int, int>(i, j));
-	}
-    
-	for (int iter = inputmap.begin() ; iter !=  inputmap.end(); iter++){ //error
-	        InputAmount+=(iter->second * iter->first);//원화 단위 * 개수     
-	};
-	
-};
-Transaction::CheckCheck() {
-	//declaration
-    	int NumCheck2;
-   	int inputCheck;
-    	Bank* Bank2;
-    	string Username2;
-    	string AccountNum2;
-    	string Password2;
-    	int InputAmount2 = 0;
-    	int SavingAmount2 = 0;
-
-    	//Receiving Cash
-    	cout << "====================Cash Insert====================" << endl;
-    	cout << "How many check do you want to insert?" << endl;
-    	cin >> NumCheck2;
-    	for (int i=0; i<NumCheck2; i++){
-        	cout << "Insert your check" << endl;
-        	cin >> inputCheck;
-        	InputAmount2 += inputCheck;
-    	}
-
-    
-};
-/*
-Transaction::Display(int TransactionAmount, string Username, AccountNum, CardNum, myBank, ExternalFile=false){
-//이름 받아 transaction 결과 보여줌, 각 transaction에서 호출, external file True면 external file로 출력
-
-    	cout << "=================Transaction Result=================" << endl;
-    	cout << "User Name : " << Username << endl;
-    	cout << "Account : " << AccountNum << endl;
-    	cout << "Card : " << CardNum << endl;
-    	cout << "From "<< myBank << " " << TransactionAmount << "Won" << endl;
-}
-
-Transaction::Authorize(string Username, int AccountNum, string Password, Bank* Bank){
-    	string UsernameFromBank = Bank->getAccount(AccountNum)->getUserName
-    	string UserPassword = Bank->getAccount(AccountNum)->getPassword
-    	if (UsernameFromBank==Username){
-        	if (UserPassword==password){
-            		return True;
-        	}else{
-            		return False;
-        	}
-    	}else{
-		cout << "Authorizing Fail" << endl;
-        	return False;
-    	};
-    
-};
-*/
 
 
 
 
 int main() {
 
-	//Bank 선언
-	int NumofBank;
-	string InputBankName1;
-	map <string, Bank*> InputBankMap;
-	cout << "BANK를 선언하겠습니다" << endl;
-	cout << "몇개의 은행을 만드시겠습니까? << endl;
-	cin >> NumofBank;
-	for (int i=0; i<NumofBank; i++){
-		cout << "은행의 이름을 입력해주세요" << endl;
-		cin >> BankName1;
-		InputBankMap.insert({BankName1,new Bank(BankName1)}); 
-	};
+    //Bank 선언
+    int NumofBank;
+    string InputBankName1;
+    map <string, Bank*> InputBankMap;
+    cout << "BANK를 선언하겠습니다" << endl;
+    cout << "몇개의 은행을 만드시겠습니까? << endl;
+    cin >> NumofBank;
+    for (int i=0; i<NumofBank; i++){
+        cout << "은행의 이름을 입력해주세요" << endl;
+        cin >> BankName1;
+        InputBankMap.insert({BankName1,new Bank(BankName1)});
+    };
 
-	//Account 선언
-	map<int, Account*> AccountMap;
-	int NumofAccount;
-	string pb;
-	int AccountNum;
-	string pw;
-	string ownername;
-	cout << "Account를 선언하겠습니다" << endl;
-	cout << "몇개의 Account를 만드시겠습니까? << endl;
-	cin >> NumofAccount;
-	for (int i=0; i<NumofAccount; i++){
-		cout << "계좌의 주거래 은행을 알려주세요" << endl;
-		cin >> pb;
-		cout << "계좌번호를 입력해주세요" << endl;
-		cin >> AccountNum;
-		cout << "계좌 소유주의 성명을 입력해주세요" << endl;
-		cin >> ownername;
-		cout << "계좌 비밀번호를 입력해주세요" << endl;
-		cin >> pw;
-		Account(AccountNum, pw, ownername, InputBankMap[pb]()); //수정중
-		AccountMap.insert({AccountNum, new Account(AccountNum, pw, ownername, InputBankMap[pb]())});
+    //Account 선언
+    map<int, Account*> AccountMap;
+    int NumofAccount;
+    string pb;
+    int AccountNum;
+    string pw;
+    string ownername;
+    cout << "Account를 선언하겠습니다" << endl;
+    cout << "몇개의 Account를 만드시겠습니까? << endl;
+    cin >> NumofAccount;
+    for (int i=0; i<NumofAccount; i++){
+        cout << "계좌의 주거래 은행을 알려주세요" << endl;
+        cin >> pb;
+        cout << "계좌번호를 입력해주세요" << endl;
+        cin >> AccountNum;
+        cout << "계좌 소유주의 성명을 입력해주세요" << endl;
+        cin >> ownername;
+        cout << "계좌 비밀번호를 입력해주세요" << endl;
+        cin >> pw;
+        Account(AccountNum, pw, ownername, InputBankMap[pb]()); //수정중
+        AccountMap.insert({AccountNum, new Account(AccountNum, pw, ownername, InputBankMap[pb]())});
 
-		//Card 선언
-		//적어도 admin card는 여기에서 선언되어 ATM을 생성할 때 넣어줘야 함.
-		cout << "카드를 만드시겠습니까? (y, n)" << endl;
-		cin >> char makeCard;
-		if (makeCard == "y") {
-			cout << "카드번호를 입력하세요" << endl;
-			int cardNumber;
-			cin >> cardNumber;
-			cout << "관리자 권한을 부여하시겠습니까? (y, n)" << endl;
-			char askAdmin;
-			cin >> askAdmin;
-			bool isAdmin;
-			if (askAdmin = "y") { isAdmin = true; }
-			else { isAdmin = false; }
-			
-			Card(cardNumber, NumofAccount, isAdmin);
-		}
-	}
-	
+        //Card 선언
+        //적어도 admin card는 여기에서 선언되어 ATM을 생성할 때 넣어줘야 함.
+        cout << "카드를 만드시겠습니까? (y, n)" << endl;
+        cin >> char makeCard;
+        if (makeCard == "y") {
+            cout << "카드번호를 입력하세요" << endl;
+            int cardNumber;
+            cin >> cardNumber;
+            cout << "관리자 권한을 부여하시겠습니까? (y, n)" << endl;
+            char askAdmin;
+            cin >> askAdmin;
+            bool isAdmin;
+            if (askAdmin = "y") { isAdmin = true; }
+            else { isAdmin = false; }
+            
+            Card(cardNumber, NumofAccount, isAdmin);
+        }
+    }
+    
 
-	//ATM선언 전 primary bank pointer, bankmap, card pointer가 준비되어 있어야 함
-	//ATM 선언
-	map<string, ATM*> ATMmap;
-	int ATMNum;
-	string ATMname;
-	string AdminCard;
-	string InputPrimaryBank;
-	cout << "ATM을 설정하겠습니다" << endl;
-	cout << "몇개의 ATM을 만드시겠습니까?" << endl;
-	cin >> ATMNum;
-	for (int i=0; i<ATMNum; i++){
-		//Primary Bank Setting
-		cout << "아래 중 ATM의 주거래 은행을 선택하세요" << endl;
-		cout << "[";
-		for (int iter=InputBankMap.begin(); iter != InputBankMap.end() ; iter++){
-			cout << iter->first << ",";
-		};
-		cout << "]" << endl;
-		cin >> InputPrimaryBank;
-		cout << "ATM의 이름을 설정하세요." << endl;
-		cin >> ATMname;
-		cout << "Admin Card를 정하세요." << endl;
-		cin >> AdminCard;
-		ATMmap.insert({ATMname, new ATM(InputBankMap.find(InputPrimaryBank), InputBankMap, AdminCard)});
-	}
-	////////////////////////////////////////question 11.28
-	bool isATMworiking = true;
-	while (isATMworking) {
-		//display
-		for (const auto& pair : AccountMap) {
-	        	cout << "[Account " << pair.first << "] Remaining Cash: KRW " << pair.second->getBalance() << endl;
-	    	}
-		for (const auto& pair : ATMmap) {
-	        	cout << "[ATM " << pair.first << "];
-			pair.second->showAvailableCash();
-	    	}
-	
-		//select ATM
-		string UsedATM;
-		cout << "Write the name of an ATM that you want to use." << endl;
-		cin << UsedATM;
-		ATMmap[UsedATM]->Start();
+    //ATM선언 전 primary bank pointer, bankmap, card pointer가 준비되어 있어야 함
+    //ATM 선언
+    map<string, ATM*> ATMmap;
+    int ATMNum;
+    string ATMname;
+    string AdminCard;
+    string InputPrimaryBank;
+    cout << "ATM을 설정하겠습니다" << endl;
+    cout << "몇개의 ATM을 만드시겠습니까?" << endl;
+    cin >> ATMNum;
+    for (int i=0; i<ATMNum; i++){
+        //Primary Bank Setting
+        cout << "아래 중 ATM의 주거래 은행을 선택하세요" << endl;
+        cout << "[";
+        for (int iter=InputBankMap.begin(); iter != InputBankMap.end() ; iter++){
+            cout << iter->first << ",";
+        };
+        cout << "]" << endl;
+        cin >> InputPrimaryBank;
+        cout << "ATM의 이름을 설정하세요." << endl;
+        cin >> ATMname;
+        cout << "Admin Card를 정하세요." << endl;
+        cin >> AdminCard;
+        ATMmap.insert({ATMname, new ATM(InputBankMap.find(InputPrimaryBank), InputBankMap, AdminCard)});
+    }
+    ////////////////////////////////////////question 11.28
+    bool isATMworiking = true;
+    while (isATMworking) {
+        //display
+        for (const auto& pair : AccountMap) {
+                cout << "[Account " << pair.first << "] Remaining Cash: KRW " << pair.second->getBalance() << endl;
+            }
+        for (const auto& pair : ATMmap) {
+                cout << "[ATM " << pair.first << "];
+            pair.second->showAvailableCash();
+            }
+    
+        //select ATM
+        string UsedATM;
+        cout << "Write the name of an ATM that you want to use." << endl;
+        cin << UsedATM;
+        ATMmap[UsedATM]->Start();
 
-		//quit?
-		char isQuit;
-		cout << "Do you want to terminate current program? (y, n)" << endl;
-		cin << isQuit;
-		if (isQuit == "n") {
-			isATMworking = true;
-		}
-		else { isATMworking = false; }
-	}
-	////////////////////////////////////////change 11.28
-	Global myGlobal(AccountMap, ATMMap);
-	for (auto& i : ATMMap){
-		i.second->getGlobal();
-	};
-	for (auto& j : AccountMap){
-		i.second->getGlobal();
-	};
-		
-	return 0;
+        //quit?
+        char isQuit;
+        cout << "Do you want to terminate current program? (y, n)" << endl;
+        cin << isQuit;
+        if (isQuit == "n") {
+            isATMworking = true;
+        }
+        else { isATMworking = false; }
+    }
+    ////////////////////////////////////////change 11.28
+    Global myGlobal(AccountMap, ATMMap);
+    for (auto& i : ATMMap){
+        i.second->getGlobal();
+    };
+    for (auto& j : AccountMap){
+        i.second->getGlobal();
+    };
+        
+    return 0;
 }
+
