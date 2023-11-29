@@ -19,7 +19,6 @@ class Account;
 // -------------------------------[Card] class-----------------------------------
 
 ///황지영
-
 class Card {
     //admin 여부, bank, account 정보
 
@@ -53,10 +52,49 @@ public:
 */
     // 카드 유효성 검사, 인증과 관련된 다른 함수들도 추가할 수 있음
 };
-
 const string& Card::getCardNumber() const { return accountNumber; }
 const string& Card::getAccountNumber() const { return accountNumber; }
 bool Card::isAdminCard() const { return isAdmin; }
+
+
+
+//Bank
+class Bank {
+private:
+    map<string, Account*> accounts; // 계좌 번호를 키로 사용
+    string bankName;
+    
+public:
+    
+    Bank(string name) : bankName(name) {}; // Bank name 설정
+    
+    // 현재 account 있는지 확인하 없으면 생성
+    void createAccount(string , string , string );
+    
+    // 사용자 정보를 모두 출력하는 함수 (특정 사용자의 모든 계정 정보를 출력하는 함수)
+    void allAccount(string username);
+    
+    // 사용자 정보를 확인하는 함수 (사용자 정보를 확인하고, 주어진 사용자 이름, 계좌 번호, 비밀번호와 일치하는지 여부를 반환하는 함수)
+    bool verifyUser(string username, string accountNum, string password);
+    
+    // 계정 정보를 확인하는 함수(계정 정보를 확인하고, 주어진 계좌 번호와 비밀번호가 일치하는지 여부를 반환하는 함수)
+    bool verifyAccount(string accountNum, string password);
+    
+    // 계좌 존재 여부 확인 (주어진 계좌 번호가 은행에 존재하는지 여부를 확인하는 함수) //Account의 pointer를 반환하면?
+    bool accountExists(string accountNum);
+    
+    
+    // 은행 이름 리턴 함수
+    string getBankName() { return bankName; };
+    
+    // Bank 클래스의 소멸자
+    ~Bank() {}
+        // 소멸자에서 리소스 정리 작업 수행
+        // 예: 동적으로 할당된 메모리 해제 등
+        
+    map<string, Account*> AccountsInBank() { return accounts; };
+};
+    
 
 
 //2. Account Class
@@ -104,11 +142,53 @@ public:
     // 출금 함수
     void withdraw(int amount);
 };
--------------methods of Account-----------
+
+
+// 현재 account 있는지 확인하 없으면 생성
+void Bank::createAccount(string accountNum, string password, string ownerName) {
+    if (!accountExists(accountNum)) {
+        accounts[accountNum] = new Account(accountNum, password, ownerName, this);
+    }
+}
+
+// 사용자 정보를 모두 출력하는 함수 (특정 사용자의 모든 계정 정보를 출력하는 함수)
+void Bank::allAccount(string username) {
+    cout << "사용자 " << username << "의 모든 계정 정보:" << endl;
+    for (auto entry : accounts) {
+        if (entry.second->getOwnerName() == username) {
+            cout << "계좌 번호: " << entry.second->getAccountNum() << ", ";
+            cout << "잔액: " << entry.second->getBalance() << endl;
+        }
+    }
+}
+
+// 사용자 정보를 확인하는 함수 (사용자 정보를 확인하고, 주어진 사용자 이름, 계좌 번호, 비밀번호와 일치하는지 여부를 반환하는 함수)
+bool Bank::verifyUser(string username, string accountNum, string password) {
+    auto it = accounts.find(accountNum);
+    if (it != accounts.end()) {
+        Account* account = it->second;
+        return (account->getOwnerName() == username && account->verifyPW(password));
+    }
+    return false; // 사용자 확인 실패
+}
+
+// 계정 정보를 확인하는 함수(계정 정보를 확인하고, 주어진 계좌 번호와 비밀번호가 일치하는지 여부를 반환하는 함수)
+bool Bank::verifyAccount(string accountNum, string password) {
+    auto it = accounts.find(accountNum);
+    return (it != accounts.end() && it->second->verifyPW(password));
+}
+
+// 계좌 존재 여부 확인 (주어진 계좌 번호가 은행에 존재하는지 여부를 확인하는 함수) //Account의 pointer를 반환하면?
+bool Bank::accountExists(string accountNum) {
+    return { accounts.find(accountNum) != accounts.end() };
+}
+
 
 // Password 검증 함수
-bool Account::verifyPW(const string& enteredPassword) const {
-  
+bool Account::verifyPW (const string& enteredPassword) const {
+    return (password == enteredPassword);
+}
+// AccountNum 반환 함수
 const string& Account::getAccountNum() const {
     return accountNum;
 }
@@ -138,10 +218,9 @@ void Account::withdraw(int amount) {
         balance -= amount;
     }
     else {
-        cout << "잔액이 부족합니다. 이 cout은 출력되지 않는 것이 좋습니다." << std::endl; //stop
+        cout << "잔액이 부족합니다." << std::endl;
     }
 }
-
 
 //3. ATM Class
 // -------------------------------[ATM] class-----------------------------------
@@ -196,6 +275,7 @@ public:
     void ShowHistory();
     void ShowAvailableCash();
 };
+
 
 
 
