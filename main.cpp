@@ -1265,7 +1265,7 @@ void ATM::OpenSession() {
         }
     }
 }
-void SetAvailableCash(map<int, int> inputcash, bool Plus) {
+void ATM::SetAvailableCash(map<int, int> inputcash, bool Plus) {
         if (Plus) {
             for (auto iter = this->AvailableCash.begin(); iter != this->AvailableCash.end(); iter++) {
                 int currentnum = inputcash.find(iter->first)->second;
@@ -1282,7 +1282,7 @@ void SetAvailableCash(map<int, int> inputcash, bool Plus) {
                 this->AvailableCashAmount = sum;
             }
         };
-        void ShowHistory() {
+void ATM::ShowHistory() {
             //History -> vector<string>
             //cout은 terminal에 프린트, out은 History.txt에 프린트하는 함수입니다.
             ofstream out("History.txt");
@@ -1302,7 +1302,7 @@ void SetAvailableCash(map<int, int> inputcash, bool Plus) {
             fout.close();
             
         };
-        void ShowAvailableCash() {
+        void ATM::ShowAvailableCash() {
             int total = 0;
             cout << " Remaining Cash: ( ";
             for (auto iter = this->AvailableCash.begin(); iter != this->AvailableCash.end(); iter++) {
