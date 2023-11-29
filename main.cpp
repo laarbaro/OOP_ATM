@@ -301,14 +301,17 @@ void Session::CheckDeposit(unsigned long long amount, int x) {
     // 계좌에 입금합니다.
     unsigned long long totalAmount = amount - fee;
     account->deposit(totalAmount);
-    
+    int transactionID = GetNextTransactionID();
     
     //질문 , ATM에는 돈을 안넣나요. ? 네!!
     
-    // ------[history 관리]
+    //History를 저장합니다. 
+    //형식 : [1] Transaction ID: 1234, Card number: 234, Transaction type: Cash deposit, Amount: 2347, Deposit account number: 23478
     string out = "[";
     out += to_string(atm->GetHistory().size());
-    out += "] Card number: ";
+    out += "] Transaction ID: " 
+    out += to_string(this->transactionID);
+    out += ", Card number: ";
     out += card->getCardNumber();
     out += ", Transaction type: Check deposit, Amount: ";
     out += to_string(totalAmount);
@@ -317,9 +320,8 @@ void Session::CheckDeposit(unsigned long long amount, int x) {
     
     atm->SetHistory(out);
     
-    int transactionID = GetNextTransactionID();
-    Transaction CheckDepositTransaction(transactionID, card->getCardNumber(), "CheckDeposit", totalAmount) ;
-    transctionHistoryOfSession.push_back(CheckDepositTransaction);
+    //Transaction CheckDepositTransaction(transactionID, card->getCardNumber(), "CheckDeposit", totalAmount) ;
+    //transctionHistoryOfSession.push_back(CheckDepositTransaction);
     //-------------------
     
     // 거래 정보를 출력합니다. ~에는 뱅크 이름이랑 어카운트 가져오도록 수정합니다.
@@ -379,10 +381,13 @@ void Session::Withdrawal(const map<int, int>& amount, int x) {
         account->deposit(totalAmount - fee);
 
         
-        // ------[history 관리]
+        //History를 저장합니다. 
+        //형식 : [1] Transaction ID: 1234, Card number: 234, Transaction type: Cash deposit, Amount: 2347, Deposit account number: 23478
         string out = "[";
         out += to_string(atm->GetHistory().size());
-        out += "] Card number: ";
+        out += "] Transaction ID: " 
+        out += to_string(this->transactionID);
+        out += ", Card number: ";
         out += card->getCardNumber();
         out += ", Transaction type: Withdrawal, Amount: ";
         out += to_string(totalAmount);
@@ -435,10 +440,13 @@ void Session::CashTransfer(map<int, int> amount, Account* destination, int x) { 
     
     int transactionID = GetNextTransactionID();
     
-    // ------[history 관리]
+    //History를 저장합니다. 
+    //형식 : [1] Transaction ID: 1234, Card number: 234, Transaction type: Cash deposit, Amount: 2347, Deposit account number: 23478
     string out = "[";
     out += to_string(atm->GetHistory().size());
-    out += "] Card number: ";
+    out += "] Transaction ID: " 
+    out += to_string(this->transactionID);
+    out += ", Card number: ";
     out += card->getCardNumber();
     out += ", Transaction type: Cash transfer, Amount: ";
     out += to_string(totalAmount);
@@ -515,10 +523,13 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
         // 수취 계좌에 송금액을 추가합니다.
         destination->deposit(<#int amount#>)(amount);
 
-        // ------[history 관리]
+        //History를 저장합니다. 
+        //형식 : [1] Transaction ID: 1234, Card number: 234, Transaction type: Cash deposit, Amount: 2347, Deposit account number: 23478
         string out = "[";
         out += to_string(atm->GetHistory().size());
-        out += "] Card number: ";
+        out += "] Transaction ID: " 
+        out += to_string(this->transactionID);
+        out += ", Card number: ";
         out += card->getCardNumber();
         out += ", Transaction type: Account transfer, Amount: ";
         out += to_string(totalAmount);
