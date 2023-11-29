@@ -299,13 +299,14 @@ public:
 // -------------------------------[Session] class-----------------------------------
 // -------------------------------[Session] class-----------------------------------
 class Session {
-private:
+//private:
+protected:
     ATM * atm ; // ATM 객체 가리키는 포인터
     Account* account ; // 계좌 객체 가리키는 포인터
     Card* card ;
     vector<Transaction> transctionHistoryOfSession ; // 세션 동안 거래 내역 저장 -> 하고 뭐햇는지 display 해야함. 하나 저장 후 보여주기 (이걸 함수로먼들지 그냥 코드를 짤지는선택 ) + 백터 구조가 어떤지 알려줘서 ATM에 할수 있게 하기
     bool authorizationSignal ; // 계좌 비밀번호 인증 결과 나타내는 bool값
-    int aouthorizationCount ; // 비밀번호 인증 실패 횟수
+    int authorizationCount ; // 비밀번호 인증 실패 횟수
     int withdrawalCount ; // 출금 횟수 기록
     bool primarySignal ;  // 현재 계좌 은행 정보와 ATM 주거래 은행이 동일한지 여부를 나타내는 bool 값
     int currentTransactionID;
@@ -687,6 +688,7 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
             //-----------------
         }
     }
+}
     
     
     // -------------child of Session class ---------------
@@ -699,7 +701,9 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
     //void mainKoreanDisplay();
     //------------methods of KoreanSession---------------
     void KoreanSession::mainKoreanDisplay() {
-        cout << atm->getPrimaryBank() << " 은행" << endl;
+        string tmp;
+        for (const auto& pair : atm->GetPrimaryBank()) { tmp = pair.first; }
+        cout << tmp << " 은행" << endl;
         if (atm->IsMultiBank()) {
             cout << "주거래 은행 전용>" << endl;
         }
@@ -1085,58 +1089,6 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
     };
     
     
-    
-    
-    
-    
-    
-    
-    
-    //5.Bank class
-    // -------------------------------[Bank] class-----------------------------------
-    // -------------------------------[Bank] class-----------------------------------
-    /*
-     class Bank {
-     private:
-     map<string, Account*> accounts; // 계좌 번호를 키로 사용
-     string bankName;
-     
-     public:
-     
-     Bank(string name) : bankName(name) {}; // Bank name 설정
-     
-     // 현재 account 있는지 확인하 없으면 생성
-     void createAccount(string accountNum, string password, string ownerName);
-     
-     // 사용자 정보를 모두 출력하는 함수 (특정 사용자의 모든 계정 정보를 출력하는 함수)
-     void allAccount(string username);
-     
-     // 사용자 정보를 확인하는 함수 (사용자 정보를 확인하고, 주어진 사용자 이름, 계좌 번호, 비밀번호와 일치하는지 여부를 반환하는 함수)
-     bool verifyUser(string username, string accountNum, string password);
-     
-     // 계정 정보를 확인하는 함수(계정 정보를 확인하고, 주어진 계좌 번호와 비밀번호가 일치하는지 여부를 반환하는 함수)
-     bool verifyAccount(string accountNum, string password);
-     
-     // 계좌 존재 여부 확인 (주어진 계좌 번호가 은행에 존재하는지 여부를 확인하는 함수) //Account의 pointer를 반환하면?
-     bool accountExists(int accountNum);
-     
-     
-     // 은행 이름 리턴 함수
-     string getBankName() { return bankName; };
-     
-     // Bank 클래스의 소멸자
-     ~Bank() {
-     // 소멸자에서 리소스 정리 작업 수행
-     // 예: 동적으로 할당된 메모리 해제 등
-     
-     map<string, Account*> AccountsInBank() { return accounts }
-     };
-     */
-    
-    
-    
-    
-}
 
 
 ///--------------------------------method of ATM-------------------------------------
