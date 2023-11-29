@@ -81,50 +81,67 @@ public:
         : accountNum(accountNum), password(password), ownerName(ownerName), myBank(bank), balance(0) {}
 
     // Password 검증 함수
-    bool verifyPW(const string& enteredPassword) const {
-        return (password == enteredPassword);
-    }
+    bool verifyPW(const string& enteredPassword) const;
 
     // AccountNum 반환 함수
-    const string& getAccountNum() const {
-        return accountNum;
-    }
+    const string& getAccountNum() const;
 
     // OwnerName 반환 함수
-    const string& getOwnerName() const {
-        return ownerName;
-    }
+    const string& getOwnerName() const;
 
     // Bank 반환 함수
-    Bank* getBank() const {
-        return myBank;
-    }
+    Bank* getBank() const;
 
     // Bank 이름 반환 함수
-    string getBankName() const {
-        return myBank->getBankName();
-    };
+    string getBankName() const;
 
     // 잔액 조회 함수
-    int getBalance() const {
-        return balance;
-    }
+    int getBalance() const;
 
     // 입금 함수
-    void deposit(int amount) {
-        balance += amount;
-    }
+    void deposit(int amount);
 
     // 출금 함수
-    void withdraw(int amount) {
-        if (amount <= balance) {
-            balance -= amount;
-        }
-        else {
-            cout << "잔액이 부족합니다." << std::endl;
-        }
-    }
+    void withdraw(int amount);
 };
+
+// Password 검증 함수
+bool Account::verifyPW(const string& enteredPassword) const {
+    return (password == enteredPassword);
+}
+// AccountNum 반환 함수
+const string& Account::getAccountNum() const {
+    return accountNum;
+}
+// OwnerName 반환 함수
+const string& Account::getOwnerName() const {
+    return ownerName;
+}
+// Bank 반환 함수
+Bank* Account::getBank() const {
+    return myBank;
+}
+// Bank 이름 반환 함수
+string Account::getBankName() const {
+    return myBank->getBankName();
+};
+// 잔액 조회 함수
+int Account::getBalance() const {
+    return balance;
+}
+// 입금 함수
+void Account::deposit(int amount) {
+    balance += amount;
+}
+// 출금 함수
+void Account::withdraw(int amount) {
+    if (amount <= balance) {
+        balance -= amount;
+    }
+    else {
+        cout << "잔액이 부족합니다." << std::endl;
+    }
+}
 
 
 //3. ATM Class
