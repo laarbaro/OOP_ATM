@@ -309,7 +309,7 @@ void Session::CheckDeposit(unsigned long long amount, int x) {
     //형식 : [1] Transaction ID: 1234, Card number: 234, Transaction type: Cash deposit, Amount: 2347, Deposit account number: 23478
     string out = "[";
     out += to_string(atm->GetHistory().size());
-    out += "] Transaction ID: " 
+    out += "] Transaction ID: ";
     out += to_string(this->transactionID);
     out += ", Card number: ";
     out += card->getCardNumber();
@@ -327,7 +327,7 @@ void Session::CheckDeposit(unsigned long long amount, int x) {
     // 거래 정보를 출력합니다.
     if (x == 0)//
         //출력 형태 : "Kakao 은행의 계좌 020202(계좌번호)에 3000원이 입금되었습니다." 
-        cout << account->getBankName() << " 은행의 계좌 " account->getAccountNum() <<"에 " << totalAmount << "원이 입금되었습니다." << endl;
+        cout << account->getBankName() << " 은행의 계좌 " << account->getAccountNum() << "에 " << totalAmount << "원이 입금되었습니다." << endl;
     else
         //출력 형태 : "3000 won has been deposited into the account 020202 of Kakao Bank." 
         cout << totalAmount << "won has been deposited into the account " << account->getAccountNum() << " of " <<account->getBankName()<< " Bank." << endl;
