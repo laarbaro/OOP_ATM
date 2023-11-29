@@ -408,20 +408,32 @@ void Session::Withdrawal(const map<int, int>& amount, int x) {
         transctionHistoryOfSession.push_back(withdrawTransaction);
         //------------------
 
-        // 결과 출력
-        // 거래 정보를 출력합니다. ~에는 뱅크 이름이랑 어카운트 가져오기 ?
-        if (x == 0)
-            cout << "~에 " << totalAmount << " 원이 입금되었습니다." << endl;
-        else
-            cout << "~에 " << totalAmount << " won has been deposited." << endl;
 
-        withdrawalCount++;  // 세션 종료 !! 변수가 있음 ATM에서 가져가면 될듯 ??
-        if (x == 0) cout << "\n현재 잔액 : ";
-        else cout << "\nCURRENT BALANCE : ";
-        cout << account->getFundInfo();
+         // 거래 정보를 출력합니다.
+        if (x == 0)//
+            //출력 형태 : "Kakao 은행의 계좌 020202(계좌번호)에서 3000원이 출금되었습니다." 
+            cout << account->getBankName() << " 은행의 계좌 " account->getAccountNum() <<"에서 " << totalAmount << "원이 출금되었습니다." << endl;
+        else
+            //출력 형태 : "3000 won has been withdrawn from the account 020202 of Kakao Bank." 
+            cout << totalAmount << "won has been withdrawn from the account " << account->getAccountNum() << " of " <<account->getBankName()<< " Bank." << endl;
+    
+        // 현재 잔액을 출력합니다.
+        if (x == 0) 
+            //출력 형태 : "현재 잔액 : 3000 원"
+            cout << "현재 잔액 : ";
+        else 
+            //출력 형태 : "Current Available Cash : 3000 won"
+            cout << "Current Available Cash : ";
+        cout << account->getBalance();
+        
         if (x == 0) cout << " 원" << endl;
         else cout << " won" << endl;
+    
         cout << "\n";
+        //-----------------
+
+        
+        withdrawalCount++;  // 세션 종료 !! 변수가 있음 ATM에서 가져가면 될듯 ??question) ATM에서 어떤걸 하면 되나요??
     }
 }
 
@@ -469,29 +481,14 @@ void Session::CashTransfer(map<int, int> amount, Account* destination, int x) { 
     transctionHistoryOfSession.push_back(CashTransferTransaction);
     //------------------
 
-   
-    // 이체 거래의 정보를 출력합니다. (x가 0이면 한국어, 1이면 영어 출력)
-    if (x == 0)
-        cout << newTransaction.getKoreanInformation() << endl;
+   // 거래 정보를 출력합니다.
+    if (x == 0)//
+        //출력 형태 : "Kakao 은행의 계좌 020202(계좌번호)로 3000원이 송금되었습니다." 
+        cout << destination->getBankName() << " 은행의 계좌 " destination->getAccountNum() <<"로 " << totalAmount << "원이 송금되었습니다." << endl;
     else
-        cout << newTransaction.getEnglishInformation() << endl;
-
-    // 현재 계좌의 잔액을 출력합니다.
-    if (x == 0)
-        cout << "\n현재 잔액 : ";
-    else
-        cout << "\nCURRENT BALANCE : ";
-    cout << account->getBalance();
-
-    // 통화 단위를 출력합니다.
-    if (x == 0)
-        cout << " 원" << endl;
-    else
-        cout << " won" << endl;
-
-    // 개행 문자를 출력합니다.
-    cout << "\n";
-}
+        //출력 형태 : "3000 won has been transferred to the account 020202 of Kakao Bank." 
+        cout << totalAmount << "won has been transferred to the account " << destination->getAccountNum() << " of " <<destination->getBankName()<< " Bank." << endl;
+    //-----------------
 
 
 //5. 계좌 송금하는 함수
