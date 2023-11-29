@@ -235,7 +235,18 @@ void Session::CashDeposit(map<int, int> amount, int x) { // 여기서 x 는 한�
     int transactionID = GetNextTransactionID();
     account->deposit(totalAmount - fee);
 
+
+    vector<string> previous =  atm->GetHistory();
+    string out = "[";
+    out += to_string(previous.size());
+    out += "] Card number: ";
+    out += to_string(card->getCardNumber());
+    out += ", Transaction type: Cash deposit, Amount: ";
+    out += to_string(totalAmount);
     
+    atm->SetHistory(out);
+    
+    //Transaction ID, Card Number, Transaction Types, Amount, other transaction-specific information
     /////question History가 string으로 바뀌어 업데이트 했습니다. 삭제해도 될까요?
     // ------[history 관리]
     //Transaction CashDepositTransaction(transactionID, card->getCardNumber(), "CashDeposit", totalAmount) ;
