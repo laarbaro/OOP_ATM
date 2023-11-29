@@ -37,20 +37,14 @@ public:
         : cardNumber(cardNumber), accountNumber(accountNumber), isAdmin(isAdmin) {}
 
     // 카드 번호를 가져오는 함수
-    const string& getCardNumber() const {
-        return cardNumber;
-    }
+    const string& getCardNumber() const;
 
     // 계정 번호를 가져오는 함수
-    const string& getAccountNumber() const {
-        return accountNumber;
-    }
+    const string& getAccountNumber() const;
 
     // 카드가 관리자 카드인지 확인
     //[유리] card number와 password를 받아서 Admin인지 확인해주세요
-    bool isAdminCard() const {
-        return isAdmin;
-    }
+    bool isAdminCard() const;
 /*
     // 카드가 양 언어 지원으로 구성되어 있는지 확인
     bool isBilingualCard() const {
@@ -59,6 +53,10 @@ public:
 */
     // 카드 유효성 검사, 인증과 관련된 다른 함수들도 추가할 수 있음
 };
+
+const string& Card::getCardNumber() const { return accountNumber; }
+const string& Card::getAccountNumber() const { return accountNumber; }
+bool Card::isAdminCard() const { return isAdmin; }
 
 
 //2. Account Class
@@ -83,50 +81,66 @@ public:
         : accountNum(accountNum), password(password), ownerName(ownerName), myBank(bank), balance(0) {}
 
     // Password 검증 함수
-    bool verifyPW(const string& enteredPassword) const {
-        return (password == enteredPassword);
-    }
+    bool verifyPW(const string& enteredPassword) const;
 
     // AccountNum 반환 함수
-    const string& getAccountNum() const {
-        return accountNum;
-    }
+    const string& getAccountNum() const;
 
     // OwnerName 반환 함수
-    const string& getOwnerName() const {
-        return ownerName;
-    }
+    const string& getOwnerName() const;
 
     // Bank 반환 함수
-    Bank* getBank() const {
-        return myBank;
-    }
+    Bank* getBank() const;
 
     // Bank 이름 반환 함수
-    string getBankName() const {
-        return myBank->getBankName();
-    };
+    string getBankName() const;
 
     // 잔액 조회 함수
-    int getBalance() const {
-        return balance;
-    }
+    int getBalance() const;
 
     // 입금 함수
-    void deposit(int amount) {
-        balance += amount;
-    }
+    void deposit(int amount);
 
     // 출금 함수
-    void withdraw(int amount) {
-        if (amount <= balance) {
-            balance -= amount;
-        }
-        else {
-            cout << "잔액이 부족합니다. 이 cout은 출력되지 않는 것이 좋습니다." << std::endl; //stop
-        }
-    }
+    void withdraw(int amount);
 };
+-------------methods of Account-----------
+
+// Password 검증 함수
+bool Account::verifyPW(const string& enteredPassword) const {
+  
+const string& Account::getAccountNum() const {
+    return accountNum;
+}
+// OwnerName 반환 함수
+const string& Account::getOwnerName() const {
+    return ownerName;
+}
+// Bank 반환 함수
+Bank* Account::getBank() const {
+    return myBank;
+}
+// Bank 이름 반환 함수
+string Account::getBankName() const {
+    return myBank->getBankName();
+};
+// 잔액 조회 함수
+int Account::getBalance() const {
+    return balance;
+}
+// 입금 함수
+void Account::deposit(int amount) {
+    balance += amount;
+}
+// 출금 함수
+void Account::withdraw(int amount) {
+    if (amount <= balance) {
+        balance -= amount;
+    }
+    else {
+        cout << "잔액이 부족합니다. 이 cout은 출력되지 않는 것이 좋습니다." << std::endl; //stop
+    }
+}
 
 
 //3. ATM Class
@@ -404,8 +418,8 @@ void Session::Withdrawal(const map<int, int>& amount, int x) {
     
         atm->SetHistory(out);
         
-        Transaction withdrawTransaction(transactionID, card->getCardNumber(), "Withdraw", totalAmount);
-        transctionHistoryOfSession.push_back(withdrawTransaction);
+        //Transaction withdrawTransaction(transactionID, card->getCardNumber(), "Withdraw", totalAmount);
+        //transctionHistoryOfSession.push_back(withdrawTransaction);
         //------------------
 
 
@@ -477,8 +491,8 @@ void Session::CashTransfer(map<int, int> amount, Account* destination, int x) { 
     
     atm->SetHistory(out);
     
-    Transaction CashTransferTransaction(transactionID, card->getCardNumber(), "CashTransfer", totaltotalAmount) ;
-    transctionHistoryOfSession.push_back(CashTransferTransaction);
+    //Transaction CashTransferTransaction(transactionID, card->getCardNumber(), "CashTransfer", totaltotalAmount) ;
+    //transctionHistoryOfSession.push_back(CashTransferTransaction);
     //------------------
 
    // 거래 정보를 출력합니다.
