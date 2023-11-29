@@ -138,7 +138,7 @@ private:
     map<string, Bank*> PrimaryBank;
     map<string, Bank*> NonPrimaryBank;
     map<int, int> AvailableCash;//현금 단위, 갯수
-    int AvailableCashAmount;//현금 양
+    unsigned long long AvailableCashAmount;//현금 양
     Card* AdminCard;
     vector<string> History;
     bool Bilingual = false;
@@ -170,7 +170,7 @@ public:
     map<int, int> GetAvailableCash() { return this->AvailableCash; }
     Card* GetAdminCard() { return this->AdminCard; }
     vector<string> GetHistory() { return this->History; }
-    int GetAvailableCashAmount(){return this->AvailableCashAmount;}
+    unsigned long long GetAvailableCashAmount(){return this->AvailableCashAmount;}
     
 
     //Is 함수
@@ -323,25 +323,29 @@ void Session::CheckDeposit(unsigned long long amount, int x) {
     //Transaction CheckDepositTransaction(transactionID, card->getCardNumber(), "CheckDeposit", totalAmount) ;
     //transctionHistoryOfSession.push_back(CheckDepositTransaction);
     //-------------------
-    
-    // 거래 정보를 출력합니다. ~에는 뱅크 이름이랑 어카운트 가져오도록 수정합니다.
-    if (x == 0)
-        cout << "~에 " << totalAmount << " 원이 입금되었습니다." << endl;
+  
+    // 거래 정보를 출력합니다.
+    if (x == 0)//
+        //출력 형태 : "Kakao 은행의 계좌 020202(계좌번호)에 3000원이 입금되었습니다." 
+        cout << account->getBankName() << " 은행의 계좌 " account->getAccountNum() <<"에 " << totalAmount << "원이 입금되었습니다." << endl;
     else
-        cout << "~에 " << totalAmount << " won has been deposited." << endl;
+        //출력 형태 : "3000 won has been deposited into the account 020202 of Kakao Bank." 
+        cout << totalAmount << "won has been deposited into the account " << account->getAccountNum() << " of " <<account->getBankName()<< " Bank." << endl;
 
-    
-    //현재 잔액 출력
-    if (x == 0) cout << "\n현재 잔액 : ";
-    else cout << "\nCURRENT BALANCE : ";
+    // 현재 잔액을 출력합니다.
+    if (x == 0) 
+        //출력 형태 : "현재 잔액 : 3000 원"
+        cout << "현재 잔액 : ";
+    else 
+        //출력 형태 : "Current Available Cash : 3000 won"
+        cout << "Current Available Cash : ";
     cout << account->getBalance();
     
     if (x == 0) cout << " 원" << endl;
     else cout << " won" << endl;
-    
-    cout << "\n";
-}
 
+    cout << "\n";
+};
 
 // 3. 출금해주는 함수
 void Session::Withdrawal(const map<int, int>& amount, int x) {
@@ -351,20 +355,24 @@ void Session::Withdrawal(const map<int, int>& amount, int x) {
     // ATM의 사용 가능한 현금을 가져옴
     map<int, int> availableCash = atm->GetAvailableCash();
 
-    
+    //question) 이 파트의 역할이 무엇인가요?
     unsigned long long totalAvailableCash = 0;
     for (const auto& entry : availableCash) {
         int denomination = entry.first;
         int count = entry.second;
         totalAvailableCash += (denomination * count);
     }
-
+    //question) atm에 avalilableCash의 total amount를 가져올 수 있는 함수를 새로 만들었어요. 지워도 될까요?
+    /*
     unsigned long long totalAmount = 0;
     for (const auto& entry : amount) {
         int denomination = entry.first;
         int count = entry.second;
         totalAmount += (denomination * count);
-    }
+    }*/
+
+    //ATM의 사용 가능한 현금의 양을 가져옴
+    unsigned long long totalAmount = atm->AvailableCashAmount();
 
     if (totalAvailableCash < totalAmount + fee) {
         if (x == 0) cout << " 현재 기기 내 현금이 부족합니다\n" << endl;
