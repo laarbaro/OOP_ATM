@@ -213,6 +213,7 @@ private:
     int withdrawalCount ; // 출금 횟수 기록
     bool primarySignal ;  // 현재 계좌 은행 정보와 ATM 주거래 은행이 동일한지 여부를 나타내는 bool 값
     int currentTransactionID;
+    Global* myGlobal;
 
 public:
 
@@ -223,12 +224,9 @@ public:
     void Withdrawal(unsigned long long amount, int x);
     void CashTransfer(map<int, int>, Account* destination, int x);
     void AccountTransfer(unsigned long long amount, Account* destination, int x);
-    bool Authorization(string password) {return account->verifyPW(password);}
-    
-    int GetNextTransactionID() {
-        return currentTransactionID++;
-    }
-    
+    bool Authorization(string password) {return account->verifyPW(password);};
+    int GetNextTransactionID() { return currentTransactionID++;   };
+    SetmyGlobal(Global* inputglo){ myGlobal = inputglo;};
 };
 
 /*-------------- Methods of Session Class --------------*/
@@ -593,12 +591,15 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
 // -------------child of Session class ---------------
 class KoreanSession : public Session {
 public:
-    void mainKoreanDisplay() {//stop
+    KoreanSession(ATM* iatm);
+    void mainKoreanDisplay();
+//------------methods of KoreanSession---------------
+void KoreanSession::mainKoreanDisplay() {
         cout << atm->getPrimaryBank() << " 은행" << endl;
         if (atm->IsMultiBank()) {cout << "주거래 은행 전용>" << endl; }
         else {cout << "타은행 거래 가능>" << endl;}
     
-    KoreanSession(ATM* iatm) {
+KoreanSession::KoreanSession(ATM* iatm) {
         // 세션 파라미터 초기화
         atm = iatm;
         primarySignal = true;
@@ -614,7 +615,7 @@ public:
         cout << "계좌 번호 : ";
         cin >> inputAccount;
         
-        //이 부분 어떻게 할지 .. ?
+        //이 부분 어떻게 할지 .. ?//stop
         Bank* temp = this->myBank->findAccountOfBank(inputAccount);
         
         
@@ -1149,7 +1150,7 @@ ATM::~ATM() {
     delete this->CurrentSession;
     NumberOfATM--;
 }
-void Start() {
+void ATM::Start() {
 //기본적인 모든 session 열기 전 수행을 하는 함수입니다.
     
     //기본 선택 : (Card 입력받기)
