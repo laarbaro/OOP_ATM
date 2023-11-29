@@ -136,7 +136,7 @@ private:
     ////////////////////////////////////////change 11.28
     int AvailableCashAmount;//현금 양
     Card* AdminCard;
-    map<string, string> History;
+    string History;
     bool Bilingual = false;
     bool MultiBank = false;
     static int NumberOfATM;
@@ -164,7 +164,7 @@ public:
     map<string, Bank*> GetNonPrimaryBank() { return this->NonPrimaryBank; }
     map<int, int> GetAvailableCash() { return this->AvailableCash; }
     Card* GetAdminCard() { return this->AdminCard; }
-    map<string, string> GetHistory() { return this->History; }
+    string GetHistory() { return this->History; }
     int GetAvailableCashAmount(){return this->AvailableCashAmount;}
     
 
@@ -1415,21 +1415,23 @@ void SetAvailableCash(map<int, int> inputcash, bool Plus) {
 void ShowHistory() {
     //Transaction History 보여주기 - user명과 transaction id, card num, transaction type, amount 등 정보
     //map[<"TransactionID",int>,<"CardNumber",int>,<"TransactionType",string>,<"Amount",int>]
-    std::ofstream out("History.txt", std::ios::app);
+    ofstream out("History.txt");
     if (out.is_open()) {
         cout << "----------------------History--------------------" << endl;
         out << "----------------------History--------------------" << endl;
-        for (auto iter = this->History.begin(); iter != this->History.end(); iter++) {
+        cout << this->History << endl;
+        out << this->History << endl;
+        /*for (auto iter = this->History.begin(); iter != this->History.end(); iter++) {
             cout << iter->first << " : " << iter->second << endl;
             out << iter->first << " : " << iter->second << endl;
-        };
+        };*/
         cout << "------------------------------------------------" << endl;
         out << "------------------------------------------------" << endl;
     }
     else {
         cout << "Error : history 파일 안열림" << endl;
     };
-
+    fout.close();
 
 };
 void ShowAvailableCash() {
