@@ -37,20 +37,14 @@ public:
         : cardNumber(cardNumber), accountNumber(accountNumber), isAdmin(isAdmin) {}
 
     // 카드 번호를 가져오는 함수
-    const string& getCardNumber() const {
-        return cardNumber;
-    }
+    const string& getCardNumber() const;
 
     // 계정 번호를 가져오는 함수
-    const string& getAccountNumber() const {
-        return accountNumber;
-    }
+    const string& getAccountNumber() const;
 
     // 카드가 관리자 카드인지 확인
     //[유리] card number와 password를 받아서 Admin인지 확인해주세요
-    bool isAdminCard() const {
-        return isAdmin;
-    }
+    bool isAdminCard() const;
 /*
     // 카드가 양 언어 지원으로 구성되어 있는지 확인
     bool isBilingualCard() const {
@@ -59,6 +53,10 @@ public:
 */
     // 카드 유효성 검사, 인증과 관련된 다른 함수들도 추가할 수 있음
 };
+
+const string& Card::getCardNumber() const { return accountNumber; }
+const string& Card::getAccountNumber() const { return accountNumber; }
+bool Card::isAdminCard() const { return isAdmin; }
 
 
 //2. Account Class
