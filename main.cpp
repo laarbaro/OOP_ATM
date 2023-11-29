@@ -136,7 +136,7 @@ private:
     ////////////////////////////////////////change 11.28
     int AvailableCashAmount;//현금 양
     Card* AdminCard;
-    string History;
+    vector<string> History;
     bool Bilingual = false;
     bool MultiBank = false;
     static int NumberOfATM;
@@ -157,6 +157,7 @@ public:
     void SetAvailableCash(map<int, int>, bool);
     ////////////////////////////////////////change 11.28
     void SetGlobal(Global* inglobal){this->myGlobal = inglobal;};
+    void SetHistory(string newTransaction){this->History.push_back(newTransaction);};
 
     //Get 함수
     int GetSerialNum() { return this->SerialNumber; }
@@ -164,7 +165,7 @@ public:
     map<string, Bank*> GetNonPrimaryBank() { return this->NonPrimaryBank; }
     map<int, int> GetAvailableCash() { return this->AvailableCash; }
     Card* GetAdminCard() { return this->AdminCard; }
-    string GetHistory() { return this->History; }
+    vector<string> GetHistory() { return this->History; }
     int GetAvailableCashAmount(){return this->AvailableCashAmount;}
     
 
