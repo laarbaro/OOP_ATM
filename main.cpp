@@ -461,8 +461,11 @@ void Session::CashDeposit(map<int, int> amount, int x) { // 야기서 x 는 한�
     
     
     // ------[history 관리]
-    Transaction CashDepositTransaction(transactionID, card->getCardNumber(), "CashDeposit", totalAmount) ;
-    transctionHistoryOfSession.push_back(CashDepositTransaction);
+    atm->SetHistory("");
+    
+    //Transaction CashDepositTransaction(transactionID, card->getCardNumber(), "CashDeposit", totalAmount) ;
+    //transctionHistoryOfSession.push_back(CashDepositTransaction);
+    
     //------------------
     
     
