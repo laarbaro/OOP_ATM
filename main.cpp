@@ -156,7 +156,7 @@ public:
     //Set 함수
     void SetAvailableCash(map<int, int>, bool);
     ////////////////////////////////////////change 11.28
-    void SetmyGlobal(Global* inglobal){this->myGlobal = inglobal;};
+    void SetGlobal(Global* inglobal){this->myGlobal = inglobal;};
 
     //Get 함수
     int GetSerialNum() { return this->SerialNumber; }
@@ -166,6 +166,7 @@ public:
     Card* GetAdminCard() { return this->AdminCard; }
     map<string, string> GetHistory() { return this->History; }
     int GetAvailableCashAmount(){return this->AvailableCashAmount;}
+    
 
     //Is 함수
     bool IsMultiBank() { return this->MultiBank; }
@@ -214,8 +215,6 @@ public:
     }
     void SetmyGlobal(Global* inglobal){this->myGlobal = inglobal;};
     
-
-
 
     
 };
@@ -733,11 +732,17 @@ public:
         bool validAccount = true; // 계좌 정보 유무
         string inputAccount;
         mainKoreanDisplay();
-        
-        cout << " 계좌 번호를 입력해주세요\n" << endl;
-        cout << "계좌 번호 : ";
-        cin >> inputAccount;
-        
+        bool input;
+        while (input) {
+            cout << " 계좌 번호를 입력해주세요\n" << endl;
+            cout << "계좌 번호 : ";
+            cin >> inputAccount;
+            input = false;
+            if( sel == 'x' ){
+                this->myGlobal->Display();
+                input = true;
+            }
+        }
         //이 부분 어떻게 할지 .. ?
         Bank* temp = this->myBank->findAccountOfBank(inputAccount);
         
@@ -767,14 +772,23 @@ public:
             for (int i = 1; i < 4; i++) { // 비밀번호 3번까지 입력 가능 !
                 string inputPassword;
                 mainKoreanDisplay();
+
+            while (input) {
                 cout << "비밀번호를 입력해주세요\n" << endl;
                 cout << "비밀번호 : ";
                 cin >> inputPassword;
+                input = false;
+                if( sel == 'x' ){
+                    this->myGlobal->Display();
+                    input = true;
+                }
+            }
                 if (Authorization(inputPassword)) {
                     authorizationSignal = true;
                     break;
-                }
-                else {
+                } else if( sel == 'x' ){
+                    this->myGlobal->Display();
+                } else {
                     authorizationSignal = false;
                     authorizationCount ++;
                     mainKoreanDisplay();
@@ -796,13 +810,17 @@ public:
                     cout << "번호 입력 : ";
                     int transactionNum = -1;
                     cin >> transactionNum;
+                    input = false;
+                    if( transactionNum == 0000000000 ){
+                        this->myGlobal->Display();
+                        continue;
+                    }
                     if (cin.fail() == true) { // 사용자의 입력이 숫자가 아닌 경우
                         cout << "유효하지 않은 번호입니다." << endl;
                         cin.clear();
                         cin.ignore(100, '\n');
                         continue; //for문 다시 돌아가서 선택하게 하기.
                     }
-                    
                     if (transactionNum == 1) { // 입금 (1000월 , 5000원 , 10000원, 50000원을 받아야함. )
                         mainKoreanDisplay() ;
                         cout << " 입금 서비스 입니다. \n" << endl;
@@ -816,7 +834,12 @@ public:
                             cin.clear();
                             cin.ignore(100, '\n');
                             continue;
+                        } else if (depositinput == 0000000000) {
+                            this->myGlobal->Display();
+                            continue;
                         }
+                    };
+                        
                         
                         
                         
@@ -838,6 +861,9 @@ public:
                                     cout << "유효하지 않은 번호입니다." << endl;
                                     cin.clear();
                                     cin.ignore(100, '\n');
+                                    continue;
+                                } else if (bill == 0000000000) {
+                                    this->myGlobal->Display();
                                     continue;
                                 }
                                 
@@ -872,6 +898,9 @@ public:
                                     cin.clear();
                                     cin.ignore(100, '\n');
                                     continue;
+                                } else if (numBill == 0000000000) {
+                                    this->myGlobal->Display();
+                                    continue;
                                 }
                                 
                                 // 각 지폐 종류와 갯수를 맵에 저장
@@ -903,6 +932,9 @@ public:
                                 cout << "유효하지 않은 번호입니다." << endl;
                                 cin.clear();
                                 cin.ignore(100, '\n');
+                                continue;
+                            } else if (bill == 0000000000) {
+                                this->myGlobal->Display();
                                 continue;
                             }
                             if ((0 < numBill) && (numBill <= 30)) {inAmount = 100000 * numBill; break;}
@@ -946,6 +978,9 @@ public:
                                     cin.clear();
                                     cin.ignore(100, '\n');
                                     continue;
+                                } else if (bill == 0000000000) {
+                                    this->myGlobal->Display();
+                                    continue;
                                 }
                                 
                                 if (bill == 5) {
@@ -978,6 +1013,9 @@ public:
                                     cin.ignore(100, '\n');
                                     continue;
                                     
+                                } else if (bill == 0000000000) {
+                                    this->myGlobal->Display();
+                                    continue;
                                 }
                                 
                                 billCounts[billType] = numBill;
@@ -1009,6 +1047,9 @@ public:
                             cin.clear();
                             cin.ignore(100, '\n');
                             continue;
+                        } else if (transferNum == 0000000000) {
+                            this->myGlobal->Display();
+                            continue;
                         }
                         
                         if (transferNum == 1) { // Account Transfer
@@ -1021,6 +1062,9 @@ public:
                                 cout << "유효하지 않은 번호입니다." << endl;
                                 cin.clear();
                                 cin.ignore(100, '\n');
+                                continue;
+                            } else if (inAmount == 0000000000) {
+                                this->myGlobal->Display();
                                 continue;
                             }
                             if (inAmount < 0) { cout << "유효하지 않은 번호입니다." << endl;}
@@ -1290,11 +1334,14 @@ void Start() {
         while (repeat){
                 cout << "[1] Transaction History" << endl;
                 cin >> sel;
+                
                 if (sel == 1) {
                         ShowHistory();
                 repeat = false;
-                }
-                else {
+                } else if (transferNum == 0000000000) {
+                        this->myGlobal->Display();
+                        continue;
+                } else {
                         cout << "error : 올바른 input을 입력해주세요" << endl;
                 }
         }
@@ -1341,9 +1388,11 @@ bool OpenSession() {
         cout << "[1] English [etc] Korean" << endl;
         if (sel == 1) {
             this->CurrentSession = new EnglishSession();
+            CurrentSession.SetmyGlobal(this->myGlobal);
         }
         else {
             this->CurrentSession = new KoreanSession();
+            CurrentSession.SetmyGlobal(this->myGlobal);
         }
     }
 };
@@ -1500,6 +1549,12 @@ int main() {
         cin >> AdminCard;
         ATMmap.insert({ATMname, new ATM(InputBankMap.find(InputPrimaryBank), InputBankMap, AdminCard)});
     }
+    ////////////////////////////////////////change 11.28
+    Global myGlobal(AccountMap, ATMMap);
+    for (auto& i : ATMMap){
+        i.second->SetGlobal();
+    };
+        
     ////////////////////////////////////////question 11.28
     bool isATMworiking = true;
     while (isATMworking) {
@@ -1516,6 +1571,11 @@ int main() {
         string UsedATM;
         cout << "Write the name of an ATM that you want to use." << endl;
         cin << UsedATM;
+        if (UsedATM == 'x') {
+            myGlobal->Display();
+            continue;
+        }
+        
         ATMmap[UsedATM]->Start();
 
         //quit?
@@ -1524,18 +1584,13 @@ int main() {
         cin << isQuit;
         if (isQuit == "n") {
             isATMworking = true;
+        } else if (UsedATM == 'x') {
+            myGlobal->Display();
+            continue;
         }
         else { isATMworking = false; }
     }
-    ////////////////////////////////////////change 11.28
-    Global myGlobal(AccountMap, ATMMap);
-    for (auto& i : ATMMap){
-        i.second->getGlobal();
-    };
-    for (auto& j : AccountMap){
-        i.second->getGlobal();
-    };
-        
+    
     return 0;
 }
 
