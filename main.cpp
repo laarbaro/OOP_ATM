@@ -240,7 +240,7 @@ void Session::CashDeposit(map<int, int> amount, int x) { // 여기서 x 는 한�
     string out = "[";
     out += to_string(previous.size());
     out += "] Card number: ";
-    out += to_string(card->getCardNumber());
+    out += card->getCardNumber();
     out += ", Transaction type: Cash deposit, Amount: ";
     out += to_string(totalAmount);
     
