@@ -404,8 +404,8 @@ void Session::Withdrawal(const map<int, int>& amount, int x) {
     
         atm->SetHistory(out);
         
-        Transaction withdrawTransaction(transactionID, card->getCardNumber(), "Withdraw", totalAmount);
-        transctionHistoryOfSession.push_back(withdrawTransaction);
+        //Transaction withdrawTransaction(transactionID, card->getCardNumber(), "Withdraw", totalAmount);
+        //transctionHistoryOfSession.push_back(withdrawTransaction);
         //------------------
 
 
@@ -477,8 +477,8 @@ void Session::CashTransfer(map<int, int> amount, Account* destination, int x) { 
     
     atm->SetHistory(out);
     
-    Transaction CashTransferTransaction(transactionID, card->getCardNumber(), "CashTransfer", totaltotalAmount) ;
-    transctionHistoryOfSession.push_back(CashTransferTransaction);
+    //Transaction CashTransferTransaction(transactionID, card->getCardNumber(), "CashTransfer", totaltotalAmount) ;
+    //transctionHistoryOfSession.push_back(CashTransferTransaction);
     //------------------
 
    // 거래 정보를 출력합니다.
