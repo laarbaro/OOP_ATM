@@ -239,12 +239,25 @@ void Session::CashDeposit(map<int, int> amount, int x) { //x=0이면 한국어
     int transactionID = GetNextTransactionID();
     account->deposit(totalAmount - fee);
 
+
+    string out = "[";
+    out += to_string(atm->GetHistory().size());
+    out += "] Card number: ";
+    out += card->getCardNumber();
+    out += ", Transaction type: Cash deposit, Amount: ";
+    out += to_string(totalAmount);
+    out += ", Deposit account number: ";
+    out += account->getAccountNum();
     
-    //question History가 string으로 바뀌어 업데이트 했습니다. 삭제해도 될까요?
+    atm->SetHistory(out);
+    
+   
+    //Transaction ID, Card Number, Transaction Types, Amount, other transaction-specific information
+    /////question History가 string으로 바뀌어 업데이트 했습니다. 삭제해도 될까요?
     // ------[history 관리]
     //Transaction CashDepositTransaction(transactionID, card->getCardNumber(), "CashDeposit", totalAmount) ;
     //transctionHistoryOfSession.push_back(CashDepositTransaction);
-    //------------------
+    //------
 
     
     //question history 이렇게 저장하는거 어떤지 확인 + history ATM에 넘기는건 여기서 안해도 되는지 확인 부탁드려요!
@@ -298,6 +311,17 @@ void Session::CheckDeposit(unsigned long long amount, int x) {
     //질문 , ATM에는 돈을 안넣나요. ? 네!!
     
     // ------[history 관리]
+    string out = "[";
+    out += to_string(atm->GetHistory().size());
+    out += "] Card number: ";
+    out += card->getCardNumber();
+    out += ", Transaction type: Check deposit, Amount: ";
+    out += to_string(totalAmount);
+    out += ", Deposit account number: ";
+    out += account->getAccountNum();
+    
+    atm->SetHistory(out);
+    
     int transactionID = GetNextTransactionID();
     Transaction CheckDepositTransaction(transactionID, card->getCardNumber(), "CheckDeposit", totalAmount) ;
     transctionHistoryOfSession.push_back(CheckDepositTransaction);
@@ -361,6 +385,17 @@ void Session::Withdrawal(const map<int, int>& amount, int x) {
 
         
         // ------[history 관리]
+        string out = "[";
+        out += to_string(atm->GetHistory().size());
+        out += "] Card number: ";
+        out += card->getCardNumber();
+        out += ", Transaction type: Withdrawal, Amount: ";
+        out += to_string(totalAmount);
+        out += ", Deposit account number: ";
+        out += account->getAccountNum();
+    
+        atm->SetHistory(out);
+        
         Transaction withdrawTransaction(transactionID, card->getCardNumber(), "Withdraw", totalAmount);
         transctionHistoryOfSession.push_back(withdrawTransaction);
         //------------------
@@ -406,6 +441,19 @@ void Session::CashTransfer(map<int, int> amount, Account* destination, int x) { 
     int transactionID = GetNextTransactionID();
     
     // ------[history 관리]
+    string out = "[";
+    out += to_string(atm->GetHistory().size());
+    out += "] Card number: ";
+    out += card->getCardNumber();
+    out += ", Transaction type: Cash transfer, Amount: ";
+    out += to_string(totalAmount);
+    out += ", account number for withdrawal: ";
+    out += account->getAccountNum();
+    out += ", account number for deposit: ";
+    out += destination->getAccountNum();
+    
+    atm->SetHistory(out);
+    
     Transaction CashTransferTransaction(transactionID, card->getCardNumber(), "CashTransfer", totaltotalAmount) ;
     transctionHistoryOfSession.push_back(CashTransferTransaction);
     //------------------
@@ -473,6 +521,19 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
         destination->deposit(<#int amount#>)(amount);
 
         // ------[history 관리]
+        string out = "[";
+        out += to_string(atm->GetHistory().size());
+        out += "] Card number: ";
+        out += card->getCardNumber();
+        out += ", Transaction type: Account transfer, Amount: ";
+        out += to_string(totalAmount);
+        out += ", account number for withdrawal: ";
+        out += account->getAccountNum();
+        out += ", account number for deposit: ";
+        out += destination->getAccountNum();
+        
+        atm->SetHistory(out);
+            
         AccountTransferTransaction newTransaction(destination, account, amount, accountNum, destNum);
         destination->addTransaction(&newTransaction);
 
