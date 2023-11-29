@@ -236,13 +236,14 @@ void Session::CashDeposit(map<int, int> amount, int x) { // 여기서 x 는 한�
     account->deposit(totalAmount - fee);
 
 
-    vector<string> previous =  atm->GetHistory();
     string out = "[";
-    out += to_string(previous.size());
+    out += to_string(atm->GetHistory().size());
     out += "] Card number: ";
     out += card->getCardNumber();
     out += ", Transaction type: Cash deposit, Amount: ";
     out += to_string(totalAmount);
+    out += ", Deposit account number: ";
+    out += account->getAccountNum();
     
     atm->SetHistory(out);
     
@@ -290,6 +291,17 @@ void Session::CheckDeposit(unsigned long long amount, int x) {
     //질문 , ATM에는 돈을 안넣나요. ? .?
     
     // ------[history 관리]
+    string out = "[";
+    out += to_string(atm->GetHistory().size());
+    out += "] Card number: ";
+    out += card->getCardNumber();
+    out += ", Transaction type: Check deposit, Amount: ";
+    out += to_string(totalAmount);
+    out += ", Deposit account number: ";
+    out += account->getAccountNum();
+    
+    atm->SetHistory(out);
+    
     int transactionID = GetNextTransactionID();
     Transaction CheckDepositTransaction(transactionID, card->getCardNumber(), "CheckDeposit", totalAmount) ;
     transctionHistoryOfSession.push_back(CheckDepositTransaction);
@@ -353,6 +365,17 @@ void Session::Withdrawal(const map<int, int>& amount, int x) {
 
         
         // ------[history 관리]
+        string out = "[";
+        out += to_string(atm->GetHistory().size());
+        out += "] Card number: ";
+        out += card->getCardNumber();
+        out += ", Transaction type: Withdrawal, Amount: ";
+        out += to_string(totalAmount);
+        out += ", Deposit account number: ";
+        out += account->getAccountNum();
+    
+        atm->SetHistory(out);
+        
         Transaction withdrawTransaction(transactionID, card->getCardNumber(), "Withdraw", totalAmount);
         transctionHistoryOfSession.push_back(withdrawTransaction);
         //------------------
@@ -398,6 +421,19 @@ void Session::CashTransfer(map<int, int> amount, Account* destination, int x) { 
     int transactionID = GetNextTransactionID();
     
     // ------[history 관리]
+    string out = "[";
+    out += to_string(atm->GetHistory().size());
+    out += "] Card number: ";
+    out += card->getCardNumber();
+    out += ", Transaction type: Cash transfer, Amount: ";
+    out += to_string(totalAmount);
+    out += ", account number for withdrawal: ";
+    out += account->getAccountNum();
+    out += ", account number for deposit: ";
+    out += destination->getAccountNum();
+    
+    atm->SetHistory(out);
+    
     Transaction CashTransferTransaction(transactionID, card->getCardNumber(), "CashTransfer", totaltotalAmount) ;
     transctionHistoryOfSession.push_back(CashTransferTransaction);
     //------------------
@@ -465,6 +501,19 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
         destination->deposit(<#int amount#>)(amount);
 
         // ------[history 관리]
+        string out = "[";
+        out += to_string(atm->GetHistory().size());
+        out += "] Card number: ";
+        out += card->getCardNumber();
+        out += ", Transaction type: Account transfer, Amount: ";
+        out += to_string(totalAmount);
+        out += ", account number for withdrawal: ";
+        out += account->getAccountNum();
+        out += ", account number for deposit: ";
+        out += destination->getAccountNum();
+        
+        atm->SetHistory(out);
+            
         AccountTransferTransaction newTransaction(destination, account, amount, accountNum, destNum);
         destination->addTransaction(&newTransaction);
 
