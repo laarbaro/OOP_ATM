@@ -933,7 +933,7 @@ public:
                                 cin.clear();
                                 cin.ignore(100, '\n');
                                 continue;
-                            } else if (bill == 0000000000) {
+                            } else if (numBill == 0000000000) {
                                 this->myGlobal->Display();
                                 continue;
                             }
