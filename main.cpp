@@ -195,9 +195,6 @@ private:
     int withdrawalCount ; // 출금 횟수 기록
     bool primarySignal ;  // 현재 계좌 은행 정보와 ATM 주거래 은행이 동일한지 여부를 나타내는 bool 값
     int currentTransactionID;
-    ////////////////////////////////////////change 11.28
-    Global* myGlobal;
-    
 
 public:
 
@@ -205,8 +202,7 @@ public:
     void CashDeposit(map<int, int>, int x);
     //void Session::CashDeposit(map<int, int> amount, int x)
     void CheckDeposit(unsigned long long amount, int x);
-    //void Withdrawal(unsigned long long amount, int x);
-    void Withdrawal(const map<int, int>& amount, int x);
+    void Withdrawal(unsigned long long amount, int x);
     void CashTransfer(map<int, int>, Account* destination, int x);
     void AccountTransfer(unsigned long long amount, Account* destination, int x);
     bool Authorization(string password) {return account->verifyPW(password);}
@@ -214,228 +210,8 @@ public:
     int GetNextTransactionID() {
         return currentTransactionID++;
     }
-    void SetmyGlobal(Global* inglobal){this->myGlobal = inglobal;};
-    
-
     
 };
-
-
-
-// -------------------------------[Transaction] class-----------------------------------
-// -------------------------------[Transaction] class-----------------------------------
-class Transaction {
-private:
-    ATM* CurrentATM;
-    Account* CurrentAccount;
-public:
-
-    //void CheckInput();//cash인지 check인지 확인해 CheckCash 또는 CheckCheck 호출
-    void CheckCash() {
-        map<int, int> CashInATM = CurrentATM->GetAvailableCash();
-    };//cash 종류별 개수, bank, username, accountnum, password
-    void CheckCheck() {
-        int CheckInAccount = CurrentAccount->getBalance();
-    };//amount, username, accountnum, password
-};
-
-
-//----------------child of Transaction----------------------
-class DepositTransaction : public Transaction {
-    //아직 미구현: There is a limit in the number of cash or checks that can be deposited per transaction (e.g., 50 papercashes, 30 paper checks)
-public:
-    string Deposit(ATM* CurrentATM, Account* CurrentAccount, bool isCash, map<int,int> depositCash) {
-        //수수료 책정
-        int fee;
-        Bank* tmp;
-        for (const auto& pair : CurrentATM->GetPrimaryBank()) { tmp = pair.second; }
-        if (CurrentAccount->getBank() == tmp) {//error : ==연산자 사용 불가
-             fee = 0;
-        }
-        else { fee = 1000; }
-        
-        //예치금 액수 계산
-        int depositCash_sum = 0;
-        for (const auto& entry : depositCash) {
-            depositCash_sum += entry.first * entry.second;
-        }
-        
-        //cash or check
-        if (isCash == true) {
-            //ATM available cash 증가
-            map<int, int> available1 = CurrentATM->GetAvailableCash();
-            map<int, int> available2;
-            for (const auto& entry : available1) {
-                available2[entry.first] = entry.second + depositCash[entry.first];//error : available1.first에서 first member가 없다고 하는데 확인해주세요
-            }
-            CurrentATM->SetAvailableCash(available2, true);
-        }
-        
-        //account 액수 증가
-        CurrentAccount->deposit(depositCash_sum + fee);//error : fee가 정의되어있지 않습니다
-        
-        //history return
-        return "cash deposit KRW " + to_string(depositCash_sum) + "(balance now: KRW " + to_string(CurrentAccount->getBalance()) + ")";//error : to_string이 정의되어있지 않습니다
-    };
-};
-
-class withdrawTransaction : public Transaction {
-public:
-    string Withdraw(ATM* CurrentATM, Account* CurrentAccount, int Amount) {
-        //bank에서 계좌 확인 후 limit 안넘으면 출금, bank 확인해 fee 결정해 빼고 출금, ATM의 available_cash 감소, 최대 50만원 withdraw 가능
-        //수수료 책정
-        int fee;
-        Bank* tmp;
-        for (const auto& pair : CurrentATM->GetPrimaryBank()) { tmp = pair.second; }
-        if (CurrentAccount->getBank() == tmp) {
-            int fee = 1000;
-        }
-        else { int fee = 2000; }
-
-        map<int, int> AvailableNow = CurrentATM->GetAvailableCash();
-
-        //ATM available money amount
-        int ATMCash_sum = 0;
-        for (const auto& entry : AvailableNow) {
-            ATMCash_sum += entry.first * entry.second;
-        }
-
-        //int out_50000 = 0; int out_10000 = 0; int out_5000 = 0; int out_1000 = 0;
-        map<int, int> out;
-        int tmp_amount = Amount;
-        //인출 가능한가?
-        if (ATMCash_sum >= tmp_amount) {
-            //금액권 개수 산정
-            if (AvailableNow[50000] >= int(tmp_amount / 50000)) {
-                out[50000] = int(tmp_amount / 50000);
-                tmp_amount -= 50000 * out[50000];
-            }
-            else {
-                int out_50000 = AvailableNow[50000];
-            }
-            if (AvailableNow[10000] >= int(tmp_amount / 10000)) {
-                out[10000] = int(tmp_amount / 10000);
-                tmp_amount -= 10000 * out[10000];
-            }
-            else {
-                int out_10000 = AvailableNow[10000];
-            }
-            if (AvailableNow[5000] >= int(tmp_amount / 5000)) {
-                out[5000] = int(tmp_amount / 5000);
-                tmp_amount -= 5000 * out[5000];
-            }
-            else {
-                int out_5000 = AvailableNow[5000];
-            }
-            out[1000] = int(tmp_amount / 1000);
-            tmp_amount -= 1000 * out[1000];
-
-            //ATM available cash 감소
-            map<int, int> AvailableUpdate;
-            for (const auto& pair : AvailableNow) {
-                AvailableUpdate[pair.first] = pair.second - out[pair.first];//error : first 멤버가 없습니다
-            }
-            CurrentATM->SetAvailableCash(AvailableUpdate, false);
-
-            //Account balance 감소
-            CurrentAccount->withdraw(Amount + fee);//error : fee가 정의되어있지 않습니다
-
-            //history return
-            return "cash withdrawal KRW " + to_string(Amount) + "(balance now: KRW" + to_string(CurrentAccount->getBalance()) + ")";//error : to_string이 정의되어있지 않습니다
-
-        }
-        else { //인출 불가능
-            return "error: The user ordered withdrawal of an amount that exceeds the amount currently available from the ATM.";
-        }
-    };
-};
-
-class TransferTransaction : public Transaction{
-public:
-    string AccountTransfer(ATM* CurrentATM, Account* Account1, Account* Account2, int Amount) {
-        //transfer 가능한가?
-        if (Account1->getBalance() >= Amount) {
-            //수수료 책정
-            int fee;
-            Bank* tmp;
-            for (const auto& pair : CurrentATM->GetPrimaryBank()) { tmp = pair.second; }
-            if (Account1->getBank() == tmp && Account2->getBank() == tmp) {//error : ==연산자 사용 불가
-                int fee = 3000;
-            }
-            else if (Account1->getBank() == tmp || Account2->getBank() == tmp) {//error : ==연산자 사용 불가
-                int fee = 4000;
-            }
-            else { int fee = 5000; }
-
-            Account1->withdraw(Amount + fee);//error : fee가 정의되어있지 않습니다 //error :
-            Account2->deposit(Amount);
-
-            //return history
-            return "cash transfer KRW " + to_string(Amount) + ", from " + Account1->getAccountNum() + " to " + Account1->getAccountNum();//error : to_string이 정의되어있지 않습니다
-        }
-        else { // 잔액부족
-            return "error: The user ordered transfer of an amount that exceeds the amount currently available from the account.";
-        };
-    };
-
-    string CashTransfer(ATM* CurrentATM, Account* Account1, Account* Account2, map<int,int> Cash) {//error : map의 type이 정의되어있지 않습니다(ex. map<int,int> Cash)
-        int Cash_sum = 0;
-        for (const auto& entry : Cash) {
-            Cash_sum += entry.first * entry.second;
-        }
-
-        //transfer 가능한가?
-        if (Account1->getBalance() >= Cash_sum) {
-            if (Cash_sum == 5000) {
-                //수수료 책정
-                Bank* tmp;
-                for (const auto& pair : CurrentATM->GetPrimaryBank()) { tmp = pair.second; }
-                if (Account1->getBank() == tmp && Account2->getBank() == tmp) {
-                    int fee = 3000;
-                }
-                else if (Account1->getBank() == tmp || Account2->getBank() == tmp) {
-                    int fee = 4000;
-                }
-                else { int fee = 5000; }
-                
-                Account1->withdraw(Cash_sum);
-                Account2->deposit(Cash_sum);
-                
-                //return history
-                return "cash transfer KRW " + to_string(Cash_sum) + ", from " + Account1->getAccountNum() + " to " + Account1->getAccountNum();//error : CurrentAccount에 액세스할 수 없습니다, to_string이 정의되어 있지 않습니다, Amount가 정의되어있지 않습니다}
-                }
-            else {
-                 return "error: The amount came in ATM is not KRW 5000.";
-            }
-        }
-        else { // 잔액부족
-            return "error: The user ordered transfer of an amount that exceeds the amount currently available from the account.";
-        }//error : if문이 필요합니다
-    };
-};
-
-
-
-////////////////////////////////////////change 11.28
-//5. Global Class
-class Global{
-private:
-    map<string, Account*> AccountMap;
-    map<string, ATM*> ATMMap;
-    char SecretCode = 'x';
-public:
-    Global();
-    Global(map<string, Account*>, map<string, ATM*>);
-    ~Global();
-    map<string, Account*> getAccountMap(){return this->AccountMap;}
-    map<string, ATM*> getATMMap(){return this->ATMMap;}
-    char getSecretCode(){return this->SecretCode;}
-    void setAccountMap(map<string, Account*>);
-    void setATMMap(map<string, Account*>);
-    void Display();
-    
-};
-
 
 /*-------------- Methods of Session Class --------------*/
 
@@ -461,11 +237,8 @@ void Session::CashDeposit(map<int, int> amount, int x) { // 야기서 x 는 한�
     
     
     // ------[history 관리]
-    atm->SetHistory("");
-    
-    //Transaction CashDepositTransaction(transactionID, card->getCardNumber(), "CashDeposit", totalAmount) ;
-    //transctionHistoryOfSession.push_back(CashDepositTransaction);
-    
+    Transaction CashDepositTransaction(transactionID, card->getCardNumber(), "CashDeposit", totalAmount) ;
+    transctionHistoryOfSession.push_back(CashDepositTransaction);
     //------------------
     
     
@@ -597,15 +370,14 @@ void Session::CashTransfer(map<int, int> amount, Account* destination, int x) { 
     
     
  // 수수료 빼고 계좌에 입금
-    unsigned long long totalAmount;
     for (const auto& entry : amount) {
         int denomination = entry.first;
         int count = entry.second;
         unsigned long long totalAmount = (denomination * count);
     }
     
-    unsigned long long totaltotalAmount =  totalAmount - fee;
-    destination-> deposit ( totaltotalAmount ) ;
+    unsigned long long totaltotalAmount =  totalAmount - fee
+    destination-> deposit ( utotaltotalAmount ) ;
     
     int transactionID = GetNextTransactionID();
     
@@ -709,13 +481,6 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
 }
 
 
-
-
-
-
-
-// History에서 withdraw 3번 넘으면 session 종료
-
 // -------------child of Session class ---------------
 class KoreanSession : public Session {
 public:
@@ -736,17 +501,11 @@ public:
         bool validAccount = true; // 계좌 정보 유무
         string inputAccount;
         mainKoreanDisplay();
-        bool input;
-        while (input) {
-            cout << " 계좌 번호를 입력해주세요\n" << endl;
-            cout << "계좌 번호 : ";
-            cin >> inputAccount;
-            input = false;
-            if( sel == 'x' ){
-                this->myGlobal->Display();
-                input = true;
-            }
-        }
+        
+        cout << " 계좌 번호를 입력해주세요\n" << endl;
+        cout << "계좌 번호 : ";
+        cin >> inputAccount;
+        
         //이 부분 어떻게 할지 .. ?
         Bank* temp = this->myBank->findAccountOfBank(inputAccount);
         
@@ -776,23 +535,14 @@ public:
             for (int i = 1; i < 4; i++) { // 비밀번호 3번까지 입력 가능 !
                 string inputPassword;
                 mainKoreanDisplay();
-
-            while (input) {
                 cout << "비밀번호를 입력해주세요\n" << endl;
                 cout << "비밀번호 : ";
                 cin >> inputPassword;
-                input = false;
-                if( sel == 'x' ){
-                    this->myGlobal->Display();
-                    input = true;
-                }
-            }
                 if (Authorization(inputPassword)) {
                     authorizationSignal = true;
                     break;
-                } else if( sel == 'x' ){
-                    this->myGlobal->Display();
-                } else {
+                }
+                else {
                     authorizationSignal = false;
                     authorizationCount ++;
                     mainKoreanDisplay();
@@ -814,17 +564,13 @@ public:
                     cout << "번호 입력 : ";
                     int transactionNum = -1;
                     cin >> transactionNum;
-                    input = false;
-                    if( transactionNum == 0000000000 ){
-                        this->myGlobal->Display();
-                        continue;
-                    }
                     if (cin.fail() == true) { // 사용자의 입력이 숫자가 아닌 경우
                         cout << "유효하지 않은 번호입니다." << endl;
                         cin.clear();
                         cin.ignore(100, '\n');
                         continue; //for문 다시 돌아가서 선택하게 하기.
                     }
+                    
                     if (transactionNum == 1) { // 입금 (1000월 , 5000원 , 10000원, 50000원을 받아야함. )
                         mainKoreanDisplay() ;
                         cout << " 입금 서비스 입니다. \n" << endl;
@@ -838,12 +584,7 @@ public:
                             cin.clear();
                             cin.ignore(100, '\n');
                             continue;
-                        } else if (depositinput == 0000000000) {
-                            this->myGlobal->Display();
-                            continue;
                         }
-                    };
-                        
                         
                         
                         
@@ -865,9 +606,6 @@ public:
                                     cout << "유효하지 않은 번호입니다." << endl;
                                     cin.clear();
                                     cin.ignore(100, '\n');
-                                    continue;
-                                } else if (bill == 0000000000) {
-                                    this->myGlobal->Display();
                                     continue;
                                 }
                                 
@@ -902,9 +640,6 @@ public:
                                     cin.clear();
                                     cin.ignore(100, '\n');
                                     continue;
-                                } else if (numBill == 0000000000) {
-                                    this->myGlobal->Display();
-                                    continue;
                                 }
                                 
                                 // 각 지폐 종류와 갯수를 맵에 저장
@@ -936,9 +671,6 @@ public:
                                 cout << "유효하지 않은 번호입니다." << endl;
                                 cin.clear();
                                 cin.ignore(100, '\n');
-                                continue;
-                            } else if (numBill == 0000000000) {
-                                this->myGlobal->Display();
                                 continue;
                             }
                             if ((0 < numBill) && (numBill <= 30)) {inAmount = 100000 * numBill; break;}
@@ -982,9 +714,6 @@ public:
                                     cin.clear();
                                     cin.ignore(100, '\n');
                                     continue;
-                                } else if (bill == 0000000000) {
-                                    this->myGlobal->Display();
-                                    continue;
                                 }
                                 
                                 if (bill == 5) {
@@ -1017,9 +746,6 @@ public:
                                     cin.ignore(100, '\n');
                                     continue;
                                     
-                                } else if (bill == 0000000000) {
-                                    this->myGlobal->Display();
-                                    continue;
                                 }
                                 
                                 billCounts[billType] = numBill;
@@ -1051,9 +777,6 @@ public:
                             cin.clear();
                             cin.ignore(100, '\n');
                             continue;
-                        } else if (transferNum == 0000000000) {
-                            this->myGlobal->Display();
-                            continue;
                         }
                         
                         if (transferNum == 1) { // Account Transfer
@@ -1066,9 +789,6 @@ public:
                                 cout << "유효하지 않은 번호입니다." << endl;
                                 cin.clear();
                                 cin.ignore(100, '\n');
-                                continue;
-                            } else if (inAmount == 0000000000) {
-                                this->myGlobal->Display();
                                 continue;
                             }
                             if (inAmount < 0) { cout << "유효하지 않은 번호입니다." << endl;}
@@ -1140,7 +860,7 @@ public:
         }
 
         
-    } ; //koreansessionclass 끝
+    } ; //class 끝
 
 
 class EnglishSession {
