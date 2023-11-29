@@ -219,6 +219,203 @@ public:
 
     
 };
+
+
+
+// -------------------------------[Transaction] class-----------------------------------
+// -------------------------------[Transaction] class-----------------------------------
+class Transaction {
+private:
+    ATM* CurrentATM;
+    Account* CurrentAccount;
+public:
+
+    //void CheckInput();//cash인지 check인지 확인해 CheckCash 또는 CheckCheck 호출
+    void CheckCash() {
+        map<int, int> CashInATM = CurrentATM->GetAvailableCash();
+    };//cash 종류별 개수, bank, username, accountnum, password
+    void CheckCheck() {
+        int CheckInAccount = CurrentAccount->getBalance();
+    };//amount, username, accountnum, password
+};
+
+
+//----------------child of Transaction----------------------
+class DepositTransaction : public Transaction {
+    //아직 미구현: There is a limit in the number of cash or checks that can be deposited per transaction (e.g., 50 papercashes, 30 paper checks)
+public:
+    string Deposit(ATM* CurrentATM, Account* CurrentAccount, bool isCash, map<int,int> depositCash) {
+        //수수료 책정
+        int fee;
+        Bank* tmp;
+        for (const auto& pair : CurrentATM->GetPrimaryBank()) { tmp = pair.second; }
+        if (CurrentAccount->getBank() == tmp) {//error : ==연산자 사용 불가
+             fee = 0;
+        }
+        else { fee = 1000; }
+        
+        //예치금 액수 계산
+        int depositCash_sum = 0;
+        for (const auto& entry : depositCash) {
+            depositCash_sum += entry.first * entry.second;
+        }
+        
+        //cash or check
+        if (isCash == true) {
+            //ATM available cash 증가
+            map<int, int> available1 = CurrentATM->GetAvailableCash();
+            map<int, int> available2;
+            for (const auto& entry : available1) {
+                available2[entry.first] = entry.second + depositCash[entry.first];//error : available1.first에서 first member가 없다고 하는데 확인해주세요
+            }
+            CurrentATM->SetAvailableCash(available2, true);
+        }
+        
+        //account 액수 증가
+        CurrentAccount->deposit(depositCash_sum + fee);//error : fee가 정의되어있지 않습니다
+        
+        //history return
+        return "cash deposit KRW " + to_string(depositCash_sum) + "(balance now: KRW " + to_string(CurrentAccount->getBalance()) + ")";//error : to_string이 정의되어있지 않습니다
+    };
+};
+
+class withdrawTransaction : public Transaction {
+public:
+    string Withdraw(ATM* CurrentATM, Account* CurrentAccount, int Amount) {
+        //bank에서 계좌 확인 후 limit 안넘으면 출금, bank 확인해 fee 결정해 빼고 출금, ATM의 available_cash 감소, 최대 50만원 withdraw 가능
+        //수수료 책정
+        int fee;
+        Bank* tmp;
+        for (const auto& pair : CurrentATM->GetPrimaryBank()) { tmp = pair.second; }
+        if (CurrentAccount->getBank() == tmp) {
+            int fee = 1000;
+        }
+        else { int fee = 2000; }
+
+        map<int, int> AvailableNow = CurrentATM->GetAvailableCash();
+
+        //ATM available money amount
+        int ATMCash_sum = 0;
+        for (const auto& entry : AvailableNow) {
+            ATMCash_sum += entry.first * entry.second;
+        }
+
+        //int out_50000 = 0; int out_10000 = 0; int out_5000 = 0; int out_1000 = 0;
+        map<int, int> out;
+        int tmp_amount = Amount;
+        //인출 가능한가?
+        if (ATMCash_sum >= tmp_amount) {
+            //금액권 개수 산정
+            if (AvailableNow[50000] >= int(tmp_amount / 50000)) {
+                out[50000] = int(tmp_amount / 50000);
+                tmp_amount -= 50000 * out[50000];
+            }
+            else {
+                int out_50000 = AvailableNow[50000];
+            }
+            if (AvailableNow[10000] >= int(tmp_amount / 10000)) {
+                out[10000] = int(tmp_amount / 10000);
+                tmp_amount -= 10000 * out[10000];
+            }
+            else {
+                int out_10000 = AvailableNow[10000];
+            }
+            if (AvailableNow[5000] >= int(tmp_amount / 5000)) {
+                out[5000] = int(tmp_amount / 5000);
+                tmp_amount -= 5000 * out[5000];
+            }
+            else {
+                int out_5000 = AvailableNow[5000];
+            }
+            out[1000] = int(tmp_amount / 1000);
+            tmp_amount -= 1000 * out[1000];
+
+            //ATM available cash 감소
+            map<int, int> AvailableUpdate;
+            for (const auto& pair : AvailableNow) {
+                AvailableUpdate[pair.first] = pair.second - out[pair.first];//error : first 멤버가 없습니다
+            }
+            CurrentATM->SetAvailableCash(AvailableUpdate, false);
+
+            //Account balance 감소
+            CurrentAccount->withdraw(Amount + fee);//error : fee가 정의되어있지 않습니다
+
+            //history return
+            return "cash withdrawal KRW " + to_string(Amount) + "(balance now: KRW" + to_string(CurrentAccount->getBalance()) + ")";//error : to_string이 정의되어있지 않습니다
+
+        }
+        else { //인출 불가능
+            return "error: The user ordered withdrawal of an amount that exceeds the amount currently available from the ATM.";
+        }
+    };
+};
+
+class TransferTransaction : public Transaction{
+public:
+    string AccountTransfer(ATM* CurrentATM, Account* Account1, Account* Account2, int Amount) {
+        //transfer 가능한가?
+        if (Account1->getBalance() >= Amount) {
+            //수수료 책정
+            int fee;
+            Bank* tmp;
+            for (const auto& pair : CurrentATM->GetPrimaryBank()) { tmp = pair.second; }
+            if (Account1->getBank() == tmp && Account2->getBank() == tmp) {//error : ==연산자 사용 불가
+                int fee = 3000;
+            }
+            else if (Account1->getBank() == tmp || Account2->getBank() == tmp) {//error : ==연산자 사용 불가
+                int fee = 4000;
+            }
+            else { int fee = 5000; }
+
+            Account1->withdraw(Amount + fee);//error : fee가 정의되어있지 않습니다 //error :
+            Account2->deposit(Amount);
+
+            //return history
+            return "cash transfer KRW " + to_string(Amount) + ", from " + Account1->getAccountNum() + " to " + Account1->getAccountNum();//error : to_string이 정의되어있지 않습니다
+        }
+        else { // 잔액부족
+            return "error: The user ordered transfer of an amount that exceeds the amount currently available from the account.";
+        };
+    };
+
+    string CashTransfer(ATM* CurrentATM, Account* Account1, Account* Account2, map<int,int> Cash) {//error : map의 type이 정의되어있지 않습니다(ex. map<int,int> Cash)
+        int Cash_sum = 0;
+        for (const auto& entry : Cash) {
+            Cash_sum += entry.first * entry.second;
+        }
+
+        //transfer 가능한가?
+        if (Account1->getBalance() >= Cash_sum) {
+            if (Cash_sum == 5000) {
+                //수수료 책정
+                Bank* tmp;
+                for (const auto& pair : CurrentATM->GetPrimaryBank()) { tmp = pair.second; }
+                if (Account1->getBank() == tmp && Account2->getBank() == tmp) {
+                    int fee = 3000;
+                }
+                else if (Account1->getBank() == tmp || Account2->getBank() == tmp) {
+                    int fee = 4000;
+                }
+                else { int fee = 5000; }
+                
+                Account1->withdraw(Cash_sum);
+                Account2->deposit(Cash_sum);
+                
+                //return history
+                return "cash transfer KRW " + to_string(Cash_sum) + ", from " + Account1->getAccountNum() + " to " + Account1->getAccountNum();//error : CurrentAccount에 액세스할 수 없습니다, to_string이 정의되어 있지 않습니다, Amount가 정의되어있지 않습니다}
+                }
+            else {
+                 return "error: The amount came in ATM is not KRW 5000.";
+            }
+        }
+        else { // 잔액부족
+            return "error: The user ordered transfer of an amount that exceeds the amount currently available from the account.";
+        }//error : if문이 필요합니다
+    };
+};
+
+
+
 ////////////////////////////////////////change 11.28
 //5. Global Class
 class Global{
@@ -903,189 +1100,6 @@ public:
 
 };
 
-
-
-
-// -------------------------------[Transaction] class-----------------------------------
-// -------------------------------[Transaction] class-----------------------------------
-class Transaction {
-private:
-    ATM* CurrentATM;
-    Account* CurrentAccount;
-public:
-
-    //void CheckInput();//cash인지 check인지 확인해 CheckCash 또는 CheckCheck 호출
-    void CheckCash() {
-        CashInATM = CurrentATM->GetAvailableCash();
-    };//cash 종류별 개수, bank, username, accountnum, password
-    void CheckCheck() {
-        CheckInAccount = CurrentAccout->getBalance();
-    };//amount, username, accountnum, password
-};
-
-
-//----------------child of Transaction----------------------
-class DepositTransaction : public Transaction {
-    //아직 미구현: There is a limit in the number of cash or checks that can be deposited per transaction (e.g., 50 papercashes, 30 paper checks)
-public:
-    string Deposit(ATM* CurrentATM, Account* CurrentAccount, bool isCash, map depositCash//error : map의 타입을 지정하세요) {
-        //수수료 책정
-        if (CurrentAccount->getBank() == CurrentATM->GetPrimaryBank()) {//error : ==연산자 사용 불가
-            int fee = 0;
-        }
-        else { int fee = 1000; }
-
-        //예치금 액수 계산
-        int depositCash_sum = 0;
-        for (const auto& entry : depositCash) {
-            depositCash_sum += entry.first * entry.second;
-        }
-
-        //cash or check
-        if (isCash == true) {
-            //ATM available cash 증가
-            map<int, int> available1 = CurrentATM->GetAvailableCash();
-            map<int, int> available2;
-            for (const auto& entry : available1) {
-                available2[available1.first] = available1.second + depositCash[available1.first];//error : available1.first에서 first member가 없다고 하는데 확인해주세요
-            }
-            CurrentATM->SetAvailableCash(available2);
-        }
-
-        //account 액수 증가
-        CurrentAccount->Deposit(depositCash_sum + fee);//error : fee가 정의되어있지 않습니다
-
-            //history return
-            return "cash deposit KRW " + to_string(depositCash_sum) + "(balance now: KRW " + to_string(CurrentAccount->getBalance()) + ")";//error : to_string이 정의되어있지 않습니다
-    };
-};
-
-class withdrawTransaction : public Transaction {
-public:
-    string Withdraw(ATM* CurrentATM, Account* CurrentAccount, int Amount) {
-        //bank에서 계좌 확인 후 limit 안넘으면 출금, bank 확인해 fee 결정해 빼고 출금, ATM의 available_cash 감소, 최대 50만원 withdraw 가능
-        //수수료 책정
-        if (CurrentAccount->getBank() == CurrentATM->GetPrimaryBank()) {
-            int fee = 1000;
-        }
-        else { int fee = 2000; }
-
-        map<int, int> AvailableNow = CurrentATM->GetAvailableCash();
-
-        //ATM available money amount
-        int ATMCash_sum = 0;
-        for (const auto& entry : AvailableNow) {
-            ATMCash_sum += entry.first * entry.second;
-        }
-
-        //int out_50000 = 0; int out_10000 = 0; int out_5000 = 0; int out_1000 = 0;
-        map<int, int> out;
-        int tmp_amount = Amount;
-        //인출 가능한가?
-        if (ATMCash_sum >= tmp_amount) {
-            //금액권 개수 산정
-            if (AvailableNow[50000] >= int(tmp_amount / 50000)) {
-                out[50000] = int(tmp_amount / 50000);
-                tmp_amount -= 50000 * out[50000];
-            }
-            else {
-                int out_50000 = AvailableNow[50000];
-            }
-            if (AvailableNow[10000] >= int(tmp_amount / 10000)) {
-                out[10000] = int(tmp_amount / 10000);
-                tmp_amount -= 10000 * out[10000];
-            }
-            else {
-                int out_10000 = AvailableNow[10000];
-            }
-            if (AvailableNow[5000] >= int(tmp_amount / 5000)) {
-                out[5000] = int(tmp_amount / 5000);
-                tmp_amount -= 5000 * out[5000];
-            }
-            else {
-                int out_5000 = AvailableNow[5000];
-            }
-            out[1000] = int(tmp_amount / 1000);
-            tmp_amount -= 1000 * out[1000];
-
-            //ATM available cash 감소
-            map<int, int> AvailableUpdate;
-            for (const auto& entry : AvailableNow) {
-                AvailableUpdate[AvailableNow.first] = AvailableNow.second - out[AvailableNow.first];//error : first 멤버가 없습니다
-            }
-            CurrentATM->SetAvailableCash(AvailableUpdate);
-
-            //Account balance 감소
-            CurrentAccount->Withdraw(Amount + fee);//error : fee가 정의되어있지 않습니다
-
-            //history return
-            return "cash withdrawal KRW " + to_string(Amount) + "(balance now: KRW" + to_string(CurrentAccount->getBalance()) + ")";//error : to_string이 정의되어있지 않습니다
-
-        }
-        else { //인출 불가능
-            return "error: The user ordered withdrawal of an amount that exceeds the amount currently available from the ATM.";
-        }
-    };
-};
-
-class TransferTransaction : public Transaction{
-public:
-    string AccountTransfer(ATM* CurrentATM, Account* Account1, Account* Account2, int Amount) {
-        //transfer 가능한가?
-        if (Account1->getBalance() >= Amount) {
-            //수수료 책정
-            if (Account1->getBank() == CurrentATM->GetPrimaryBank() && Account2->getBank() == CurrentATM->GetPrimaryBank()) {//error : ==연산자 사용 불가
-                int fee = 3000;
-            }
-            else if (Account1->getBank() == CurrentATM->GetPrimaryBank() || Account2->getBank() == CurrentATM->GetPrimaryBank()) {//error : ==연산자 사용 불가
-                int fee = 4000;
-            }
-            else { int fee = 5000; }
-
-            Account1->Withdraw(Amount + fee);//error : fee가 정의되어있지 않습니다 //error :
-            Account2->Deposit(Amount);
-
-            //return history
-            return "cash transfer KRW " + to_string(Amount) + ", from " + Account1->getAccountNum() + " to " + Account1->getAccountNum() + "(balance now: KRW" + to_string(CurrentAccount->getBalance()) + ")";//error : to_string이 정의되어있지 않습니다
-        }
-        else { // 잔액부족
-            return "error: The user ordered transfer of an amount that exceeds the amount currently available from the account.";
-        };
-    };
-
-    string CashTransfer(ATM* CurrentATM, Account* Account1, Account* Account2, map Cash) {//error : map의 type이 정의되어있지 않습니다(ex. map<int,int> Cash)
-        int Cash_sum = 0;
-        for (const auto& entry : Cash) {
-            Cash_sum += entry.first * entry.second;
-        }
-
-        //transfer 가능한가?
-        if (Account1->getBalance() >= Cash_sum) {
-            if (Cash_sum == 5000) {
-                //수수료 책정
-                if (Account1->getBank() == CurrentATM->GetPrimaryBank() && Account2->getBank() == CurrentATM->GetPrimaryBank()) {
-                    int fee = 3000;
-                }
-                else if (Account1->getBank() == CurrentATM->GetPrimaryBank() || Account2->getBank() == CurrentATM->GetPrimaryBank()) {
-                    int fee = 4000;
-                }
-                else { int fee = 5000; }
-
-                Account1->Withdraw(Cash_sum);
-                Account2->Deposit(Cash_sum);
-
-                //return history
-                return "cash transfer KRW " + to_string(Amount) + ", from " + Account1->getAccountNum() + " to " + Account1->getAccountNum() + "(balance now: KRW" + to_string(CurrentAccount->getBalance()) + ")";//error : CurrentAccount에 액세스할 수 없습니다, to_string이 정의되어 있지 않습니다, Amount가 정의되어있지 않습니다}
-            else {
-                return "error: The amount came in ATM is not KRW 5000.";
-            }
-            else { // 잔액부족
-                return "error: The user ordered transfer of an amount that exceeds the amount currently available from the account.";
-            }//error : if문이 필요합니다
-        };
-    };
-    };
-};
 
 
 
