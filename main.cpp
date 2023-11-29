@@ -240,9 +240,13 @@ void Session::CashDeposit(map<int, int> amount, int x) { //x=0이면 한국어
     account->deposit(totalAmount - fee);
 
 
+    //History를 저장합니다. 
+    //형식 : [1] Transaction ID: 1234, Card number: 234, Transaction type: Cash deposit, Amount: 2347, Deposit account number: 23478
     string out = "[";
     out += to_string(atm->GetHistory().size());
-    out += "] Card number: ";
+    out += "] Transaction ID: " 
+    out += to_string(this->transactionID);
+    out += ", Card number: ";
     out += card->getCardNumber();
     out += ", Transaction type: Cash deposit, Amount: ";
     out += to_string(totalAmount);
@@ -252,21 +256,12 @@ void Session::CashDeposit(map<int, int> amount, int x) { //x=0이면 한국어
     atm->SetHistory(out);
     
    
-    //Transaction ID, Card Number, Transaction Types, Amount, other transaction-specific information
-    /////question History가 string으로 바뀌어 업데이트 했습니다. 삭제해도 될까요?
+  
+    /////question) History가 string으로 바뀌어 업데이트 했습니다. 삭제해도 될까요?
     // ------[history 관리]
     //Transaction CashDepositTransaction(transactionID, card->getCardNumber(), "CashDeposit", totalAmount) ;
     //transctionHistoryOfSession.push_back(CashDepositTransaction);
     //------
-
-    
-    //question history 이렇게 저장하는거 어떤지 확인 + history ATM에 넘기는건 여기서 안해도 되는지 확인 부탁드려요!
-
-    //History를 저장합니다.
-    //-> [Transaction ID : 0000] Card Number : 2p9384 / Transaction Type : CashDeposit / TotalAmount : 203948의 형식 사용
-    string his;
-    his = "[Transaction ID : " + to_string(this->transactionID) + "] Card Number : " + to_string(card->getCardNumber()) + " / Transaction Type : CashDeposit / TotalAmount : "+ to_string(totalAmount);
-    transactionHistoryOfSession.push_back(his);
 
     
     
