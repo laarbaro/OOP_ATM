@@ -102,6 +102,11 @@ public:
         return myBank;
     }
 
+    // Bank 이름 반환 함수
+    string getBankName() const {
+        return myBank->getBankName();
+    };
+
     // 잔액 조회 함수
     int getBalance() const {
         return balance;
@@ -133,7 +138,6 @@ private:
     map<string, Bank*> PrimaryBank;
     map<string, Bank*> NonPrimaryBank;
     map<int, int> AvailableCash;//현금 단위, 갯수
-    ////////////////////////////////////////change 11.28
     int AvailableCashAmount;//현금 양
     Card* AdminCard;
     vector<string> History;
@@ -141,7 +145,6 @@ private:
     bool MultiBank = false;
     static int NumberOfATM;
     Session* CurrentSession;
-    ////////////////////////////////////////change 11.28
     Global* myGlobal;
 
 public:
@@ -154,6 +157,7 @@ public:
     void OpenSession();
 
     //Set 함수
+    void SetSerialNumber(int)
     void SetAvailableCash(map<int, int>, bool);
     ////////////////////////////////////////change 11.28
     void SetGlobal(Global* inglobal){this->myGlobal = inglobal;};
@@ -216,7 +220,7 @@ public:
 /*-------------- Methods of Session Class --------------*/
 
 //1. 현금 입금 함수
-void Session::CashDeposit(map<int, int> amount, int x) { // 여기서 x 는 한국어 인지 아닌지 ////////////question x는 int라서 상관없지 않을까요?
+void Session::CashDeposit(map<int, int> amount, int x) { //x=0이면 한국어
 
     //Primary bank인지 확인하고 fee를 결정합니다.
     unsigned long long fee = 0;
@@ -247,28 +251,40 @@ void Session::CashDeposit(map<int, int> amount, int x) { // 여기서 x 는 한�
     
     atm->SetHistory(out);
     
+   
     //Transaction ID, Card Number, Transaction Types, Amount, other transaction-specific information
     /////question History가 string으로 바뀌어 업데이트 했습니다. 삭제해도 될까요?
     // ------[history 관리]
     //Transaction CashDepositTransaction(transactionID, card->getCardNumber(), "CashDeposit", totalAmount) ;
     //transctionHistoryOfSession.push_back(CashDepositTransaction);
-    //------------------
-    /////
-//stop
+    //------
+
     
+    //question history 이렇게 저장하는거 어떤지 확인 + history ATM에 넘기는건 여기서 안해도 되는지 확인 부탁드려요!
+
+    //History를 저장합니다.
+    //-> [Transaction ID : 0000] Card Number : 2p9384 / Transaction Type : CashDeposit / TotalAmount : 203948의 형식 사용
+    string his;
+    his = "[Transaction ID : " + to_string(this->transactionID) + "] Card Number : " + to_string(card->getCardNumber()) + " / Transaction Type : CashDeposit / TotalAmount : "+ to_string(totalAmount);
+    transactionHistoryOfSession.push_back(his);
 
     
     
-    
-    // 거래 정보를 출력합니다. ~에는 뱅크 이름이랑 어카운트 가져오기 기능을 추가 해야함.
-    if (x == 0)
-        cout << "~에 " << totalAmount << " 원이 입금되었습니다." << endl;
+    // 거래 정보를 출력합니다.
+    if (x == 0)//
+        //출력 형태 : "Kakao 은행의 계좌 020202(계좌번호)에 3000원이 입금되었습니다." 
+        cout << account->getBankName() << " 은행의 계좌 " account->getAccountNum() <<"에 " << totalAmount << "원이 입금되었습니다." << endl;
     else
-        cout << "~에 " << totalAmount << " won has been deposited." << endl;
+        //출력 형태 : "3000 won has been deposited into the account 020202 of Kakao Bank." 
+        cout << totalAmount << "won has been deposited into the account " << account->getAccountNum() << " of " <<account->getBankName()<< " Bank." << endl;
 
     // 현재 잔액을 출력합니다.
-    if (x == 0) cout << "/n현재 잔액 : ";
-    else cout << "\nCurrent Available Cash : ";
+    if (x == 0) 
+        //출력 형태 : "현재 잔액 : 3000 원"
+        cout << "현재 잔액 : ";
+    else 
+        //출력 형태 : "Current Available Cash : 3000 won"
+        cout << "Current Available Cash : ";
     cout << account->getBalance();
     
     if (x == 0) cout << " 원" << endl;
@@ -282,13 +298,17 @@ void Session::CashDeposit(map<int, int> amount, int x) { // 여기서 x 는 한�
 
 // 2. 수표를 입금해주는 함수
 void Session::CheckDeposit(unsigned long long amount, int x) {
+    
+    // Primary bank인지 확인하고 fee를 결정합니다.
     unsigned long long fee = 0;
     if (!primarySignal) fee = 1000;
-    unsigned long long totalAmount = amount - fee ;
-        account->deposit(totalAmount);
+
+    // 계좌에 입금합니다.
+    unsigned long long totalAmount = amount - fee;
+    account->deposit(totalAmount);
     
     
-    //질문 , ATM에는 돈을 안넣나요. ? .?
+    //질문 , ATM에는 돈을 안넣나요. ? 네!!
     
     // ------[history 관리]
     string out = "[";
@@ -1038,7 +1058,7 @@ ATM::ATM(Bank* pb, map<string, Bank*> allb, Card* admin) {
 
     //UI
     cout << "ATM을 생성합니다" << endl;
-    cout << "Serial Number" << endl;
+    cout << "Serial Number : " << endl;
     cin >> this->SerialNumber;
     cout << "Primary Bank name :" << endl;
     cin >> bankname;
@@ -1202,17 +1222,15 @@ void SetAvailableCash(map<int, int> inputcash, bool Plus) {
     this->AvailableCashAmount = sum;
 };
 void ShowHistory() {
-    //Transaction History 보여주기 - user명과 transaction id, card num, transaction type, amount 등 정보
-    //map[<"TransactionID",int>,<"CardNumber",int>,<"TransactionType",string>,<"Amount",int>]
+    //History -> vector<string>
+    //cout은 terminal에 프린트, out은 History.txt에 프린트하는 함수입니다.
     ofstream out("History.txt");
     if (out.is_open()) {
         cout << "----------------------History--------------------" << endl;
         out << "----------------------History--------------------" << endl;
-        cout << this->History << endl;
-        out << this->History << endl;
-        /*for (auto iter = this->History.begin(); iter != this->History.end(); iter++) {
-            cout << iter->first << " : " << iter->second << endl;
-            out << iter->first << " : " << iter->second << endl;
+        for (auto iter = this->History.begin(); iter != this->History.end(); iter++) {
+            cout << *iter << endl;
+            out << *iter << endl;
         };*/
         cout << "------------------------------------------------" << endl;
         out << "------------------------------------------------" << endl;
