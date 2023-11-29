@@ -1355,7 +1355,7 @@ void Start() {
     //Session 종료 또는 invalid card : 카드 return 표시하기
         
 };
-bool (int cardnum, string pw){
+bool CheckInvalidCard (int cardnum, string pw){
      ///////////////////////////////이 부분 어떻게 할지, bank에서 카드 맵 저장하는게 나을지도
     bool isExist = false;
     for (const auto& pair : PrimaryBank) {
