@@ -801,7 +801,7 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                         cin.clear();
                         cin.ignore(100, '\n');
                         continue; //for문 다시 돌아가서 선택하게 하기.
-                    } else if (depositinput == 0000000000) {
+                    } else if (transactionNum == 0000000000) {
                         this->myGlobal->Display();
                         continue;
                     } else if (transactionNum == 5) {
