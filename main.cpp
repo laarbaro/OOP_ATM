@@ -691,6 +691,7 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
         KoreanSession(ATM* iatm);
         void mainKoreanDisplay();
         void VerifyAccountNum();
+        void AuthorizePassword();
     };
     
     //------------methods of KoreanSession---------------
