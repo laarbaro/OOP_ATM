@@ -693,8 +693,8 @@ class KoreanSession : public Session {
 public:
     KoreanSession(ATM* iatm);
     void mainKoreanDisplay();
-    virtual VerifyAccountNum();
-    virtual AuthorizePassword();
+    virtual void VerifyAccountNum();
+    virtual void AuthorizePassword();
 };
     
 //------------methods of KoreanSession---------------
