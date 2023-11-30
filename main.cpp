@@ -932,14 +932,14 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                                 }
                             }
                             
-                            
-                         else { // "1. 현금 입금     2. 수표 입금"에서 1과 2나 0000000000이 아닌 input이 들어오는 경우
+                        }
+                        else { // "1. 현금 입금     2. 수표 입금"에서 1과 2나 0000000000이 아닌 input이 들어오는 경우
                             cout << "유효하지 않은 번호입니다." << endl;
                         }
                         
                         
                         
-                    }
+                    
                     
                     
                     } else if (transactionNum == 2) {// 출금
@@ -1055,7 +1055,8 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                                 if (findAccount(inDest) == nullptr) { //Global Class 에 있다고 일단 가정
                                     cout << "입력한 계좌번호가 존재하지 않습니다\n" << endl;
                                 } else {
-                                    AccountTransfer(inAmount, findAccount(inDest) , 0); << endl;
+                                    AccountTransfer(inAmount, findAccount(inDest) , 0); 
+                                    // << endl;
                                     //매개변수 method of ATM이랑 같이해서 확인해 봐야함.
                                 }
                             }
