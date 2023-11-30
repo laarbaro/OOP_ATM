@@ -1030,9 +1030,9 @@ void KoreanSession::VerifyAccountNum(){
                             }
                         }
                         
-                        int transferNum;
+                        
                         else if (transactionNum == 3) { // 송금
-                            transferNum = -1;
+                            int transferNum = -1;
                             while (true){
                                 cout << "송금 서비스 입니다\n" << endl;
                                 cout << "             1. 계좌 송금 (계좌 -> 계좌)" << endl;
