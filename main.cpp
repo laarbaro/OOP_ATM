@@ -807,7 +807,7 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                     } else if (transactionNum == 5) {
                         // 사용자가 종료를 선택했을 때 루프를 종료
                         break;
-                    } 
+                    }
                     
                     if (transactionNum == 1) { // 입금 (1000월 , 5000원 , 10000원, 50000원을 받아야함. )
                         //입금 UI------------------
@@ -824,7 +824,7 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                             cin.clear();
                             cin.ignore(100, '\n');
                             continue;
-                        }; 
+                        };
                         if (depositinput == 0000000000) {
                             this->myGlobal->Display();
                             continue;
@@ -846,7 +846,7 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                                     cin.ignore(100, '\n');
                                     continue;
                                 }
-                                //stop                                
+                                //stop
 
                                 if (sel == 5) {
                                     // 사용자가 종료를 선택했을 때 루프를 종료
@@ -910,9 +910,9 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                                     break;
                                 }else {
                                     cout << "1. 수표입력 2. 종료 \n" << endl;
-                                    int choice  = -1;
-                                    cin >> choice ;
-                                    if (choice == 2) {
+                                    int chice  = -1;
+                                    cin >> chice ;
+                                    if (chice == 2) {
                                         break;
                                     }else {
                                         cout << "수표를 입력해주세요\n" << endl;
@@ -926,7 +926,7 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                                             cin.ignore(100, '\n');
                                             continue;
                                         }
-                                        CheckDeposit(inAmount, 0);
+                                        CheckDeposit(numBill, 0);
                                         numIterations++;
                                     }
                                 }
@@ -942,7 +942,7 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                     }
                     
                     
-                    } eles if (transactionNum == 2) {// 출금
+                    } else if (transactionNum == 2) {// 출금
                         //세션이 닫치게 만들어야함 !!!!!!!!!
                         
                         if (withdrawalCount == 3) {
@@ -971,6 +971,7 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                                     break;
                                 }
                                 
+                                int billType;
                                 if (bill == 1) {
                                     
                                     billType = 1000;
@@ -997,6 +998,7 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                                     continue;
                                     
                                 }
+                                
                                 
                                 billCounts[billType] = numBill;
                                 // 한 번에 거래 가능한 장 수
@@ -1504,4 +1506,5 @@ void ATM::ShowHistory() {
             
             return 0;
         }
+
 
