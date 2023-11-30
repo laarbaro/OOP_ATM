@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <string>
 #include <map>
@@ -246,6 +245,7 @@ public:
 	ATM(Bank* pb, map<string, Bank*> allb, Card* admin);//primary bank pointer, allbankmap, admincard
 	~ATM();
 	void Start();
+	bool CheckAdmin();
 	bool CheckInvalidCard();
 	void OpenSession();
 
@@ -1394,12 +1394,7 @@ bool ATM::CheckInvalidCard(string cardnum, string pw) {
 }
 
 bool ATM::CheckAdmin(string cardnum) {
-	if (this->GetAdminCard()->getCardNumber() == cardnum) {
-		return true;
-	}
-	else {
-		return false;
-	}
+	return (this->GetAdminCard()->getCardNumber() == cardnum);
 }
 void ATM::OpenSession() {
 	//언어 받고 session열어주기
@@ -1409,7 +1404,7 @@ void ATM::OpenSession() {
 			cout << "Select Language" << endl;
 			cout << "[1] English [etc] Korean" << endl;
 			cin >> sel;
-			if (cin.fail()) { // 사용자의 입력이 string이 아닌 경우
+			if (cin.fail() == true) { // 사용자의 입력이 string이 아닌 경우
 				cout << "유효하지 않은 문자열입니다." << endl;
 				cin.clear();
 				cin.ignore(100, '\n');
