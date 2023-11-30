@@ -318,10 +318,10 @@ public:
     Session() : currentTransactionID(1) {}
     void CashDeposit(map<int, int>, int x);
     //void Session::CashDeposit(map<int, int> amount, int x)
-    void CheckDeposit(unsigned long long amount, int x);
-    void Withdrawal(const map<int, int>& amount, int x);
-    void CashTransfer(map<int, int>, Account* destination, int x);
-    void AccountTransfer(unsigned long long amount, Account* destination, int x);
+    void CheckDeposit(unsigned long long, int x);
+    void Withdrawal(const map<int, int>&, int x);
+    void CashTransfer(map<int, int>, Account*, int x);
+    void AccountTransfer(unsigned long long, Account*, int x);
     bool Authorization(string password) {return account->verifyPW(password);};
     int GetNextTransactionID() { return currentTransactionID++;   };
     void SetmyGlobal(Global* inputglo){ myGlobal = inputglo;};
@@ -1482,22 +1482,26 @@ int main() {
         cin >> ownername;
         cout << "계좌 비밀번호를 입력해주세요" << endl;
         cin >> pw;
-        Account(AccountNum, pw, ownername, InputBankMap[pb]()); //수정중
-        AccountMap.insert({AccountNum, new Account(AccountNum, pw, ownername, InputBankMap[pb]())});
+        //const string& accountNum, const string& password, const string& ownerName, Bank* bank
+        map<string, Bank*> inputTMP;
+        inputTMP[pb] = InputBankMap[pb];
+        //Account(AccountNum, pw, ownername, inputTMP); //수정중
+        AccountMap.insert({AccountNum, new Account(AccountNum, pw, ownername, inputTMP)});
         
         //Card 선언
         //적어도 admin card는 여기에서 선언되어 ATM을 생성할 때 넣어줘야 함.
         cout << "카드를 만드시겠습니까? (y, n)" << endl;
-        cin >> char makeCard;
+        string makeCard;
+        cin >> makeCard;
         if (makeCard == "y") {
             cout << "카드번호를 입력하세요" << endl;
             int cardNumber;
             cin >> cardNumber;
             cout << "관리자 권한을 부여하시겠습니까? (y, n)" << endl;
-            char askAdmin;
+            string askAdmin;
             cin >> askAdmin;
             bool isAdmin;
-            if (askAdmin = "y") { isAdmin = true; }
+            if (askAdmin == "y") { isAdmin = true; }
             else { isAdmin = false; }
             
             Card(cardNumber, NumofAccount, isAdmin);
