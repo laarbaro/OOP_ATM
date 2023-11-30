@@ -726,7 +726,7 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                 cin.clear();
                 cin.ignore(100, '\n');
                 continue; //for문 다시 돌아가서 선택하게 하기.
-            } else if (depositinput == 'x') {
+            } else if (inputAccount == "x") {
                 this->myGlobal->Display();
                 continue;
         }
@@ -757,8 +757,9 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
             this->validAccount = false;
         }
     };
-
-    void KoreanSession::AuthorizePassword(){//확인되면 authorizationSignal을 true로 변경하는 함수
+        
+    //확인되면 authorizationSignal을 true로 변경하는 함수
+    void KoreanSession::AuthorizePassword(){
         for (int i = 1; i < 4; i++) { // 비밀번호 3번까지 입력 가능 !
             string inputPassword;
             mainKoreanDisplay();//question) 이 정보는 왜 계속해서 띄우나요?
@@ -774,11 +775,11 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                 mainKoreanDisplay();
                 cout << "비밀번호를 " << authorizationCount << "회 틀렸습니다\n" << endl;
             }
-        };
+        }
         if (authorizationSignal == false) {
             mainKoreanDisplay();
             cout << " 비밀번호 입력을 3회 실패하여 세션이 종료됩니다" << endl;
-        };
+        }
     };
 
 
@@ -1065,7 +1066,7 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                                 } else if (inAmount == 0000000000) {
                                     this->myGlobal->Display();
                                     continue;
-                                } else if (inAmount < 0) { 
+                                } else if (inAmount < 0) {
                                     cout << "유효하지 않은 번호입니다." << endl;
                                 } else if (inAmount == 0) {
                                     cout << "0 원을 송금할 수는 없습니다\n" << endl;
@@ -1129,12 +1130,6 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                     if (transactionNum == 4) { // 서비스 종료
                         
                         sessionExitSignal = false;
-
-                        cout << "이 세션의 거래 내역입니다. 서비스를 종료합니다." << endl;
-                        for (const auto& element : this->GetSessionHistory()) {
-                            cout << element << endl;
-                        }
-                        cout << "======================================" << endl;
                     }
                     
                     
@@ -1557,4 +1552,5 @@ void ATM::ShowHistory() {
             
             return 0;
         }
+
 
