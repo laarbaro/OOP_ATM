@@ -307,7 +307,7 @@ protected:
     ATM * atm ; // ATM 객체 가리키는 포인터
     Account* account ; // 계좌 객체 가리키는 포인터
     Card* card ;
-    vector<Transaction> transctionHistoryOfSession ; // 세션 동안 거래 내역 저장 -> 하고 뭐햇는지 display 해야함. 하나 저장 후 보여주기 (이걸 함수로먼들지 그냥 코드를 짤지는선택 ) + 백터 구조가 어떤지 알려줘서 ATM에 할수 있게 하기
+    vector<string> transctionHistoryOfSession ; // 세션 동안 거래 내역 저장 -> 하고 뭐햇는지 display 해야함. 하나 저장 후 보여주기 (이걸 함수로먼들지 그냥 코드를 짤지는선택 ) + 백터 구조가 어떤지 알려줘서 ATM에 할수 있게 하기
     bool authorizationSignal ; // 계좌 비밀번호 인증 결과 나타내는 bool값
     int authorizationCount ; // 비밀번호 인증 실패 횟수
     bool validAccount ;   // 계좌번호 확인결과
@@ -315,10 +315,8 @@ protected:
     bool primarySignal ;  // 현재 계좌 은행 정보와 ATM 주거래 은행이 동일한지 여부를 나타내는 bool 값
     int currentTransactionID;
     Global* myGlobal;
-
     
 public:
-
     Session() : currentTransactionID(1) {}
     void CashDeposit(map<int, int>, int x);
     //void Session::CashDeposit(map<int, int> amount, int x)
@@ -330,6 +328,7 @@ public:
     int GetNextTransactionID() { return currentTransactionID++;   };
     void SetmyGlobal(Global* inputglo){ myGlobal = inputglo;};
     
+    vector<string> GetSessionHistory() { return transctionHistoryOfSession; };
 };
 
 /*-------------- Methods of Session Class --------------*/
@@ -369,6 +368,7 @@ void Session::CashDeposit(map<int, int> amount, int x) { //x=0이면 한국어
     out += account->getAccountNum();
     
     atm->SetHistory(out);
+    this->transctionHistoryOfSession.push_back(out);
     
    
   
@@ -434,6 +434,7 @@ void Session::CheckDeposit(unsigned long long amount, int x) {
     out += account->getAccountNum();
     
     atm->SetHistory(out);
+    this->transctionHistoryOfSession.push_back(out);
     
     //Transaction CheckDepositTransaction(transactionID, card->getCardNumber(), "CheckDeposit", totalAmount) ;
     //transctionHistoryOfSession.push_back(CheckDepositTransaction);
@@ -508,6 +509,7 @@ void Session::Withdrawal(const map<int, int>& amount, int x) {
         out += account->getAccountNum();
     
         atm->SetHistory(out);
+        this->transctionHistoryOfSession.push_back(out);
         
         //Transaction withdrawTransaction(transactionID, card->getCardNumber(), "Withdraw", totalAmount);
         //transctionHistoryOfSession.push_back(withdrawTransaction);
@@ -582,6 +584,7 @@ void Session::CashTransfer(map<int, int> amount, Account* destination, int x) { 
     out += destination->getAccountNum();
     
     atm->SetHistory(out);
+    this->transctionHistoryOfSession.push_back(out);
     
     //Transaction CashTransferTransaction(transactionID, card->getCardNumber(), "CashTransfer", totaltotalAmount) ;
     //transctionHistoryOfSession.push_back(CashTransferTransaction);
@@ -649,6 +652,7 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
         out += destination->getAccountNum();
         
         atm->SetHistory(out);
+        this->transctionHistoryOfSession.push_back(out);
         
         //AccountTransferTransaction newTransaction(destination, account, amount, accountNum, destNum);
         //destination->addTransaction(&newTransaction);
@@ -884,7 +888,7 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                                 
                                 
                                 billCounts[Type] = bill;
-                                CashDeposit ( billCounts , 0 ) ;
+                                
                                 
                                 /* ??
                                 //input 체크 완료
@@ -896,7 +900,7 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                                  */
                                     
                             }
-                            
+                            CashDeposit ( billCounts , 0 ) ;
 
                                 
                             
@@ -1005,16 +1009,11 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                                 if (numBill > 50) {
                                     cout << "거래 1회 당 입금 가능한 장 수를 초과하셨습니다." << endl;
                                     break;
-                                
                                     
                                 }
-                            Withdrawal(billCounts, 0) ;
+                            Withdraw(billCounts, 0) ;
                             }
-                        
-                            
                         }
-                        
-                        
                     }
                     
                     
@@ -1069,12 +1068,12 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                     }
                     
                     // !!!!!!!!!!!!!!!!!히스토리.....
-                    
+                    /*
                     else if (transactionNum == 4) { // 거래 내역 조회// Transaction History
                         
                         cout << "거래 내역 조회를 선택하셨습니다\n" << endl;
                         cout << " 해당 계좌의 거래내역은 다음과 같습니다\n" << endl;
-                        vector<Transaction> temp = account->getTransactionHistoryOfAccount();
+                        vector<string> temp = this->GetSessionHistory();
                         if (temp.size() == 0) {
                             cout << "현재 잔액 : " << account->getFundInfo() << " 원\n" << endl;
                             cout << "            해당 계좌에는 거래 내역이 업습니다\n" << endl;
@@ -1085,7 +1084,7 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                             cout << "\n현재 잔액 : " << account->getFundInfo() << " 원\n" << endl;
                         }
                         
-                    }
+                    }*/
                     
                     if (transactionNum == 5) { // 서비스 종료
                         
@@ -1509,5 +1508,4 @@ void ATM::ShowHistory() {
             
             return 0;
         }
-
 
