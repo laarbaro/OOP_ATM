@@ -50,7 +50,7 @@ public:
     */
     // 카드 유효성 검사, 인증과 관련된 다른 함수들도 추가할 수 있음
 };
-const string& Card::getCardNumber() const { return accountNumber; }
+const string& Card::getCardNumber() const { return cardNumber; }
 const string& Card::getAccountNumber() const { return accountNumber; }
 bool Card::isAdminCard() const { return isAdmin; }
 
@@ -90,6 +90,7 @@ public:
     // 소멸자에서 리소스 정리 작업 수행
     // 예: 동적으로 할당된 메모리 해제 등
 
+    void setAccounts(map<string, Account*> inputAcc) {accounts.insert(inputAcc.begin(), inputAcc.end());};
     map<string, Account*> AccountsInBank() { return accounts; };
 };
 
@@ -109,6 +110,7 @@ private:
     string ownerName;
     int balance;
     Bank* myBank; // Bank 클래스의 전방 선언 사용 ,  포인터 연결은 여기서 해주는게 맞음
+    Card* myCard;
 
 public:
     // 생성자: AccountNum, Password, OwnerName 설정
@@ -129,6 +131,10 @@ public:
 
     // Bank 이름 반환 함수
     string getBankName() const;
+    
+    //card pointer
+    Card* getMyCard() { return myCard; };
+    void setMyCard(Card* crd) { myCard = crd; };
 
     // 잔액 조회 함수
     int getBalance() const;
@@ -183,7 +189,7 @@ bool Bank::accountExists(string accountNum) {
 
 // Password 검증 함수
 bool Account::verifyPW(const string& enteredPassword) const {
-    return (password == enteredPassword);
+    return (this->password == enteredPassword);
 }
 // AccountNum 반환 함수
 const string& Account::getAccountNum() const {
@@ -1362,6 +1368,8 @@ void ATM::Start() {
     string PW;
     cout << "Insert card number" << endl;
     cin >> CN;
+    cout << "Insert password" << endl;
+    cin >> PW;
     //Card 입력받은 경우 : admin인지, 올바른 카드인지 확인 후 session 열어주기
     if (CheckAdmin(CN)) {
         int sel = 1;
@@ -1394,40 +1402,36 @@ void ATM::Start() {
             }
         }
     }
-    else {
-        if (CheckInvalidCard(CN, PW)) {
+    else if (CheckInvalidCard(CN, PW)) {
             OpenSession();
-        }
-        else { cout << "올바르지 않은 카드입니다." << endl; }
-
     }
+    else { cout << "올바르지 않은 카드입니다." << endl; }
+    
     //Session 종료 또는 invalid card : 카드 return 표시하기
-
 }
 bool ATM::CheckInvalidCard(string cardnum, string pw) {
     ///////////////////////////////이 부분 어떻게 할지, bank에서 카드 맵 저장하는게 나을지도
     bool isExist = false;
-    for (const auto& pair : PrimaryBank) {
-        map<string, Account*> accs = pair.second->AccountsInBank();
-        for (const auto& pair : accs) {
-            if (pair.second->getAccountNum() == cardnum && pair.second->verifyPW(pw)) {
+    for (const auto& banks : GetPrimaryBank()) {
+        map<string, Account*> accMap = banks.second->AccountsInBank();
+        for (const auto& accs : accMap) {
+            if (accs.second->getMyCard()->getCardNumber() == cardnum && accs.second->verifyPW(pw)) {
                 isExist = true;
-            }
+            };
         }
     }
-    for (const auto& pair : NonPrimaryBank) {
-        map<string, Account*> accs = pair.second->AccountsInBank();
-        for (const auto& pair : accs) {
-            if (pair.second->getAccountNum() == cardnum && pair.second->verifyPW(pw)) {
+    for (const auto& banks : GetNonPrimaryBank()) {
+        map<string, Account*> accMap = banks.second->AccountsInBank();
+        for (const auto& accs : accMap) {
+            if (accs.second->getMyCard()->getCardNumber() == cardnum && accs.second->verifyPW(pw)) {
                 isExist = true;
-            }
+            };
         }
     }
     return isExist;
 }
 
 bool ATM::CheckAdmin(string cardnum) {
-    //return (this->GetAdminCard()->getCardNumber() == cardnum);
     bool isAdmin = false;
     map<string, Card*> tmp = this->myGlobal->getAdminMap();
     for (const auto& element : tmp) {
@@ -1600,7 +1604,10 @@ int main() {
         inputTMP[pb] = InputBankMap[pb];
         //Account(AccountNum, pw, ownername, inputTMP); //수정중
         AccountMap.insert({ AccountNum, new Account(AccountNum, pw, ownername, inputTMP[pb]) });//stop
-
+        map<string, Account*> bankin;
+        bankin[AccountNum] = AccountMap[AccountNum];
+        InputBankMap[pb]->setAccounts(bankin);
+        
         //Card 선언
         //적어도 admin card는 여기에서 선언되어 ATM을 생성할 때 넣어줘야 함.
         cout << "카드를 만드시겠습니까? (y, n)" << endl;
@@ -1616,11 +1623,13 @@ int main() {
             bool isAdmin;
             
             
+            
             if (askAdmin == "y") {
                 isAdmin = true;
             }
             else { isAdmin = false; }
-            inputCardMap.insert({ cardNumber, new Card(cardNumber, AccountNum, isAdmin) });
+            AccountMap[AccountNum]->setMyCard(new Card(cardNumber, AccountNum, isAdmin));
+            inputCardMap.insert({ cardNumber, AccountMap[AccountNum]->getMyCard() });
             
             if (askAdmin == "y") {
                 mainAdminMap.insert({cardNumber, inputCardMap[cardNumber]});
