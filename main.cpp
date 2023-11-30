@@ -900,38 +900,40 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
 
                                 
                             
-                        } else if (depositinput == 2) {
+                        }  else if (depositinput == 2) {
                             // 수표 입금 처리
-                            // 사용자에게 ?원권 수표의 장 수를 입력 받아 입금 처리합니다.
+                            int numIterations = 0;
                             
-                            cout << "수표를 입력해주세요\n" << endl;
-                            cout << "수표 : ";
-                            int numBill = -1;
-                            cin >> numBill;
-                            
-                            //input 체크
-                            if (cin.fail() == true) {
-                                cout << "유효하지 않은 번호입니다." << endl;
-                                cin.clear();
-                                cin.ignore(100, '\n');
-                                continue;
-                            } else if (depositinput == 0000000000) {
-                                this->myGlobal->Display();
-                                continue;
+                            while (true){
+                                if (numIterations==30) {
+                                    cout << "수표는 30장 까지 입금이 가능합니다. " << endl;
+                                    break;
+                                }else {
+                                    cout << "1. 수표입력 2. 종료 \n" << endl;
+                                    int chice  = -1;
+                                    cin >> choice ;
+                                    if (chice == 2) {
+                                        break;
+                                    }else {
+                                        cout << "수표를 입력해주세요\n" << endl;
+                                        cout << "수표 : ";
+                                        int numBill = -1;
+                                        cin >> numBill;
+                                        
+                                        if (cin.fail() == true) { //잘못입력시
+                                            cout << "유효하지 않은 번호입니다." << endl;
+                                            cin.clear();
+                                            cin.ignore(100, '\n');
+                                            continue;
+                                        }
+                                        CheckDeposit(inAmount, 0);
+                                        numIterations++;
+                                    }
+                                }
                             }
-
-                            if ((0 < numBill) && (numBill <= 30)) {inAmount = 100000 * numBill; break;}
-                            else if (numBill > 30) {
-                                atm->mainKoreanDisplay();
-                                cout << "       거래 1회 당 입금 가능한 장 수를 초과하셨습니다\n" << endl;
-                            } else {
-                                cout << "유효하지 않은 번호입니다." << endl;
-                            }
-                            
-                            CheckDeposit(inAmount, 0);
                             
                             
-                        } else { // "1. 현금 입금     2. 수표 입금"에서 1과 2나 0000000000이 아닌 input이 들어오는 경우
+                         else { // "1. 현금 입금     2. 수표 입금"에서 1과 2나 0000000000이 아닌 input이 들어오는 경우
                             cout << "유효하지 않은 번호입니다." << endl;
                         }
                         
