@@ -1171,15 +1171,15 @@ void KoreanSession::VerifyAccountNum(){
                         
                         cout << "세션 종료" << endl;
                         cout << "ATM을 이용해주셔서 감사합니다\n" << endl;
-                        if (transactionHistoryOfSession.size() == 0) {  //히스토리 부분
+                        if (GetSessionHistory().size() == 0) {  //히스토리 부분
                             cout << "해당 세션에는 거래 내역이 없습니다\n" << endl;
                         } else {
                             cout << "해당 세션 내 총 거래 내역" << endl;
                             
-                            atm->addTransaction(transactionHistoryOfSession); //ATM에 넘겨주기.
+                            //atm->addTransaction(GetSessionHistory()); //ATM에 넘겨주기.
                             
-                            for (int i = 0; i < transactionHistoryOfSession.size(); i++) {
-                                cout << transactionHistoryOfSession[i].getKoreanInformation() << endl; // 내역 출력
+                            for (int i = 0; i < GetSessionHistory().size(); i++) {
+                                cout << GetSessionHistory()[i] << endl; // 내역 출력
                             }
                             
                         }
