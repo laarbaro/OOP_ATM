@@ -884,7 +884,7 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                                 
                                 
                                 billCounts[Type] = bill;
-                                
+                                CashDeposit ( billCounts , 0 ) ;
                                 
                                 /* ??
                                 //input 체크 완료
@@ -896,7 +896,7 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                                  */
                                     
                             }
-                            CashDeposit ( billCounts , 0 ) ;
+                            
 
                                 
                             
