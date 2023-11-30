@@ -810,7 +810,7 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                     }
                     
                     if (transactionNum == 1) { // 입금 (1000월 , 5000원 , 10000원, 50000원을 받아야함. )
-                        //입금 UI------------------//stop
+                        //입금 UI------------------
                         mainKoreanDisplay();
                         cout << " 입금 서비스 입니다. " << endl;
                         cout << " 1. 현금 입금     2. 수표 입금" << endl;
@@ -818,28 +818,68 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                         int depositinput = -1;
                         cin >> depositinput;
                         
+                        //input 체크
                         if (cin.fail() == true) {
-                            cout << "유효하지 않은 번호입니다." << endl; //유효하지 않은 입력값 일때 !
+                            cout << "유효하지 않은 번호입니다. 다시 입력해주세요." << endl;
                             cin.clear();
                             cin.ignore(100, '\n');
                             continue;
-                        }
-                        
-                        
-                        
-                        
-                        
-                        
+                        } else if (depositinput == 0000000000) {
+                            this->myGlobal->Display();
+                            continue;
+                        } else { 
+                            
+
+                        //선택 : 현금 입금
                         if ( depositinput == 1) {
                             while (true) {
-                                
                                 mainKoreanDisplay() ;
                                 map<int, int> billCounts; // 각 지폐의 갯수를 저장할 맵
                                 cout << "입금하실 지폐의 종류를 선택해주세요\n" << endl;
                                 cout << "1. 1000원  2. 5000원  3. 10000원  4. 50000원 5. 종료" << endl;
-                                cout << "번호 입력 : ";
+                                int sel;
+                                cin >> sel;
+                                //stop
+                                
+                                cout << "몇 장인가요? : ";
                                 int bill = -1;
-                                cin >> bill;끝----------------------
+                                cin >> bill;끝
+                                
+                                //input 체크
+                                if (cin.fail() == true) {
+                                    cout << "유효하지 않은 번호입니다. 다시 입력해주세요." << endl;
+                                    cin.clear();
+                                    cin.ignore(100, '\n');
+                                    continue;
+                                } else if (depositinput == 0000000000) {
+                                    this->myGlobal->Display();
+                                    continue;
+                                }
+
+                                if (sel == 1){
+                                    
+                                }else if (sel == 2) {
+                                    
+                                } else if (sel==3){
+                                    
+                                } else if (sel==4){
+                                    
+                                } else if (sel == 5){
+                                    
+                                } else{
+                                    
+                                }
+
+                                //input 체크 완료
+                                map<int, int> cashinput;
+                                cashinput.insert({})
+                                CashDeposit(map<int, int> amount, int x)
+                                ----------------------//stop
+
+                                    
+                            }
+
+                                
                             
                         } else if (depositinput == 2) {
                             // 수표 입금 처리
