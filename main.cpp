@@ -845,7 +845,8 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                                     // 사용자가 종료를 선택했을 때 루프를 종료
                                     break;
                                 }
-                                
+
+                                int Type;
                                 if (sel == 1) {
                                     Type = 1000;
                                 } else if (sel == 2) {
