@@ -841,7 +841,7 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                                 cout << "1. 1000원  2. 5000원  3. 10000원  4. 50000원 5. 종료" << endl;
                                 int sel;
                                 cin >> sel;
-                                //stop
+                                
                                 
                                 cout << "몇 장인가요? : ";
                                 int bill = -1;
@@ -857,7 +857,6 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                                     this->myGlobal->Display();
                                     continue;
                                 }
-
                                 if (sel == 1){
                                     
                                 }else if (sel == 2) {
@@ -876,7 +875,7 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                                 map<int, int> cashinput;
                                 cashinput.insert({})
                                 CashDeposit(map<int, int> amount, int x)
-                                ----------------------//stop
+                                ---------------
 
                                     
                             }
@@ -885,19 +884,31 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                             
                         } else if (depositinput == 2) {
                             // 수표 입금 처리
-                            // 사용자에게 10만원권 수표의 장 수를 입력 받아 입금 처리합니다.
+                            // 사용자에게 ?원권 수표의 장 수를 입력 받아 입금 처리합니다.
                             
                             cout << "수표를 입력해주세요\n" << endl;
                             cout << "수표 : ";
                             int numBill = -1;
                             cin >> numBill;
                             
-                            if (cin.fail() == true) { //잘못입력시
+                            //input 체크
+                            if (cin.fail() == true) {
                                 cout << "유효하지 않은 번호입니다." << endl;
                                 cin.clear();
                                 cin.ignore(100, '\n');
                                 continue;
+                            } else if (depositinput == 0000000000) {
+                                this->myGlobal->Display();
+                                continue;
                             }
+
+                           
+                                if (cin.fail() == true) {
+                                    cout << "유효하지 않은 번호입니다. 다시 입력해주세요." << endl;
+                                    cin.clear();
+                                    cin.ignore(100, '\n');
+                                    continue;
+                                } 
                             if ((0 < numBill) && (numBill <= 30)) {inAmount = 100000 * numBill; break;}
                             else if (numBill > 30) {
                                 atm->mainKoreanDisplay();
