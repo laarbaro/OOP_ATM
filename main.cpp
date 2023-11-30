@@ -794,12 +794,19 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                     cout << "번호 입력 : ";
                     int transactionNum = -1;
                     cin >> transactionNum;
+
                     if (cin.fail() == true) { // 사용자의 입력이 숫자가 아닌 경우
                         cout << "유효하지 않은 번호입니다." << endl;
                         cin.clear();
                         cin.ignore(100, '\n');
                         continue; //for문 다시 돌아가서 선택하게 하기.
-                    }
+                    } else if (depositinput == 0000000000) {
+                        this->myGlobal->Display();
+                        continue;
+                    } else if (transactionNum == 5) {
+                        // 사용자가 종료를 선택했을 때 루프를 종료
+                        break;
+                    } 
                     
                     if (transactionNum == 1) { // 입금 (1000월 , 5000원 , 10000원, 50000원을 받아야함. )
                         //입금 UI------------------
@@ -816,13 +823,14 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                             cin.clear();
                             cin.ignore(100, '\n');
                             continue;
-                        } else if (depositinput == 0000000000) {
+                        }; 
+                        if (depositinput == 0000000000) {
                             this->myGlobal->Display();
                             continue;
-                        } else {
+                        };
                             
 
-                         //선택 : 현금 입금
+                        //선택 : 현금 입금
                         if ( depositinput == 1) {
                             while (true) {
                                 mainKoreanDisplay() ;
@@ -837,8 +845,7 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                                     cin.ignore(100, '\n');
                                     continue;
                                 }
-                                //stop
-                                
+                                //stop                                
 
                                 if (sel == 5) {
                                     // 사용자가 종료를 선택했을 때 루프를 종료
@@ -882,7 +889,7 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                                 map<int, int> cashinput;
                                 cashinput.insert({})
                                 CashDeposit(map<int, int> amount, int x)
-                                ----------------------//stop
+                                ---------------------
 
                                  */
                                     
@@ -892,7 +899,7 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                                 
                             
                         } else if (depositinput == 2) {
-                            // 수표 입금 처리/stop
+                            // 수표 입금 처리
                             // 사용자에게 ?원권 수표의 장 수를 입력 받아 입금 처리합니다.
                             
                             cout << "수표를 입력해주세요\n" << endl;
@@ -922,7 +929,7 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                             CheckDeposit(inAmount, 0);
                             
                             
-                        } else {
+                        } else { // "1. 현금 입금     2. 수표 입금"에서 1과 2나 0000000000이 아닌 input이 들어오는 경우
                             cout << "유효하지 않은 번호입니다." << endl;
                         }
                         
@@ -930,7 +937,8 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                         
                     }
                     
-                    eles if (transactionNum == 2) {// 출금
+                    
+                    } eles if (transactionNum == 2) {// 출금
                         //세션이 닫치게 만들어야함 !!!!!!!!!
                         
                         if (withdrawalCount == 3) {
