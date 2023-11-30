@@ -30,7 +30,6 @@ private:
 
 public:
 	// 생성자
-	Card();
 	Card(const string& cardNumber, const string& accountNumber, bool isAdmin)
 		: cardNumber(cardNumber), accountNumber(accountNumber), isAdmin(isAdmin) {}
 
