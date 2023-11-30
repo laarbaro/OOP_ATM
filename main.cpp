@@ -858,10 +858,11 @@ void KoreanSession::VerifyAccountNum(){
                             
                             
                             //선택 : 현금 입금
+                            map<int, int> billCounts; // 각 지폐의 갯수를 저장할 맵
                             if ( depositinput == 1) {
                                 while (true) {
                                     mainKoreanDisplay() ;
-                                    map<int, int> billCounts; // 각 지폐의 갯수를 저장할 맵
+                                    //map<int, int> billCounts; // 각 지폐의 갯수를 저장할 맵
                                     cout << "입금하실 지폐의 종류를 선택해주세요\n" << endl;
                                     cout << "1. 1000원  2. 5000원  3. 10000원  4. 50000원 5. 종료" << endl;
                                     int sel = -1 ;
