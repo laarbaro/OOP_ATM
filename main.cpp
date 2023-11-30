@@ -325,7 +325,8 @@ public:
     bool Authorization(string password) {return account->verifyPW(password);};
     int GetNextTransactionID() { return currentTransactionID++;   };
     void SetmyGlobal(Global* inputglo){ myGlobal = inputglo;};
-    
+    virtual void VerifyAccountNum();
+    virtual void AuthorizePassword();
     vector<string> GetSessionHistory() { return transctionHistoryOfSession; };
 };
 
@@ -692,8 +693,8 @@ class KoreanSession : public Session {
 public:
     KoreanSession(ATM* iatm);
     void mainKoreanDisplay();
-    void VerifyAccountNum();
-    void AuthorizePassword();
+    virtual VerifyAccountNum();
+    virtual AuthorizePassword();
 };
     
 //------------methods of KoreanSession---------------
