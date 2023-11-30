@@ -473,6 +473,7 @@ void Session::Withdrawal(const map<int, int>& amount, int x) {
         int denomination = entry.first;
         int count = entry.second;
         totalAmount += (denomination * count);
+    }
     
     //ATM의 사용 가능한 현금의 양을 가져옴
     unsigned long long totalAmountCash = atm->GetAvailableCashAmount();
