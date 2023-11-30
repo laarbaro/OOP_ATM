@@ -822,20 +822,45 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                         } else {
                             
 
-                        //선택 : 현금 입금
+                         //선택 : 현금 입금
                         if ( depositinput == 1) {
                             while (true) {
                                 mainKoreanDisplay() ;
                                 map<int, int> billCounts; // 각 지폐의 갯수를 저장할 맵
                                 cout << "입금하실 지폐의 종류를 선택해주세요\n" << endl;
                                 cout << "1. 1000원  2. 5000원  3. 10000원  4. 50000원 5. 종료" << endl;
-                                int sel;
+                                int sel = -1 ;
                                 cin >> sel;
+                                if (cin.fail() == true || sel < 1 || sel > 5) {
+                                    cout << "유효하지 않은 번호입니다." << endl;
+                                    cin.clear();
+                                    cin.ignore(100, '\n');
+                                    continue;
+                                }
+                                //stop
                                 
+
+                                if (sel == 5) {
+                                    // 사용자가 종료를 선택했을 때 루프를 종료
+                                    break;
+                                }
                                 
-                                cout << "몇 장인가요? : ";
+                                if (sel == 1) {
+                                    Type = 1000;
+                                } else if (sel == 2) {
+                                    Type = 5000;
+                                    
+                                } else if (sel == 3) {
+                                    Type = 10000;
+                                    
+                                } else if (sel == 4) {
+                                    Type = 50000;
+                                    
+                                }
+                                
+                                cout << "입금하실 지폐의 장 수를 입력해주세요: ";
                                 int bill = -1;
-                                cin >> bill;끝
+                                cin >> bill;
                                 
                                 //input 체크
                                 if (cin.fail() == true) {
@@ -847,28 +872,22 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                                     this->myGlobal->Display();
                                     continue;
                                 }
-                                if (sel == 1){
-                                    
-                                }else if (sel == 2) {
-                                    
-                                } else if (sel==3){
-                                    
-                                } else if (sel==4){
-                                    
-                                } else if (sel == 5){
-                                    
-                                } else{
-                                    
-                                }
-
+                                
+                                
+                                billCounts[Type] = bill;
+                                
+                                
+                                /* ??
                                 //input 체크 완료
                                 map<int, int> cashinput;
                                 cashinput.insert({})
                                 CashDeposit(map<int, int> amount, int x)
-                                ---------------
+                                ----------------------//stop
 
+                                 */
                                     
                             }
+                            CashDeposit ( billCounts , 0 ) ;
 
                                 
                             
