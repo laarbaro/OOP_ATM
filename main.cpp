@@ -784,389 +784,391 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
 
 
 
-    KoreanSession::KoreanSession(ATM* iatm) {
-        //Session Protected parameter 초기화 - account, card, transactionHistoryOfSession, currentTransactionID, myGlobal 비어있음
-        atm = iatm;
-        primarySignal = true; //
-        authorizationCount = 0; //
-        withdrawalCount = 0; // 이거 처리 !
-        authorizationSignal = true;
-
+        KoreanSession::KoreanSession(ATM* iatm) {
+            //Session Protected parameter 초기화 - account, card, transactionHistoryOfSession, currentTransactionID, myGlobal 비어있음
+            atm = iatm;
+            primarySignal = true; //
+            authorizationCount = 0; //
+            withdrawalCount = 0; // 이거 처리 !
+            authorizationSignal = true;
             
-        mainKoreanDisplay();
-        
-        //계좌번호 입력받고 존재하는지 확인, 유효하면 account에 저장되고 아니면 validAccount=false
-        VerifyAccountNum();
-                
-        if (validAccount) { // 유효한 계좌인 경우 (비밀번호 인증 로직)
-            AuthorizePassword();//확인되면 authorizationSignal을 true로 변경하는 함수
-            if(authorizationSignal){
-                bool sessionExitSignal = true;
-                while (sessionExitSignal) {
-                    mainKoreanDisplay();
-
-                    //서비스 선택 UI
-                    cout << "원하시는 서비스를 선택해주세요\n" << endl;
-                    cout << "1. 입금    2. 출금   3. 송금   4. 거래 내역 조회   5. 서비스 종료\n" << endl; //거래 3번 이상 시 세션 새로 열기
-                    cout << "번호 입력 : ";
-                    int transactionNum = -1;
-                    cin >> transactionNum;
-
-                    if (cin.fail() == true) { // 사용자의 입력이 숫자가 아닌 경우
-                        cout << "유효하지 않은 번호입니다." << endl;
-                        cin.clear();
-                        cin.ignore(100, '\n');
-                        continue; //for문 다시 돌아가서 선택하게 하기.
-                    } else if (transactionNum == 0000000000) {
-                        this->myGlobal->Display();
-                        continue;
-                    } else if (transactionNum == 5) {
-                        // 사용자가 종료를 선택했을 때 루프를 종료
-                        break;
-                    }
-                    
-                    if (transactionNum == 1) { // 입금 (1000월 , 5000원 , 10000원, 50000원을 받아야함. )
-                        //입금 UI------------------
+            
+            mainKoreanDisplay();
+            
+            //계좌번호 입력받고 존재하는지 확인, 유효하면 account에 저장되고 아니면 validAccount=false
+            VerifyAccountNum();
+            
+            if (validAccount) { // 유효한 계좌인 경우 (비밀번호 인증 로직)
+                AuthorizePassword();//확인되면 authorizationSignal을 true로 변경하는 함수
+                if(authorizationSignal){
+                    bool sessionExitSignal = true;
+                    while (sessionExitSignal) {
                         mainKoreanDisplay();
-                        cout << " 입금 서비스 입니다. " << endl;
-                        cout << " 1. 현금 입금     2. 수표 입금" << endl;
-                        cout << "번호 입력 : ";
-                        int depositinput = -1;
-                        cin >> depositinput;
                         
-                        //input 체크
-                        if (cin.fail() == true) {
-                            cout << "유효하지 않은 번호입니다. 다시 입력해주세요." << endl;
+                        //서비스 선택 UI
+                        cout << "원하시는 서비스를 선택해주세요\n" << endl;
+                        cout << "1. 입금    2. 출금   3. 송금   4. 거래 내역 조회   5. 서비스 종료\n" << endl; //거래 3번 이상 시 세션 새로 열기
+                        cout << "번호 입력 : ";
+                        int transactionNum = -1;
+                        cin >> transactionNum;
+                        
+                        if (cin.fail() == true) { // 사용자의 입력이 숫자가 아닌 경우
+                            cout << "유효하지 않은 번호입니다." << endl;
                             cin.clear();
                             cin.ignore(100, '\n');
-                            continue;
-                        };
-                        if (depositinput == 0000000000) {
+                            continue; //for문 다시 돌아가서 선택하게 하기.
+                        } else if (transactionNum == 0000000000) {
                             this->myGlobal->Display();
                             continue;
-                        };
-                            
-
-                        //선택 : 현금 입금
-                        if ( depositinput == 1) {
-                            while (true) {
-                                mainKoreanDisplay() ;
-                                map<int, int> billCounts; // 각 지폐의 갯수를 저장할 맵
-                                cout << "입금하실 지폐의 종류를 선택해주세요\n" << endl;
-                                cout << "1. 1000원  2. 5000원  3. 10000원  4. 50000원 5. 종료" << endl;
-                                int sel = -1 ;
-                                cin >> sel;
-                                if (cin.fail() == true || sel < 1 || sel > 5) {
-                                    cout << "유효하지 않은 번호입니다." << endl;
-                                    cin.clear();
-                                    cin.ignore(100, '\n');
-                                    continue;
-                                }
-                                //stop
-
-                                if (sel == 5) {
-                                    // 사용자가 종료를 선택했을 때 루프를 종료
-                                    break;
-                                }
-
-                                int Type;
-                                if (sel == 1) {
-                                    Type = 1000;
-                                } else if (sel == 2) {
-                                    Type = 5000;
-                                    
-                                } else if (sel == 3) {
-                                    Type = 10000;
-                                    
-                                } else if (sel == 4) {
-                                    Type = 50000;
-                                    
-                                }
-                                
-                                cout << "입금하실 지폐의 장 수를 입력해주세요: ";
-                                int bill = -1;
-                                cin >> bill;
-                                
-                                //input 체크
-                                if (cin.fail() == true) {
-                                    cout << "유효하지 않은 번호입니다. 다시 입력해주세요." << endl;
-                                    cin.clear();
-                                    cin.ignore(100, '\n');
-                                    continue;
-                                } else if (depositinput == 0000000000) {
-                                    this->myGlobal->Display();
-                                    continue;
-                                }
-                                
-                                
-                                billCounts[Type] = bill;
-                                
-                                
-                                /* ??
-                                //input 체크 완료
-                                map<int, int> cashinput;
-                                cashinput.insert({})
-                                CashDeposit(map<int, int> amount, int x)
-                                ---------------------
-
-                                 */
-                                    
-                            }
-                            CashDeposit ( billCounts , 0 ) ;
-
-                                
-                            
-                        }  else if (depositinput == 2) {
-                            // 수표 입금 처리
-                            int numIterations = 0;
-                            
-                            while (true){
-                                if (numIterations==30) {
-                                    cout << "수표는 30장 까지 입금이 가능합니다. " << endl;
-                                    break;
-                                }else {
-                                    cout << "1. 수표입력 2. 종료 \n" << endl;
-                                    int chice  = -1;
-                                    cin >> chice ;
-                                    if (chice == 2) {
-                                        break;
-                                    }else {
-                                        cout << "수표를 입력해주세요\n" << endl;
-                                        cout << "수표 : ";
-                                        int numBill = -1;
-                                        cin >> numBill;
-                                        
-                                        if (cin.fail() == true) { //잘못입력시
-                                            cout << "유효하지 않은 번호입니다." << endl;
-                                            cin.clear();
-                                            cin.ignore(100, '\n');
-                                            continue;
-                                        }
-                                        CheckDeposit(numBill, 0);
-                                        numIterations++;
-                                    }
-                                }
-                            }
-                            
-                        }
-                        else { // "1. 현금 입금     2. 수표 입금"에서 1과 2나 0000000000이 아닌 input이 들어오는 경우
-                            cout << "유효하지 않은 번호입니다." << endl;
+                        } else if (transactionNum == 5) {
+                            // 사용자가 종료를 선택했을 때 루프를 종료
+                            break;
                         }
                         
-                        
-                        
-                    
-                    
-                    
-                    } else if (transactionNum == 2) {// 출금
-                        //세션이 닫치게 만들어야함 !!!!!!!!!
-                        
-                        if (withdrawalCount == 3) {
-                            cout << "       세션 1회 당 출금 가능한 액수를 초과하셨습니다\n" << endl;
-                        }
-                        
-                        else {
-                            while (true){
-                                mainKoreanDisplay();
-                                map<int, int> billCounts; // 각 지폐의 갯수를 저장할 맵
-                                cout << "출금하실 지폐의 종류를 선택해주세요\n" << endl;
-                                cout << "1. 1000원  2. 5000원  3. 10000원  4. 50000원  5. 종료" << endl;
-                                cout << "번호 입력 : ";
-                                int bill = -1;
-                                cin >> bill;
-                                
-                                if (cin.fail() == true || bill < 1 || bill > 5) {
-                                    cout << "유효하지 않은 번호입니다." << endl;
-                                    cin.clear();
-                                    cin.ignore(100, '\n');
-                                    continue;
-                                }
-                                
-                                if (bill == 5) {
-                                    // 사용자가 종료를 선택했을 때 루프를 종료
-                                    break;
-                                }
-                                
-                                int billType;
-                                if (bill == 1) {
-                                    
-                                    billType = 1000;
-                                    
-                                } else if (bill == 2) {
-                                    billType = 5000;
-                                    
-                                } else if (bill == 3) {
-                                    billType = 10000;
-                                    
-                                } else if (bill == 4) {
-                                    billType = 50000;
-                                    
-                                }
-                                
-                                cout << "입금하실 지폐의 장 수를 입력해주세요: ";
-                                int numBill = -1;
-                                
-                                cin >> numBill;
-                                if (cin.fail() == true || numBill <= 0) {
-                                    cout << "유효하지 않은 번호입니다." << endl;
-                                    cin.clear();
-                                    cin.ignore(100, '\n');
-                                    continue;
-                                    
-                                }
-                                
-                                
-                                billCounts[billType] = numBill;
-                                // 한 번에 거래 가능한 장 수
-                                if (numBill > 50) {
-                                    cout << "거래 1회 당 입금 가능한 장 수를 초과하셨습니다." << endl;
-                                    break;
-                                    
-                                }
-                            Withdraw(billCounts, 0) ;
-                            }
-                        }
-                    }
-                    
-                    
-                    else if (transactionNum == 3) { // 송금
-
-                        while (true){
-                            cout << "송금 서비스 입니다\n" << endl;
-                            cout << "             1. 계좌 송금 (계좌 -> 계좌)" << endl;
-                            cout << "             2. 현금 송금 (현금 -> 계좌)\n" << endl;
-                            cout << "==================================================" << endl;
+                        if (transactionNum == 1) { // 입금 (1000월 , 5000원 , 10000원, 50000원을 받아야함. )
+                            //입금 UI------------------
+                            mainKoreanDisplay();
+                            cout << " 입금 서비스 입니다. " << endl;
+                            cout << " 1. 현금 입금     2. 수표 입금" << endl;
                             cout << "번호 입력 : ";
-                            int transferNum = -1;
-                            cin >> transferNum;
+                            int depositinput = -1;
+                            cin >> depositinput;
+                            
+                            //input 체크
                             if (cin.fail() == true) {
-                                cout << "유효하지 않은 번호입니다." << endl;
+                                cout << "유효하지 않은 번호입니다. 다시 입력해주세요." << endl;
                                 cin.clear();
                                 cin.ignore(100, '\n');
                                 continue;
-                            } else if (transferNum == 0000000000) {
+                            };
+                            if (depositinput == 0000000000) {
                                 this->myGlobal->Display();
                                 continue;
-                            } else {break;};
+                            };
+                            
+                            
+                            //선택 : 현금 입금
+                            if ( depositinput == 1) {
+                                while (true) {
+                                    mainKoreanDisplay() ;
+                                    map<int, int> billCounts; // 각 지폐의 갯수를 저장할 맵
+                                    cout << "입금하실 지폐의 종류를 선택해주세요\n" << endl;
+                                    cout << "1. 1000원  2. 5000원  3. 10000원  4. 50000원 5. 종료" << endl;
+                                    int sel = -1 ;
+                                    cin >> sel;
+                                    if (cin.fail() == true || sel < 1 || sel > 5) {
+                                        cout << "유효하지 않은 번호입니다." << endl;
+                                        cin.clear();
+                                        cin.ignore(100, '\n');
+                                        continue;
+                                    }
+                                    //stop
+                                    
+                                    if (sel == 5) {
+                                        // 사용자가 종료를 선택했을 때 루프를 종료
+                                        break;
+                                    }
+                                    
+                                    int Type;
+                                    if (sel == 1) {
+                                        Type = 1000;
+                                    } else if (sel == 2) {
+                                        Type = 5000;
+                                        
+                                    } else if (sel == 3) {
+                                        Type = 10000;
+                                        
+                                    } else if (sel == 4) {
+                                        Type = 50000;
+                                        
+                                    }
+                                    
+                                    cout << "입금하실 지폐의 장 수를 입력해주세요: ";
+                                    int bill = -1;
+                                    cin >> bill;
+                                    
+                                    //input 체크
+                                    if (cin.fail() == true) {
+                                        cout << "유효하지 않은 번호입니다. 다시 입력해주세요." << endl;
+                                        cin.clear();
+                                        cin.ignore(100, '\n');
+                                        continue;
+                                    } else if (depositinput == 0000000000) {
+                                        this->myGlobal->Display();
+                                        continue;
+                                    }
+                                    
+                                    
+                                    billCounts[Type] = bill;
+                                    
+                                    
+                                    /* ??
+                                     //input 체크 완료
+                                     map<int, int> cashinput;
+                                     cashinput.insert({})
+                                     CashDeposit(map<int, int> amount, int x)
+                                     ---------------------
+                                     
+                                     */
+                                    
+                                }
+                                CashDeposit ( billCounts , 0 ) ;
+                                
+                                
+                                
+                            }  else if (depositinput == 2) {
+                                // 수표 입금 처리
+                                int numIterations = 0;
+                                
+                                while (true){
+                                    if (numIterations==30) {
+                                        cout << "수표는 30장 까지 입금이 가능합니다. " << endl;
+                                        break;
+                                    }else {
+                                        cout << "1. 수표입력 2. 종료 \n" << endl;
+                                        int chice  = -1;
+                                        cin >> chice ;
+                                        if (chice == 2) {
+                                            break;
+                                        }else {
+                                            cout << "수표를 입력해주세요\n" << endl;
+                                            cout << "수표 : ";
+                                            int numBill = -1;
+                                            cin >> numBill;
+                                            
+                                            if (cin.fail() == true) { //잘못입력시
+                                                cout << "유효하지 않은 번호입니다." << endl;
+                                                cin.clear();
+                                                cin.ignore(100, '\n');
+                                                continue;
+                                            }
+                                            CheckDeposit(numBill, 0);
+                                            numIterations++;
+                                        }
+                                    }
+                                }
+                                
+                            }
+                            else { // "1. 현금 입금     2. 수표 입금"에서 1과 2나 0000000000이 아닌 input이 들어오는 경우
+                                cout << "유효하지 않은 번호입니다." << endl;
+                            }
+                            
+                            
+                            
+                            
+                            
+                            
+                        } else if (transactionNum == 2) {// 출금
+                            //세션이 닫치게 만들어야함 !!!!!!!!!
+                            
+                            if (withdrawalCount == 3) {
+                                cout << "       세션 1회 당 출금 가능한 액수를 초과하셨습니다\n" << endl;
+                            }
+                            
+                            else {
+                                while (true){
+                                    mainKoreanDisplay();
+                                    map<int, int> billCounts; // 각 지폐의 갯수를 저장할 맵
+                                    cout << "출금하실 지폐의 종류를 선택해주세요\n" << endl;
+                                    cout << "1. 1000원  2. 5000원  3. 10000원  4. 50000원  5. 종료" << endl;
+                                    cout << "번호 입력 : ";
+                                    int bill = -1;
+                                    cin >> bill;
+                                    
+                                    if (cin.fail() == true || bill < 1 || bill > 5) {
+                                        cout << "유효하지 않은 번호입니다." << endl;
+                                        cin.clear();
+                                        cin.ignore(100, '\n');
+                                        continue;
+                                    }
+                                    
+                                    if (bill == 5) {
+                                        // 사용자가 종료를 선택했을 때 루프를 종료
+                                        break;
+                                    }
+                                    
+                                    int billType;
+                                    if (bill == 1) {
+                                        
+                                        billType = 1000;
+                                        
+                                    } else if (bill == 2) {
+                                        billType = 5000;
+                                        
+                                    } else if (bill == 3) {
+                                        billType = 10000;
+                                        
+                                    } else if (bill == 4) {
+                                        billType = 50000;
+                                        
+                                    }
+                                    
+                                    cout << "입금하실 지폐의 장 수를 입력해주세요: ";
+                                    int numBill = -1;
+                                    
+                                    cin >> numBill;
+                                    if (cin.fail() == true || numBill <= 0) {
+                                        cout << "유효하지 않은 번호입니다." << endl;
+                                        cin.clear();
+                                        cin.ignore(100, '\n');
+                                        continue;
+                                        
+                                    }
+                                    
+                                    
+                                    billCounts[billType] = numBill;
+                                    // 한 번에 거래 가능한 장 수
+                                    if (numBill > 50) {
+                                        cout << "거래 1회 당 입금 가능한 장 수를 초과하셨습니다." << endl;
+                                        break;
+                                        
+                                    }
+                                    Withdraw(billCounts, 0) ;
+                                }
+                            }
                         }
                         
                         
-                        if (transferNum == 1) { // Account Transfer
+                        else if (transactionNum == 3) { // 송금
+                            
                             while (true){
-                                cout << "계좌 송금 서비스를 선택하셨습니다\n" << endl;
-                                cout << "송금하실 금액을 입력해주십시오\n" << endl;
-                                cout << "송금 금액 : ";
-                                unsigned long long inAmount = -1;
-                                cin >> inAmount;
+                                cout << "송금 서비스 입니다\n" << endl;
+                                cout << "             1. 계좌 송금 (계좌 -> 계좌)" << endl;
+                                cout << "             2. 현금 송금 (현금 -> 계좌)\n" << endl;
+                                cout << "==================================================" << endl;
+                                cout << "번호 입력 : ";
+                                int transferNum = -1;
+                                cin >> transferNum;
                                 if (cin.fail() == true) {
                                     cout << "유효하지 않은 번호입니다." << endl;
                                     cin.clear();
                                     cin.ignore(100, '\n');
                                     continue;
-                                } else if (inAmount == 0000000000) {
+                                } else if (transferNum == 0000000000) {
                                     this->myGlobal->Display();
                                     continue;
-                                } else if (inAmount < 0) {
-                                    cout << "유효하지 않은 번호입니다." << endl;
-                                } else if (inAmount == 0) {
-                                    cout << "0 원을 송금할 수는 없습니다\n" << endl;
                                 } else {break;};
                             }
-                            mainKoreanDisplay() ;
-
-                            while (true){
-                                cout << "          받으실 분의 계좌 번호를 입력해주십시오\n" << endl;
-                                cout << "받으실 분 계좌 번호 : ";
-                                string inDest;
-                                cin >> inDest;
-
                             
-                                if (cin.fail() == true) {
-                                    cout << "유효하지 않은 번호입니다." << endl;
-                                    cin.clear();
-                                    cin.ignore(100, '\n');
-                                    continue;
-                                    
-                                } else if (inDest == 'x') {
-                                    this->myGlobal->Display();
-                                    continue;
-                                } else { /
-                                    //Global에서 account map 가져와서 destination account* 넘겨주기
-                                    auto it = accountmap.find(inDest);
-
-                                    if (it != accountmap.end()) {
-                                        AccountTransfer(inAmount, it->second, 0); << endl;
-                                    } else {
-                                        // 계좌가 존재하지 않는 경우
-                                        cout << "입력한 계좌번호가 존재하지 않습니다. 다시 입력해주세요." << endl;
+                            
+                            if (transferNum == 1) { // Account Transfer
+                                while (true){
+                                    cout << "계좌 송금 서비스를 선택하셨습니다\n" << endl;
+                                    cout << "송금하실 금액을 입력해주십시오\n" << endl;
+                                    cout << "송금 금액 : ";
+                                    unsigned long long inAmount = -1;
+                                    cin >> inAmount;
+                                    if (cin.fail() == true) {
+                                        cout << "유효하지 않은 번호입니다." << endl;
+                                        cin.clear();
+                                        cin.ignore(100, '\n');
                                         continue;
-                                    }
-                                };
-                            };
-             
-                                   
-          
-                                    /*
-                                    // !!!!!!!!!!!!!!!!!히스토리.....
+                                    } else if (inAmount == 0000000000) {
+                                        this->myGlobal->Display();
+                                        continue;
+                                    } else if (inAmount < 0) {
+                                        cout << "유효하지 않은 번호입니다." << endl;
+                                    } else if (inAmount == 0) {
+                                        cout << "0 원을 송금할 수는 없습니다\n" << endl;
+                                    } else {break;};
+                                }
+                                mainKoreanDisplay() ;
+                                
+                                while (true){
+                                    cout << "          받으실 분의 계좌 번호를 입력해주십시오\n" << endl;
+                                    cout << "받으실 분 계좌 번호 : ";
+                                    string inDest;
+                                    cin >> inDest;
                                     
-                                    else if (transactionNum == 4) { // 거래 내역 조회// Transaction History
+                                    
+                                    if (cin.fail() == true) {
+                                        cout << "유효하지 않은 번호입니다." << endl;
+                                        cin.clear();
+                                        cin.ignore(100, '\n');
+                                        continue;
                                         
-                                        cout << "거래 내역 조회를 선택하셨습니다\n" << endl;
-                                        cout << " 해당 계좌의 거래내역은 다음과 같습니다\n" << endl;
-                                        vector<Transaction> temp = account->getTransactionHistoryOfAccount();
-                                        if (temp.size() == 0) {
-                                            cout << "현재 잔액 : " << account->getFundInfo() << " 원\n" << endl;
-                                            cout << "            해당 계좌에는 거래 내역이 업습니다\n" << endl;
+                                    } else if (inDest == 'x') {
+                                        this->myGlobal->Display();
+                                        continue;
+                                    } else { /
+                                        //Global에서 account map 가져와서 destination account* 넘겨주기
+                                        auto it = accountmap.find(inDest);
+                                        
+                                        if (it != accountmap.end()) {
+                                            AccountTransfer(inAmount, it->second, 0); << endl;
                                         } else {
-                                            for (int i = 0; i < temp.size(); i++) {
-                                                cout << temp[i].getKoreanInformation() << endl;
-                                            }
-                                            cout << "\n현재 잔액 : " << account->getFundInfo() << " 원\n" << endl;
+                                            // 계좌가 존재하지 않는 경우
+                                            cout << "입력한 계좌번호가 존재하지 않습니다. 다시 입력해주세요." << endl;
+                                            continue;
                                         }
-                                        
-                                    }
-                                    */
-                                  
-                    if (transactionNum == 4) { // 서비스 종료
+                                    };
+                                };
+                                
+                                
+                                
+                                /*
+                                 // !!!!!!!!!!!!!!!!!히스토리.....
+                                 
+                                 else if (transactionNum == 4) { // 거래 내역 조회// Transaction History
+                                 
+                                 cout << "거래 내역 조회를 선택하셨습니다\n" << endl;
+                                 cout << " 해당 계좌의 거래내역은 다음과 같습니다\n" << endl;
+                                 vector<Transaction> temp = account->getTransactionHistoryOfAccount();
+                                 if (temp.size() == 0) {
+                                 cout << "현재 잔액 : " << account->getFundInfo() << " 원\n" << endl;
+                                 cout << "            해당 계좌에는 거래 내역이 업습니다\n" << endl;
+                                 } else {
+                                 for (int i = 0; i < temp.size(); i++) {
+                                 cout << temp[i].getKoreanInformation() << endl;
+                                 }
+                                 cout << "\n현재 잔액 : " << account->getFundInfo() << " 원\n" << endl;
+                                 }
+                                 
+                                 }
+                                 */
+                                
+                                if (transactionNum == 4) { // 서비스 종료
+                                    
+                                    sessionExitSignal = false;
+                                }
+                                
+                                
+                                
+                                
+                            }
+                        }
                         
-                        sessionExitSignal = false;
+                        
+                        
+                        
+                        cout << "세션 종료" << endl;
+                        cout << "ATM을 이용해주셔서 감사합니다\n" << endl;
+                        if (transactionHistoryOfSession.size() == 0) {  //히스토리 부분
+                            cout << "해당 세션에는 거래 내역이 없습니다\n" << endl;
+                        } else {
+                            cout << "해당 세션 내 총 거래 내역" << endl;
+                            
+                            atm->addTransaction(transactionHistoryOfSession); //ATM에 넘겨주기.
+                            
+                            for (int i = 0; i < transactionHistoryOfSession.size(); i++) {
+                                cout << transactionHistoryOfSession[i].getKoreanInformation() << endl; // 내역 출력
+                            }
+                            
+                        }
                     }
-                    
-                    
-                    
-                    
                 }
-            }
-            
-
                 
                 
-                cout << "세션 종료" << endl;
-                cout << "ATM을 이용해주셔서 감사합니다\n" << endl;
-                if (transactionHistoryOfSession.size() == 0) {  //히스토리 부분
-                    cout << "해당 세션에는 거래 내역이 없습니다\n" << endl;
-                } else {
-                    cout << "해당 세션 내 총 거래 내역" << endl;
-                    
-                    atm->addTransaction(transactionHistoryOfSession); //ATM에 넘겨주기.
-                    
-                    for (int i = 0; i < transactionHistoryOfSession.size(); i++) {
-                        cout << transactionHistoryOfSession[i].getKoreanInformation() << endl; // 내역 출력
-                    }
-                    
-                }
-            }
-        }
-        
-        
-    }//class 끝
+            } else { cout << " 세션이 종료됩니다. " << endl ; }
+        }//class 끝
     
     
+    /*
     class EnglishSession {
     public:
         
     };
-    
+    */
     
 
 
@@ -1198,7 +1200,7 @@ ATM::ATM(Bank* pb, map<string, Bank*> allb, Card* admin) {
     cout << "ATM을 생성합니다" << endl;
     cout << "Serial Number : " << endl;
     
-  >> this->SerialNumber;
+    cin >> this->SerialNumber;
     cout << "Primary Bank name :" << endl;
     cin >> bankname;
     this->PrimaryBank.insert({ bankname, pb });
@@ -1223,8 +1225,8 @@ ATM::ATM(Bank* pb, map<string, Bank*> allb, Card* admin) {
         }
         else {
             cout << "올바르지 않은 숫자입니다. 다시 입력해주세요" << endl;
-        };
-    };
+        }
+    }
 
     while (true) {
         cout << "MultiBank ATM입니까?" << endl;
@@ -1243,8 +1245,8 @@ ATM::ATM(Bank* pb, map<string, Bank*> allb, Card* admin) {
         else {
             cout << "올바르지 않은 숫자입니다. 다시 입력해주세요" << endl;
 
-        };
-    };
+        }
+    }
     cout << "초기 Cash를 입금해주세요" << endl;
     cout << "1000원권 몇 장을 입금하시겠습니까?" << endl;
     cin >> cash1000;
@@ -1265,45 +1267,45 @@ ATM::~ATM() {
     delete this->CurrentSession;
     NumberOfATM--;
 }
-void ATM::Start() {
-//기본적인 모든 session 열기 전 수행을 하는 함수입니다.
-    
-    //기본 선택 : (Card 입력받기)
-    int firstsel;
-    cout << "Welcome" << endl;
-    cout << "To start a session, please insert your debit card" << endl;
-    string CN;
-    string PW;
-        cout << "Insert card number and password" << endl;
-        //Card 입력받은 경우 : admin인지, 올바른 카드인지 확인 후 session 열어주기
-        if (CheckAdmin()) {
-            int sel = 1;
-            bool repeat = true;
+        void ATM::Start() {
+            //기본적인 모든 session 열기 전 수행을 하는 함수입니다.
+            
+            //기본 선택 : (Card 입력받기)
+            int firstsel;
+            cout << "Welcome" << endl;
+            cout << "To start a session, please insert your debit card" << endl;
+            string CN;
+            string PW;
+            cout << "Insert card number and password" << endl;
+            //Card 입력받은 경우 : admin인지, 올바른 카드인지 확인 후 session 열어주기
+            if (CheckAdmin()) {
+                int sel = 1;
+                bool repeat = true;
                 cout << "Welcome Administrator" << endl;
-            while (repeat){
+                while (repeat){
                     cout << "[1] Transaction History" << endl;
                     cin >> sel;
                     
                     if (sel == 1) {
-                            ShowHistory();
-                    repeat = false;
+                        ShowHistory();
+                        repeat = false;
                     } else if (sel == 0000000000) {
-                            this->myGlobal->Display();
-                            continue;
+                        this->myGlobal->Display();
+                        continue;
                     } else {
-                            cout << "error : 올바른 input을 입력해주세요" << endl;
+                        cout << "error : 올바른 input을 입력해주세요" << endl;
                     }
+                }
             }
+            else {
+                if (CheckInvalidCard(CN, PW)){
+                    OpenSession();
+                }else{ cout << "올바르지 않은 카드입니다." << endl;}
+                
+            }
+            //Session 종료 또는 invalid card : 카드 return 표시하기
+            
         }
-        else {
-        if (CheckInvalidCard(CN, PW)){
-            OpenSession();
-        }else{ cout << "올바르지 않은 카드입니다." << endl;}
-           
-        };
-    //Session 종료 또는 invalid card : 카드 return 표시하기
-        
-};
 bool ATM::CheckInvalidCard (string cardnum, string pw){
      ///////////////////////////////이 부분 어떻게 할지, bank에서 카드 맵 저장하는게 나을지도
     bool isExist = false;
@@ -1324,11 +1326,11 @@ bool ATM::CheckInvalidCard (string cardnum, string pw){
         }
     }
     return isExist;
-};
+}
 
 bool ATM::CheckAdmin(int cardnum, int pw) {
     return this->GetAdminCard()->isAdminCard();
-};
+}
 void ATM::OpenSession() {
     //언어 받고 session열어주기
     if (this->Bilingual) {
@@ -1345,23 +1347,25 @@ void ATM::OpenSession() {
         }
     }
 }
-void ATM::SetAvailableCash(map<int, int> inputcash, bool Plus) {
-        if (Plus) {
-            for (auto iter = this->AvailableCash.begin(); iter != this->AvailableCash.end(); iter++) {
-                int currentnum = inputcash.find(iter->first)->second;
-                iter->second += currentnum;
-            } else {
+        void ATM::SetAvailableCash(map<int, int> inputcash, bool Plus) {
+            if (Plus) {
                 for (auto iter = this->AvailableCash.begin(); iter != this->AvailableCash.end(); iter++) {
                     int currentnum = inputcash.find(iter->first)->second;
-                    iter->second -= currentnum;
-                };
-                int sum;
-                for(auto iter = this->AvailableCash.begin(); iter != this->AvailableCash.end(); iter++){
-                    sum+=((iter->first)*(iter->second));
-                };
-                this->AvailableCashAmount = sum;
+                    iter->second += currentnum;
+                } else {
+                    for (auto iter = this->AvailableCash.begin(); iter != this->AvailableCash.end(); iter++) {
+                        int currentnum = inputcash.find(iter->first)->second;
+                        iter->second -= currentnum;
+                    }
+                    int sum;
+                    for(auto iter = this->AvailableCash.begin(); iter != this->AvailableCash.end(); iter++){
+                        sum+=((iter->first)*(iter->second));
+                    };
+                    this->AvailableCashAmount = sum;
+                }
             }
-        };
+        }
+        
 void ATM::ShowHistory() {
             //History -> vector<string>
             //cout은 terminal에 프린트, out은 History.txt에 프린트하는 함수입니다.
@@ -1372,54 +1376,54 @@ void ATM::ShowHistory() {
                 for (auto iter = this->History.begin(); iter != this->History.end(); iter++) {
                     cout << *iter << endl;
                     out << *iter << endl;
-                };*/
+                }
                 cout << "------------------------------------------------" << endl;
                 out << "------------------------------------------------" << endl;
             }
             else {
                 cout << "Error : history 파일 안열림" << endl;
-            };
+            }
             fout.close();
             
-        };
+        }
         void ATM::ShowAvailableCash() {
             int total = 0;
             cout << " Remaining Cash: ( ";
             for (auto iter = this->AvailableCash.begin(); iter != this->AvailableCash.end(); iter++) {
                 cout << iter->first << "원X" << iter->second << "장  ";
                 total += iter->first * iter->second;
-            };
+            }
             cout << ") total : " << total << endl;
-        };
+        }
         ////////////////////////////////////////change 11.28
         
         //----------------------------methods of Global----------------------------------------
         //-------------------------------------------------------------------------------------
         void Global::setAccountMap(map<string,Account*> inmap){
             this->AccountMap = inmap;
-        };
+        }
         void Global::setATMMap(map<string,ATM*> inmap){
             this->ATMMap = inmap;
-        };
+        }
         void Global::Display(){
             //모든 ATM의 정보 출력
             for (pair<string, ATM*> i : ATMMap){
                 cout << "(ATM [SN : "<<i.second->GetSerialNum();
                 cout << "] remaining cash: "<<i.second->AvailableCashAmount()<<" ) ";
-            };
+            }
             
             //모든 Account의 정보 출력
             for (pair<string, Account*> p: AccountMap){
                 cout << "(Account [Bank: "<<p.second->myBank->getBankName()<<", No: " <<p.first;
                 cout << ", Owner: "<<p.second->getOwnerName()<<"] balance: "<<p.second->getBalance()<<" ) ";
-            };
-        };
+            }
+        }
         map<string, ATM*> Global::getATMMap(string){
             return ATMMap;
-        };
+        }
         map<string, Account*> Global::getAccountMap(int){
             return AccountMap;
-        };
+        }
         
         
         
@@ -1437,7 +1441,7 @@ void ATM::ShowHistory() {
                 cout << "은행의 이름을 입력해주세요" << endl;
                 cin >> BankName1;
                 InputBankMap.insert({BankName1,new Bank(BankName1)});
-            };
+            }
             
             //Account 선언
             map<int, Account*> AccountMap;
@@ -1509,7 +1513,7 @@ void ATM::ShowHistory() {
             Global myGlobal(AccountMap, ATMMap);
             for (auto& i : ATMMap){
                 i.second->SetGlobal();
-            };
+            }
             
             bool isATMworiking = true;
             while (isATMworking) {
@@ -1529,7 +1533,9 @@ void ATM::ShowHistory() {
                 if (UsedATM == 'x') {
                     myGlobal->Display();
                     cout << "Write the name of an ATM that you want to use." << endl;
-                    cin << UsedATM;}
+                    cin << UsedATM;
+                    
+                }
                               
                 ATMmap[UsedATM]->Start();
                 
