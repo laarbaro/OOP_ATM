@@ -1024,7 +1024,7 @@ void KoreanSession::VerifyAccountNum(){
                                         break;
                                         
                                     }
-                                    Withdraw(billCounts, 0) ;
+                                    Withdrawal(billCounts, 0) ;
                                 }
                             }
                         }
