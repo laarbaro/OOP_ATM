@@ -479,7 +479,7 @@ void Session::Withdrawal(const map<int, int>& amount, int x) {
     unsigned long long totalAmountCash = atm->GetAvailableCashAmount();
 
     //비교해 출금
-    if (totalAvailableCash < totalAmount + fee) {
+    if (totalAmountCash < totalAmount + fee) {
         if (x == 0) cout << " 현재 기기 내 현금이 부족합니다\n" << endl;
         else cout << " OUR ATM DOESN'T HAVE ENOUGH MONEY\n" << endl;
     } else if (totalAmount + fee > account->getBalance()) {
