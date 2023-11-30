@@ -107,7 +107,6 @@ private:
 	string accountNum;
 	string password;
 	string ownerName;
-	Card associatedCard;
 	int balance;
 	Bank* myBank; // Bank 클래스의 전방 선언 사용 ,  포인터 연결은 여기서 해주는게 맞음
 
