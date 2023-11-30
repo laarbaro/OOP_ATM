@@ -901,6 +901,7 @@ void KoreanSession::VerifyAccountNum(){
                                     
                                     
                                     billCounts[Type] = bill;
+                                    CashDeposit ( billCounts , 0 ) ;
                                     
                                     
                                     /* ??
@@ -913,7 +914,7 @@ void KoreanSession::VerifyAccountNum(){
                                      */
                                     
                                 }
-                                CashDeposit ( billCounts , 0 ) ;
+                               
                                 
                                 
                                 
@@ -1031,14 +1032,13 @@ void KoreanSession::VerifyAccountNum(){
                         
                         
                         else if (transactionNum == 3) { // 송금
-                            
+                            int transferNum = -1;
                             while (true){
                                 cout << "송금 서비스 입니다\n" << endl;
                                 cout << "             1. 계좌 송금 (계좌 -> 계좌)" << endl;
                                 cout << "             2. 현금 송금 (현금 -> 계좌)\n" << endl;
                                 cout << "==================================================" << endl;
                                 cout << "번호 입력 : ";
-                                int transferNum = -1;
                                 cin >> transferNum;
                                 if (cin.fail() == true) {
                                     cout << "유효하지 않은 번호입니다." << endl;
@@ -1050,8 +1050,6 @@ void KoreanSession::VerifyAccountNum(){
                                     continue;
                                 } else {break;};
                             }
-                            
-                            
                             if (transferNum == 1) { // Account Transfer
                                 while (true){
                                     cout << "계좌 송금 서비스를 선택하셨습니다\n" << endl;
@@ -1088,22 +1086,23 @@ void KoreanSession::VerifyAccountNum(){
                                         cin.ignore(100, '\n');
                                         continue;
                                         
-                                    } else if (inDest == 'x') {
+                                    } else if (inDest == "x") {
                                         this->myGlobal->Display();
                                         continue;
-                                    } else { /
+                                    } else {
                                         //Global에서 account map 가져와서 destination account* 넘겨주기
-                                        auto it = accountmap.find(inDest);
+                                        auto it = this->myGlobal->getAccountMap().find(inDest);
                                         
-                                        if (it != accountmap.end()) {
-                                            AccountTransfer(inAmount, it->second, 0); << endl;
+                                        if (it != this->myGlobal->getAccountMap().end()) {
+                                            AccountTransfer(inAmount, it->second, 0);
+                                            
                                         } else {
                                             // 계좌가 존재하지 않는 경우
                                             cout << "입력한 계좌번호가 존재하지 않습니다. 다시 입력해주세요." << endl;
                                             continue;
                                         }
-                                    };
-                                };
+                                    }
+                                }
                                 
                                 
                                 
@@ -1144,15 +1143,15 @@ void KoreanSession::VerifyAccountNum(){
                         
                         cout << "세션 종료" << endl;
                         cout << "ATM을 이용해주셔서 감사합니다\n" << endl;
-                        if (GetSessionHistory().size() == 0) {  //히스토리 부분
+                        if (transactionHistoryOfSession.size() == 0) {  //히스토리 부분
                             cout << "해당 세션에는 거래 내역이 없습니다\n" << endl;
                         } else {
                             cout << "해당 세션 내 총 거래 내역" << endl;
                             
-                            // atm->addTransaction(GetSessionHistory()); //ATM에 넘겨주기.
+                            atm->addTransaction(transactionHistoryOfSession); //ATM에 넘겨주기.
                             
-                            for (int i = 0; i < GetSessionHistory().size(); i++) {
-                                cout << GetSessionHistory()[i] << endl; // 내역 출력
+                            for (int i = 0; i < transactionHistoryOfSession.size(); i++) {
+                                cout << transactionHistoryOfSession[i].getKoreanInformation() << endl; // 내역 출력
                             }
                             
                         }
