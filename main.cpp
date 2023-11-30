@@ -307,7 +307,7 @@ protected:
     ATM * atm ; // ATM 객체 가리키는 포인터
     Account* account ; // 계좌 객체 가리키는 포인터
     Card* card ;
-    vector<Transaction> transctionHistoryOfSession ; // 세션 동안 거래 내역 저장 -> 하고 뭐햇는지 display 해야함. 하나 저장 후 보여주기 (이걸 함수로먼들지 그냥 코드를 짤지는선택 ) + 백터 구조가 어떤지 알려줘서 ATM에 할수 있게 하기
+    vector<string> transctionHistoryOfSession ; // 세션 동안 거래 내역 저장 -> 하고 뭐햇는지 display 해야함. 하나 저장 후 보여주기 (이걸 함수로먼들지 그냥 코드를 짤지는선택 ) + 백터 구조가 어떤지 알려줘서 ATM에 할수 있게 하기
     bool authorizationSignal ; // 계좌 비밀번호 인증 결과 나타내는 bool값
     int authorizationCount ; // 비밀번호 인증 실패 횟수
     bool validAccount ;   // 계좌번호 확인결과
@@ -315,10 +315,8 @@ protected:
     bool primarySignal ;  // 현재 계좌 은행 정보와 ATM 주거래 은행이 동일한지 여부를 나타내는 bool 값
     int currentTransactionID;
     Global* myGlobal;
-
     
 public:
-
     Session() : currentTransactionID(1) {}
     void CashDeposit(map<int, int>, int x);
     //void Session::CashDeposit(map<int, int> amount, int x)
@@ -330,6 +328,7 @@ public:
     int GetNextTransactionID() { return currentTransactionID++;   };
     void SetmyGlobal(Global* inputglo){ myGlobal = inputglo;};
     
+    vector<string> GetSessionHistory() { return transctionHistoryOfSession; };
 };
 
 /*-------------- Methods of Session Class --------------*/
@@ -369,6 +368,7 @@ void Session::CashDeposit(map<int, int> amount, int x) { //x=0이면 한국어
     out += account->getAccountNum();
     
     atm->SetHistory(out);
+    this->transctionHistoryOfSession.push_back(out);
     
    
   
@@ -434,6 +434,7 @@ void Session::CheckDeposit(unsigned long long amount, int x) {
     out += account->getAccountNum();
     
     atm->SetHistory(out);
+    this->transctionHistoryOfSession.push_back(out);
     
     //Transaction CheckDepositTransaction(transactionID, card->getCardNumber(), "CheckDeposit", totalAmount) ;
     //transctionHistoryOfSession.push_back(CheckDepositTransaction);
@@ -508,6 +509,7 @@ void Session::Withdrawal(const map<int, int>& amount, int x) {
         out += account->getAccountNum();
     
         atm->SetHistory(out);
+        this->transctionHistoryOfSession.push_back(out);
         
         //Transaction withdrawTransaction(transactionID, card->getCardNumber(), "Withdraw", totalAmount);
         //transctionHistoryOfSession.push_back(withdrawTransaction);
@@ -582,6 +584,7 @@ void Session::CashTransfer(map<int, int> amount, Account* destination, int x) { 
     out += destination->getAccountNum();
     
     atm->SetHistory(out);
+    this->transctionHistoryOfSession.push_back(out);
     
     //Transaction CashTransferTransaction(transactionID, card->getCardNumber(), "CashTransfer", totaltotalAmount) ;
     //transctionHistoryOfSession.push_back(CashTransferTransaction);
@@ -649,6 +652,7 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
         out += destination->getAccountNum();
         
         atm->SetHistory(out);
+        this->transctionHistoryOfSession.push_back(out);
         
         //AccountTransferTransaction newTransaction(destination, account, amount, accountNum, destNum);
         //destination->addTransaction(&newTransaction);
@@ -812,13 +816,13 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                         cin.clear();
                         cin.ignore(100, '\n');
                         continue; //for문 다시 돌아가서 선택하게 하기.
-                    } else if (depositinput == 0000000000) {
+                    } else if (transactionNum == 0000000000) {
                         this->myGlobal->Display();
                         continue;
                     } else if (transactionNum == 5) {
                         // 사용자가 종료를 선택했을 때 루프를 종료
                         break;
-                    } 
+                    }
                     
                     if (transactionNum == 1) { // 입금 (1000월 , 5000원 , 10000원, 50000원을 받아야함. )
                         //입금 UI------------------
@@ -835,7 +839,7 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                             cin.clear();
                             cin.ignore(100, '\n');
                             continue;
-                        }; 
+                        };
                         if (depositinput == 0000000000) {
                             this->myGlobal->Display();
                             continue;
@@ -857,7 +861,7 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                                     cin.ignore(100, '\n');
                                     continue;
                                 }
-                                //stop                                
+                                //stop
 
                                 if (sel == 5) {
                                     // 사용자가 종료를 선택했을 때 루프를 종료
@@ -911,47 +915,49 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
 
                                 
                             
-                        } else if (depositinput == 2) {
+                        }  else if (depositinput == 2) {
                             // 수표 입금 처리
-                            // 사용자에게 ?원권 수표의 장 수를 입력 받아 입금 처리합니다.
+                            int numIterations = 0;
                             
-                            cout << "수표를 입력해주세요\n" << endl;
-                            cout << "수표 : ";
-                            int numBill = -1;
-                            cin >> numBill;
-                            
-                            //input 체크
-                            if (cin.fail() == true) {
-                                cout << "유효하지 않은 번호입니다." << endl;
-                                cin.clear();
-                                cin.ignore(100, '\n');
-                                continue;
-                            } else if (depositinput == 0000000000) {
-                                this->myGlobal->Display();
-                                continue;
+                            while (true){
+                                if (numIterations==30) {
+                                    cout << "수표는 30장 까지 입금이 가능합니다. " << endl;
+                                    break;
+                                }else {
+                                    cout << "1. 수표입력 2. 종료 \n" << endl;
+                                    int chice  = -1;
+                                    cin >> chice ;
+                                    if (chice == 2) {
+                                        break;
+                                    }else {
+                                        cout << "수표를 입력해주세요\n" << endl;
+                                        cout << "수표 : ";
+                                        int numBill = -1;
+                                        cin >> numBill;
+                                        
+                                        if (cin.fail() == true) { //잘못입력시
+                                            cout << "유효하지 않은 번호입니다." << endl;
+                                            cin.clear();
+                                            cin.ignore(100, '\n');
+                                            continue;
+                                        }
+                                        CheckDeposit(numBill, 0);
+                                        numIterations++;
+                                    }
+                                }
                             }
-
-                            if ((0 < numBill) && (numBill <= 30)) {inAmount = 100000 * numBill; break;}
-                            else if (numBill > 30) {
-                                atm->mainKoreanDisplay();
-                                cout << "       거래 1회 당 입금 가능한 장 수를 초과하셨습니다\n" << endl;
-                            } else {
-                                cout << "유효하지 않은 번호입니다." << endl;
-                            }
                             
-                            CheckDeposit(inAmount, 0);
-                            
-                            
-                        } else { // "1. 현금 입금     2. 수표 입금"에서 1과 2나 0000000000이 아닌 input이 들어오는 경우
+                        }
+                        else { // "1. 현금 입금     2. 수표 입금"에서 1과 2나 0000000000이 아닌 input이 들어오는 경우
                             cout << "유효하지 않은 번호입니다." << endl;
                         }
                         
                         
                         
-                    }
                     
                     
-                    } eles if (transactionNum == 2) {// 출금
+                    
+                    } else if (transactionNum == 2) {// 출금
                         //세션이 닫치게 만들어야함 !!!!!!!!!
                         
                         if (withdrawalCount == 3) {
@@ -980,6 +986,7 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                                     break;
                                 }
                                 
+                                int billType;
                                 if (bill == 1) {
                                     
                                     billType = 1000;
@@ -1007,6 +1014,7 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                                     
                                 }
                                 
+                                
                                 billCounts[billType] = numBill;
                                 // 한 번에 거래 가능한 장 수
                                 if (numBill > 50) {
@@ -1014,12 +1022,9 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                                     break;
                                     
                                 }
-                            }
                             Withdraw(billCounts, 0) ;
-                            
+                            }
                         }
-                        
-                        
                     }
                     
                     
@@ -1073,6 +1078,7 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                                 cout << "받으실 분 계좌 번호 : ";
                                 string inDest;
                                 cin >> inDest;
+
                             
                                 if (cin.fail() == true) {
                                     cout << "유효하지 않은 번호입니다." << endl;
@@ -1096,11 +1102,9 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                                     }
                                 };
                             };
-                        }else { // Exception
-                            cout << "입력한 계좌번호가 존재하지 않습니다\n" << endl;
-                        }
-                        
-                    }
+             
+                                   
+          
                                     /*
                                     // !!!!!!!!!!!!!!!!!히스토리.....
                                     
@@ -1121,7 +1125,8 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                                         
                                     }
                                     */
-                    else if (transactionNum == 5) { // 서비스 종료
+                                  
+                    if (transactionNum == 4) { // 서비스 종료
                         
                         sessionExitSignal = false;
                     }
@@ -1191,7 +1196,8 @@ ATM::ATM(Bank* pb, map<string, Bank*> allb, Card* admin) {
     //UI
     cout << "ATM을 생성합니다" << endl;
     cout << "Serial Number : " << endl;
-    cin >> this->SerialNumber;
+    
+  >> this->SerialNumber;
     cout << "Primary Bank name :" << endl;
     cin >> bankname;
     this->PrimaryBank.insert({ bankname, pb });
