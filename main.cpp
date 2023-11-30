@@ -467,28 +467,17 @@ void Session::Withdrawal(const map<int, int>& amount, int x) {
     unsigned long long fee = 1000;
     if (!primarySignal) fee = 2000;
 
-    // ATM의 사용 가능한 현금을 가져옴
-    map<int, int> availableCash = atm->GetAvailableCash();
-
-    //question) 이 파트의 역할이 무엇인가요?
-    unsigned long long totalAvailableCash = 0;
-    for (const auto& entry : availableCash) {
-        int denomination = entry.first;
-        int count = entry.second;
-        totalAvailableCash += (denomination * count);
-    }
-    //question) atm에 avalilableCash의 total amount를 가져올 수 있는 함수를 새로 만들었어요. 지워도 될까요?
-    /*
+    //withdraw할 총량을 계산함
     unsigned long long totalAmount = 0;
     for (const auto& entry : amount) {
         int denomination = entry.first;
         int count = entry.second;
         totalAmount += (denomination * count);
-    }*/
-
+    
     //ATM의 사용 가능한 현금의 양을 가져옴
-    unsigned long long totalAmount = atm->GetAvailableCashAmount();
+    unsigned long long totalAmountCash = atm->GetAvailableCashAmount();
 
+    //비교해 출금
     if (totalAvailableCash < totalAmount + fee) {
         if (x == 0) cout << " 현재 기기 내 현금이 부족합니다\n" << endl;
         else cout << " OUR ATM DOESN'T HAVE ENOUGH MONEY\n" << endl;
