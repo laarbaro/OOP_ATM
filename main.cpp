@@ -709,26 +709,26 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
         else {cout << "타은행 거래 가능>" << endl;}
     }
 
-    void KoreanSession::VerifyAccountNum(){
-        string inputAccount;
-        bool verified;
-        map<string, Account*> accountmap;
-        map<string, Account*> tmp = this->myGlobal->getAccountMap();
-        accountmap.insert(tmp.begin(), tmp.end());
-
-        //계좌번호 입력받기
-        while (true){
-            cout << " 계좌 번호를 입력해주세요\n" << endl;
-            cout << "계좌 번호 : ";
-            cin >> inputAccount;
-            if (cin.fail() == true) { // 사용자의 입력이 string이 아닌 경우
-                cout << "유효하지 않은 문자열입니다." << endl;
-                cin.clear();
-                cin.ignore(100, '\n');
-                continue; //for문 다시 돌아가서 선택하게 하기.
-            } else if (inputAccount == "x") {
-                this->myGlobal->Display();
-                continue;
+void KoreanSession::VerifyAccountNum(){
+    string inputAccount;
+    bool verified;
+    map<string, Account*> accountmap;
+    map<string, Account*> tmp = this->myGlobal->getAccountMap();
+    accountmap.insert(tmp.begin(), tmp.end());
+    
+    //계좌번호 입력받기
+    while (true){
+        cout << " 계좌 번호를 입력해주세요\n" << endl;
+        cout << "계좌 번호 : ";
+        cin >> inputAccount;
+        if (cin.fail() == true) { // 사용자의 입력이 string이 아닌 경우
+            cout << "유효하지 않은 문자열입니다." << endl;
+            cin.clear();
+            cin.ignore(100, '\n');
+            continue; //for문 다시 돌아가서 선택하게 하기.
+        } else if (inputAccount == "x") {
+            this->myGlobal->Display();
+            continue;
         }
         
         
@@ -756,7 +756,8 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
             cout << "입력한 계좌번호가 존재하지 않습니다." << endl;
             this->validAccount = false;
         }
-    };
+    }
+}
         
     //확인되면 authorizationSignal을 true로 변경하는 함수
     void KoreanSession::AuthorizePassword(){
