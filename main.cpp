@@ -763,10 +763,19 @@ void KoreanSession::VerifyAccountNum(){
     void KoreanSession::AuthorizePassword(){
         for (int i = 1; i < 4; i++) { // 비밀번호 3번까지 입력 가능 !
             string inputPassword;
-            mainKoreanDisplay();//question) 이 정보는 왜 계속해서 띄우나요?
+            mainKoreanDisplay();
             cout << "비밀번호를 입력해주세요" << endl;
             cout << "비밀번호 : ";
             cin >> inputPassword;
+            if (cin.fail() == true) { // 사용자의 입력이 string이 아닌 경우
+                cout << "유효하지 않은 문자열입니다." << endl;
+                cin.clear();
+                cin.ignore(100, '\n');
+                continue; //for문 다시 돌아가서 선택하게 하기.
+            } else if (inputPassword == "x") {
+                this->myGlobal->Display();
+                continue;
+            }
             if (Authorization(inputPassword)) {
                 authorizationSignal = true;
                 break;
@@ -857,6 +866,15 @@ void KoreanSession::VerifyAccountNum(){
                                     cout << "1. 1000원  2. 5000원  3. 10000원  4. 50000원 5. 종료" << endl;
                                     int sel = -1 ;
                                     cin >> sel;
+                                    if (cin.fail() == true) { // 사용자의 입력이 string이 아닌 경우
+                                        cout << "유효하지 않은 문자열입니다." << endl;
+                                        cin.clear();
+                                        cin.ignore(100, '\n');
+                                        continue; //for문 다시 돌아가서 선택하게 하기.
+                                    } else if (sel == 0000000000) {
+                                        this->myGlobal->Display();
+                                        continue;
+                                    }
                                     if (cin.fail() == true || sel < 1 || sel > 5) {
                                         cout << "유효하지 않은 번호입니다." << endl;
                                         cin.clear();
@@ -943,6 +961,9 @@ void KoreanSession::VerifyAccountNum(){
                                                 cin.clear();
                                                 cin.ignore(100, '\n');
                                                 continue;
+                                            } else if (numBill == 0000000000) {
+                                                this->myGlobal->Display();
+                                                continue;
                                             }
                                             CheckDeposit(numBill, 0);
                                             numIterations++;
@@ -982,6 +1003,9 @@ void KoreanSession::VerifyAccountNum(){
                                         cin.clear();
                                         cin.ignore(100, '\n');
                                         continue;
+                                    } else if (bill == 0000000000) {
+                                        this->myGlobal->Display();
+                                        continue;
                                     }
                                     
                                     if (bill == 5) {
@@ -1015,6 +1039,9 @@ void KoreanSession::VerifyAccountNum(){
                                         cin.ignore(100, '\n');
                                         continue;
                                         
+                                    } else if (numBill == 0000000000) {
+                                        this->myGlobal->Display();
+                                        continue;
                                     }
                                     
                                     
@@ -1267,10 +1294,10 @@ ATM::~ATM() {
     delete this->CurrentSession;
     NumberOfATM--;
 }
-        void ATM::Start() {
-            //기본적인 모든 session 열기 전 수행을 하는 함수입니다.
+void ATM::Start() {
+//기본적인 모든 session 열기 전 수행을 하는 함수입니다.
             
-            //기본 선택 : (Card 입력받기)
+//기본 선택 : (Card 입력받기)
             int firstsel;
             cout << "Welcome" << endl;
             cout << "To start a session, please insert your debit card" << endl;
@@ -1530,10 +1557,12 @@ void ATM::ShowHistory() {
                 string UsedATM;
                 cout << "Write the name of an ATM that you want to use." << endl;
                 cin << UsedATM;
-                if (UsedATM == 'x') {
+
+                if (UsedATM == "x") {
                     myGlobal->Display();
                     cout << "Write the name of an ATM that you want to use." << endl;
                     cin << UsedATM;
+                    
                     
                 }
                               
@@ -1545,7 +1574,8 @@ void ATM::ShowHistory() {
                 cin << isQuit;
                 if (isQuit == "n") {
                     isATMworking = true;
-                } else if (UsedATM == 'x') {
+                } else if (UsedATM == "x") {
+                    myGlobal->Display();
                     cout << "Do you want to terminate current program? (y, n)" << endl;
                     cin << isQuit;
                     if (isQuit == "n") {
