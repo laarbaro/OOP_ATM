@@ -1129,6 +1129,12 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                     if (transactionNum == 4) { // 서비스 종료
                         
                         sessionExitSignal = false;
+
+                        cout << "이 세션의 거래 내역입니다. 서비스를 종료합니다." << endl;
+                        for (const auto& element : this->GetSessionHistory()) {
+                            cout << element << endl;
+                        }
+                        cout << "======================================" << endl;
                     }
                     
                     
