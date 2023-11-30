@@ -1465,10 +1465,10 @@ int main() {
     }
     
     //Account 선언
-    map<int, Account*> AccountMap;
+    map<string, Account*> AccountMap;
     int NumofAccount;
     string pb;
-    int AccountNum;
+    string AccountNum;
     string pw;
     string ownername;
     cout << "Account를 선언하겠습니다" << endl;
@@ -1505,7 +1505,7 @@ int main() {
             if (askAdmin == "y") { isAdmin = true; }
             else { isAdmin = false; }
             
-            Card(cardNumber, NumofAccount, isAdmin);
+            Card(cardNumber, AccountNum, isAdmin);
         }
     }
     
