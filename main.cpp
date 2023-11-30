@@ -324,8 +324,8 @@ public:
 	bool Authorization(string password) { return account->verifyPW(password); };
 	int GetNextTransactionID() { return currentTransactionID++; };
 	void SetmyGlobal(Global* inputglo) { myGlobal = inputglo; };
-	virtual void VerifyAccountNum()=0;
-	virtual void AuthorizePassword()=0;
+	virtual void VerifyAccountNum() = 0;
+	virtual void AuthorizePassword() = 0;
 	vector<string> GetSessionHistory() { return transctionHistoryOfSession; };
 };
 
@@ -880,22 +880,17 @@ KoreanSession::KoreanSession(ATM* iatm) {
 							cout << "1. 1000원  2. 5000원  3. 10000원  4. 50000원 5. 종료" << endl;
 							int sel = -1;
 							cin >> sel;
-							if (cin.fail() == true) { // 사용자의 입력이 string이 아닌 경우
-								cout << "유효하지 않은 문자열입니다." << endl;
-								cin.clear();
-								cin.ignore(100, '\n');
-								continue; //for문 다시 돌아가서 선택하게 하기.
-							}
-							else if (sel == 0000000000) {
-								this->myGlobal->Display();
-								continue;
-							}
 							if (cin.fail() == true || sel < 1 || sel > 5) {
 								cout << "유효하지 않은 번호입니다." << endl;
 								cin.clear();
 								cin.ignore(100, '\n');
 								continue;
 							}
+							else if (sel == 0000000000) {
+								this->myGlobal->Display();
+								continue;
+							}
+							
 
 
 							if (sel == 5) {
@@ -964,6 +959,16 @@ KoreanSession::KoreanSession(ATM* iatm) {
 								cout << "1. 수표입력 2. 종료 \n" << endl;
 								int chice = -1;
 								cin >> chice;
+								if (cin.fail() == true) {
+									cout << "유효하지 않은 번호입니다. 다시 입력해주세요." << endl;
+									cin.clear();
+									cin.ignore(100, '\n');
+									continue;
+								}
+								else if (chice == 0000000000) {
+									this->myGlobal->Display();
+									continue;
+								}
 								if (chice == 2) {
 									break;
 								}
@@ -1260,9 +1265,7 @@ ATM::ATM(Bank* pb, map<string, Bank*> allb, Card* admin) {
 	cout << "Serial Number : " << endl;
 
 	cin >> this->SerialNumber;
-	cout << "Primary Bank name :" << endl;
-	cin >> bankname;
-	this->PrimaryBank.insert({ bankname, pb });
+	this->PrimaryBank.insert({ pb->getBankName(), pb });
 	allb.erase("bankname");
 	this->NonPrimaryBank.insert(allb.begin(), allb.end());
 	cout << "Primary 및 Nonprimary bank 설정이 완료되었습니다" << endl;
@@ -1273,6 +1276,16 @@ ATM::ATM(Bank* pb, map<string, Bank*> allb, Card* admin) {
 		cout << "숫자로 입력해주세요" << endl;
 		cout << "[1]Yes    [2]No" << endl;
 		cin >> bi;
+		if (cin.fail() == true) {
+			cout << "유효하지 않은 번호입니다. 다시 입력해주세요." << endl;
+			cin.clear();
+			cin.ignore(100, '\n');
+			continue;
+		}
+		else if (bi == 0000000000) {
+			this->myGlobal->Display();
+			continue;
+		}
 
 		if (bi == 1) {
 			this->Bilingual = true;
@@ -1292,7 +1305,16 @@ ATM::ATM(Bank* pb, map<string, Bank*> allb, Card* admin) {
 		cout << "숫자로 입력해주세요" << endl;
 		cout << "[1]Yes    [2]No" << endl;
 		cin >> mul;
-
+		if (cin.fail() == true) {
+			cout << "유효하지 않은 번호입니다. 다시 입력해주세요." << endl;
+			cin.clear();
+			cin.ignore(100, '\n');
+			continue;
+		}
+		else if (mul == 0000000000) {
+			this->myGlobal->Display();
+			continue;
+		}
 		if (mul == 1) {
 			this->MultiBank = true;
 			break;
@@ -1338,7 +1360,8 @@ void ATM::Start() {
 	cout << "To start a session, please insert your debit card" << endl;
 	string CN;
 	string PW;
-	cout << "Insert card number and password" << endl;
+	cout << "Insert card number" << endl;
+	cin >> CN;
 	//Card 입력받은 경우 : admin인지, 올바른 카드인지 확인 후 session 열어주기
 	if (CheckAdmin(CN)) {
 		int sel = 1;
@@ -1347,6 +1370,16 @@ void ATM::Start() {
 		while (repeat) {
 			cout << "[1] Transaction History" << endl;
 			cin >> sel;
+			if (cin.fail() == true) {
+				cout << "유효하지 않은 번호입니다. 다시 입력해주세요." << endl;
+				cin.clear();
+				cin.ignore(100, '\n');
+				continue;
+			}
+			else if (sel == 0000000000) {
+				this->myGlobal->Display();
+				continue;
+			}
 
 			if (sel == 1) {
 				ShowHistory();
@@ -1523,7 +1556,7 @@ int main() {
 	cin >> NumofBank;
 	for (int i = 0; i < NumofBank; i++) {
 		string BankName1;
-		cout << "은행의 이름을 입력해주세요" << endl;
+		cout << "은행" << (i + 1) << "의 이름을 입력해주세요" << endl;
 		cin >> BankName1;
 		InputBankMap.insert({ BankName1,new Bank(BankName1) });
 	}
@@ -1540,7 +1573,7 @@ int main() {
 	cout << "몇개의 Account를 만드시겠습니까?" << endl;
 	cin >> NumofAccount;
 	for (int i = 0; i < NumofAccount; i++) {
-		cout << "계좌의 주거래 은행을 알려주세요" << endl;
+		cout << "계좌"<<(i+1)<<"의 주거래 은행을 알려주세요" << endl;
 		cin >> pb;
 		cout << "계좌번호를 입력해주세요" << endl;
 		cin >> AccountNum;
@@ -1587,16 +1620,23 @@ int main() {
 	cin >> ATMNum;
 	for (int i = 0; i < ATMNum; i++) {
 		//Primary Bank Setting
+		cout << "새로운 ATM을 만들겠습니다." << endl;
 		cout << "아래 중 ATM의 주거래 은행을 선택하세요" << endl;
 		cout << "[";
 		for (auto iter = InputBankMap.begin(); iter != InputBankMap.end(); iter++) {
-			cout << iter->first << ",";
+			cout << iter->first << " ";
 		};
 		cout << "]" << endl;
 		cin >> InputPrimaryBank;
 		cout << "ATM의 이름을 설정하세요." << endl;
 		cin >> ATMname;
-		cout << "Admin Card의 카드 번호를 입력하세요." << endl;
+		cout << "아래 중 ATM의 Admin Card의 카드 번호를 입력하세요." << endl;
+		for (auto iter = inputCardMap.begin(); iter != inputCardMap.end(); iter++) {
+			if (iter->second->isAdminCard()) {
+				cout << iter->first << " ";
+			}else {}
+			
+		};
 		cin >> AdminCard;
 		Bank* ba = InputBankMap.find(InputPrimaryBank)->second;
 		Card* c = inputCardMap.find(AdminCard)->second;
@@ -1612,10 +1652,10 @@ int main() {
 	while (isATMworking) {
 		//display
 		for (const auto& pair : AccountMap) {
-			cout << "[Account " << pair.first << "] Remaining Cash: KRW " << pair.second->getBalance() << endl;
+			cout << "[Account " << pair.first << "] "<< pair.second->getBalance() << endl;
 		}
 		for (const auto& pair : ATMmap) {
-			cout << "[ATM " << pair.first << "] Remaining Cash: KRW " << endl;
+			cout << "[ATM " << pair.first << "] " << endl;
 			pair.second->ShowAvailableCash();
 		}
 
