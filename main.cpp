@@ -1005,10 +1005,11 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                                 if (numBill > 50) {
                                     cout << "거래 1회 당 입금 가능한 장 수를 초과하셨습니다." << endl;
                                     break;
+                                Withdrawal(billCounts, 0) ;
                                     
                                 }
                             }
-                            Withdraw(billCounts, 0) ;
+                        
                             
                         }
                         
