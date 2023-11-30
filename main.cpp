@@ -293,8 +293,8 @@ public:
     void setAccountMap(map<string,Account*> inmap);
     void setATMMap(map<string,ATM*> inmap);
     void Display();
-    map<string, ATM*> getATMMap(string);
-    map<string, Account*> getAccountMap(int);
+    map<string, ATM*> getATMMap() { return ATMMap; };
+    map<string, Account*> getAccountMap() { return AccountMap; };
 };
 
 
@@ -310,7 +310,7 @@ protected:
     vector<Transaction> transctionHistoryOfSession ; // 세션 동안 거래 내역 저장 -> 하고 뭐햇는지 display 해야함. 하나 저장 후 보여주기 (이걸 함수로먼들지 그냥 코드를 짤지는선택 ) + 백터 구조가 어떤지 알려줘서 ATM에 할수 있게 하기
     bool authorizationSignal ; // 계좌 비밀번호 인증 결과 나타내는 bool값
     int authorizationCount ; // 비밀번호 인증 실패 횟수
-    bool validAccount ;   // 계좌번호 확인결과 
+    bool validAccount ;   // 계좌번호 확인결과
     int withdrawalCount ; // 출금 횟수 기록
     bool primarySignal ;  // 현재 계좌 은행 정보와 ATM 주거래 은행이 동일한지 여부를 나타내는 bool 값
     int currentTransactionID;
@@ -467,16 +467,27 @@ void Session::Withdrawal(const map<int, int>& amount, int x) {
     unsigned long long fee = 1000;
     if (!primarySignal) fee = 2000;
 
-    //map으로 들어오는 출금할 금액을 총량으로 계산함
+    // ATM의 사용 가능한 현금을 가져옴
+    map<int, int> availableCash = atm->GetAvailableCash();
+
+    //question) 이 파트의 역할이 무엇인가요?
+    unsigned long long totalAvailableCash = 0;
+    for (const auto& entry : availableCash) {
+        int denomination = entry.first;
+        int count = entry.second;
+        totalAvailableCash += (denomination * count);
+    }
+    //question) atm에 avalilableCash의 total amount를 가져올 수 있는 함수를 새로 만들었어요. 지워도 될까요?
+    /*
     unsigned long long totalAmount = 0;
     for (const auto& entry : amount) {
         int denomination = entry.first;
         int count = entry.second;
         totalAmount += (denomination * count);
-    };
+    }*/
 
     //ATM의 사용 가능한 현금의 양을 가져옴
-    unsigned long long totalAvailableCash = atm->GetAvailableCashAmount();
+    unsigned long long totalAmount = atm->GetAvailableCashAmount();
 
     if (totalAvailableCash < totalAmount + fee) {
         if (x == 0) cout << " 현재 기기 내 현금이 부족합니다\n" << endl;
@@ -706,7 +717,9 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
     void KoreanSession::VerifyAccountNum(){
         string inputAccount;
         bool verified;
-        map<string, Account*> accountmap = this->myGlobal->getAccountMap();
+        map<string, Account*> accountmap;
+        map<string, Account*> tmp = this->myGlobal->getAccountMap();
+        accountmap.insert(tmp.begin(), tmp.end());
 
         //계좌번호 입력받기
         cout << " 계좌 번호를 입력해주세요\n" << endl;
@@ -718,7 +731,7 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
         
         //this->account에 account pointer를 저장하거나, validAccount를 false로 만들기
         if (it != accountmap.end()){
-            Bank* tempbank = it->second->getBank()
+            Bank* tempbank = it->second->getBank();
             
             if ( (atm->GetPrimaryBank()).compare(it->second) == 0 ) { //현재 세션에서 사용 중인 ATM 객체(atm)의 기본 은행 정보와, 입력된 계좌 번호에 해당하는 Bank 객체의 은행 이름을 비교 ! 두 은행 이름이 같다면, 현재 세션에서 사용 중인 은행이라는 것을 의미
                 this->account = it->second; //같다면, 해당 은행에서 입력된 계좌 번호에 해당하는 Account 객체를 찾아서 account 포인터에 저장합니다. 이렇게 하면 현재 세션에서 사용할 수 있는 계좌를 설정
@@ -767,7 +780,7 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
     KoreanSession::KoreanSession(ATM* iatm) {
         //Session Protected parameter 초기화 - account, card, transactionHistoryOfSession, currentTransactionID, myGlobal 비어있음
         atm = iatm;
-        primarySignal = true; // 
+        primarySignal = true; //
         authorizationCount = 0; //
         withdrawalCount = 0; // 이거 처리 !
         authorizationSignal = true;
@@ -816,7 +829,7 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                         } else if (depositinput == 0000000000) {
                             this->myGlobal->Display();
                             continue;
-                        } else { 
+                        } else {
                             
 
                         //선택 : 현금 입금
@@ -1329,7 +1342,7 @@ void ATM::ShowHistory() {
                 cout << "(Account [Bank: "<<p.second->myBank->getBankName()<<", No: " <<p.first;
                 cout << ", Owner: "<<p.second->getOwnerName()<<"] balance: "<<p.second->getBalance()<<" ) ";
             };
-        }; 
+        };
         map<string, ATM*> Global::getATMMap(string){
             return ATMMap;
         };
@@ -1466,3 +1479,4 @@ void ATM::ShowHistory() {
             
             return 0;
         }
+
