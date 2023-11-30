@@ -713,9 +713,20 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
         accountmap.insert(tmp.begin(), tmp.end());
 
         //계좌번호 입력받기
-        cout << " 계좌 번호를 입력해주세요\n" << endl;
-        cout << "계좌 번호 : ";
-        cin >> inputAccount;
+        while (true){
+            cout << " 계좌 번호를 입력해주세요\n" << endl;
+            cout << "계좌 번호 : ";
+            cin >> inputAccount;
+            if (cin.fail() == true) { // 사용자의 입력이 string이 아닌 경우
+                cout << "유효하지 않은 문자열입니다." << endl;
+                cin.clear();
+                cin.ignore(100, '\n');
+                continue; //for문 다시 돌아가서 선택하게 하기.
+            } else if (depositinput == 'x') {
+                this->myGlobal->Display();
+                continue;
+        }
+        
         
         //global에서 accountmap 가져와서 account pointer로 bank 찾기
         auto it = accountmap.find(inputAccount);
@@ -1013,74 +1024,104 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                     
                     
                     else if (transactionNum == 3) { // 송금
-                        cout << "송금 서비스 입니다\n" << endl;
-                        cout << "             1. 계좌 송금 (계좌 -> 계좌)" << endl;
-                        cout << "             2. 현금 송금 (현금 -> 계좌)\n" << endl;
-                        cout << "==================================================" << endl;
-                        cout << "번호 입력 : ";
-                        int transferNum = -1;
-                        cin >> transferNum;
-                        if (cin.fail() == true) {
-                            cout << "유효하지 않은 번호입니다." << endl;
-                            cin.clear();
-                            cin.ignore(100, '\n');
-                            continue;
-                        }
-                        
-                        if (transferNum == 1) { // Account Transfer
-                            cout << "계좌 송금 서비스를 선택하셨습니다\n" << endl;
-                            cout << "송금하실 금액을 입력해주십시오\n" << endl;
-                            cout << "송금 금액 : ";
-                            unsigned long long inAmount = -1;
-                            cin >> inAmount;
+
+                        while (true){
+                            cout << "송금 서비스 입니다\n" << endl;
+                            cout << "             1. 계좌 송금 (계좌 -> 계좌)" << endl;
+                            cout << "             2. 현금 송금 (현금 -> 계좌)\n" << endl;
+                            cout << "==================================================" << endl;
+                            cout << "번호 입력 : ";
+                            int transferNum = -1;
+                            cin >> transferNum;
                             if (cin.fail() == true) {
                                 cout << "유효하지 않은 번호입니다." << endl;
                                 cin.clear();
                                 cin.ignore(100, '\n');
                                 continue;
+                            } else if (transferNum == 0000000000) {
+                                this->myGlobal->Display();
+                                continue;
+                            } else {break;};
+                        }
+                        
+                        
+                        if (transferNum == 1) { // Account Transfer
+                            while (true){
+                                cout << "계좌 송금 서비스를 선택하셨습니다\n" << endl;
+                                cout << "송금하실 금액을 입력해주십시오\n" << endl;
+                                cout << "송금 금액 : ";
+                                unsigned long long inAmount = -1;
+                                cin >> inAmount;
+                                if (cin.fail() == true) {
+                                    cout << "유효하지 않은 번호입니다." << endl;
+                                    cin.clear();
+                                    cin.ignore(100, '\n');
+                                    continue;
+                                } else if (inAmount == 0000000000) {
+                                    this->myGlobal->Display();
+                                    continue;
+                                } else if (inAmount < 0) { 
+                                    cout << "유효하지 않은 번호입니다." << endl;
+                                } else if (inAmount == 0) {
+                                    cout << "0 원을 송금할 수는 없습니다\n" << endl;
+                                } else {break;};
                             }
-                            if (inAmount < 0) { cout << "유효하지 않은 번호입니다." << endl;}
-                            else if (inAmount == 0) {
-                                cout << "0 원을 송금할 수는 없습니다\n" << endl;
-                            } else {
-                                mainKoreanDisplay() ;
+                            mainKoreanDisplay() ;
+
+                            while (true){
                                 cout << "          받으실 분의 계좌 번호를 입력해주십시오\n" << endl;
                                 cout << "받으실 분 계좌 번호 : ";
                                 string inDest;
                                 cin >> inDest;
-                                if (findAccount(inDest) == nullptr) { //Global Class 에 있다고 일단 가정
-                                    cout << "입력한 계좌번호가 존재하지 않습니다\n" << endl;
-                                } else {
-                                    AccountTransfer(inAmount, findAccount(inDest) , 0); << endl;
-                                    //매개변수 method of ATM이랑 같이해서 확인해 봐야함.
-                                }
-                            }
+                            
+                                if (cin.fail() == true) {
+                                    cout << "유효하지 않은 번호입니다." << endl;
+                                    cin.clear();
+                                    cin.ignore(100, '\n');
+                                    continue;
+                                    
+                                } else if (inDest == 'x') {
+                                    this->myGlobal->Display();
+                                    continue;
+                                } else { /
+                                    //Global에서 account map 가져와서 destination account* 넘겨주기
+                                    auto it = accountmap.find(inDest);
+
+                                    if (it != accountmap.end()) {
+                                        AccountTransfer(inAmount, it->second, 0); << endl;
+                                    } else {
+                                        // 계좌가 존재하지 않는 경우
+                                        cout << "입력한 계좌번호가 존재하지 않습니다. 다시 입력해주세요." << endl;
+                                        continue;
+                                    }
+                                };
+                            };
                         }else { // Exception
                             cout << "입력한 계좌번호가 존재하지 않습니다\n" << endl;
                         }
                         
                     }
-                    
-                    // !!!!!!!!!!!!!!!!!히스토리.....
-                    
-                    else if (transactionNum == 4) { // 거래 내역 조회// Transaction History
-                        
-                        cout << "거래 내역 조회를 선택하셨습니다\n" << endl;
-                        cout << " 해당 계좌의 거래내역은 다음과 같습니다\n" << endl;
-                        vector<Transaction> temp = account->getTransactionHistoryOfAccount();
-                        if (temp.size() == 0) {
-                            cout << "현재 잔액 : " << account->getFundInfo() << " 원\n" << endl;
-                            cout << "            해당 계좌에는 거래 내역이 업습니다\n" << endl;
-                        } else {
-                            for (int i = 0; i < temp.size(); i++) {
-                                cout << temp[i].getKoreanInformation() << endl;
-                            }
-                            cout << "\n현재 잔액 : " << account->getFundInfo() << " 원\n" << endl;
-                        }
-                        
-                    }
-                    
-                    if (transactionNum == 5) { // 서비스 종료
+                                    /*
+                                    // !!!!!!!!!!!!!!!!!히스토리.....
+                                    
+                                    else if (transactionNum == 4) { // 거래 내역 조회// Transaction History
+                                        
+                                        cout << "거래 내역 조회를 선택하셨습니다\n" << endl;
+                                        cout << " 해당 계좌의 거래내역은 다음과 같습니다\n" << endl;
+                                        vector<Transaction> temp = account->getTransactionHistoryOfAccount();
+                                        if (temp.size() == 0) {
+                                            cout << "현재 잔액 : " << account->getFundInfo() << " 원\n" << endl;
+                                            cout << "            해당 계좌에는 거래 내역이 업습니다\n" << endl;
+                                        } else {
+                                            for (int i = 0; i < temp.size(); i++) {
+                                                cout << temp[i].getKoreanInformation() << endl;
+                                            }
+                                            cout << "\n현재 잔액 : " << account->getFundInfo() << " 원\n" << endl;
+                                        }
+                                        
+                                    }
+                                    */
+                    else if (transactionNum == 5) { // 서비스 종료
                         
                         sessionExitSignal = false;
                     }
@@ -1458,13 +1499,11 @@ void ATM::ShowHistory() {
                 cin >> AdminCard;
                 ATMmap.insert({ATMname, new ATM(InputBankMap.find(InputPrimaryBank), InputBankMap, AdminCard)});
             }
-            ////////////////////////////////////////change 11.28
             Global myGlobal(AccountMap, ATMMap);
             for (auto& i : ATMMap){
                 i.second->SetGlobal();
             };
             
-            ////////////////////////////////////////question 11.28
             bool isATMworiking = true;
             while (isATMworking) {
                 //display
@@ -1482,9 +1521,9 @@ void ATM::ShowHistory() {
                 cin << UsedATM;
                 if (UsedATM == 'x') {
                     myGlobal->Display();
-                    continue;
-                }
-                
+                    cout << "Write the name of an ATM that you want to use." << endl;
+                    cin << UsedATM;}
+                              
                 ATMmap[UsedATM]->Start();
                 
                 //quit?
@@ -1494,8 +1533,12 @@ void ATM::ShowHistory() {
                 if (isQuit == "n") {
                     isATMworking = true;
                 } else if (UsedATM == 'x') {
-                    myGlobal->Display();
-                    continue;
+                    cout << "Do you want to terminate current program? (y, n)" << endl;
+                    cin << isQuit;
+                    if (isQuit == "n") {
+                        isATMworking = true;
+                    } else { isATMworking = false; }
+                    
                 }
                 else { isATMworking = false; }
             }
