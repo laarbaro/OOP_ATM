@@ -1,5 +1,5 @@
 #include <iostream>
-#include <string.h>
+#include <string>
 #include <map>
 #include <vector>
 #include <fstream>
@@ -288,6 +288,7 @@ private:
     map<string,ATM*> ATMMap;
     map<string,Account*> AccountMap;
 public:
+    Global(map<string, Account*> mpa, map<string, ATM*> mpb):AccountMap(mpa), ATMMap(mpb){};
     void setAccountMap(map<string,Account*> inmap);
     void setATMMap(map<string,ATM*> inmap);
     void Display();
@@ -885,7 +886,7 @@ KoreanSession::KoreanSession(ATM* iatm) {
                                 cin.ignore(100, '\n');
                                 continue;
                             }
-                            //stop
+                         
                             
                             if (sel == 5) {
                                 // 사용자가 종료를 선택했을 때 루프를 종료
@@ -1466,6 +1467,7 @@ int main() {
     
     //Account 선언
     map<string, Account*> AccountMap;
+    map<string, Card*> inputCardMap;
     int NumofAccount;
     string pb;
     string AccountNum;
@@ -1487,7 +1489,7 @@ int main() {
         map<string, Bank*> inputTMP;
         inputTMP[pb] = InputBankMap[pb];
         //Account(AccountNum, pw, ownername, inputTMP); //수정중
-        AccountMap.insert({AccountNum, new Account(AccountNum, pw, ownername, inputTMP)});
+        AccountMap.insert({AccountNum, new Account(AccountNum, pw, ownername, inputTMP[pb])});//stop
         
         //Card 선언
         //적어도 admin card는 여기에서 선언되어 ATM을 생성할 때 넣어줘야 함.
@@ -1496,7 +1498,7 @@ int main() {
         cin >> makeCard;
         if (makeCard == "y") {
             cout << "카드번호를 입력하세요" << endl;
-            int cardNumber;
+            string cardNumber;
             cin >> cardNumber;
             cout << "관리자 권한을 부여하시겠습니까? (y, n)" << endl;
             string askAdmin;
@@ -1505,7 +1507,7 @@ int main() {
             if (askAdmin == "y") { isAdmin = true; }
             else { isAdmin = false; }
             
-            Card(cardNumber, AccountNum, isAdmin);
+            inputCardMap.insert({cardNumber, new Card(cardNumber, AccountNum, isAdmin)});
         }
     }
     
@@ -1524,7 +1526,7 @@ int main() {
         //Primary Bank Setting
         cout << "아래 중 ATM의 주거래 은행을 선택하세요" << endl;
         cout << "[";
-        for (int iter=InputBankMap.begin(); iter != InputBankMap.end() ; iter++){
+        for (auto iter=InputBankMap.begin(); iter != InputBankMap.end() ; iter++){
             cout << iter->first << ",";
         };
         cout << "]" << endl;
@@ -1533,33 +1535,35 @@ int main() {
         cin >> ATMname;
         cout << "Admin Card를 정하세요." << endl;
         cin >> AdminCard;
-        ATMmap.insert({ATMname, new ATM(InputBankMap.find(InputPrimaryBank), InputBankMap, AdminCard)});
+        Bank* i = InputBankMap.find(InputPrimaryBank)->second;
+        Card* c = inputCardMap.find(AdminCard)->second;//stop
+        ATMmap.insert({ATMname, new ATM(i, InputBankMap, c)});
     }
-    Global myGlobal(AccountMap, ATMMap);
-    for (auto& i : ATMMap){
-        i.second->SetGlobal();
+    Global* myGlobal = new Global(AccountMap, ATMmap);
+    for (auto& i : ATMmap){
+        i.second->SetGlobal(myGlobal);
     }
     
-    bool isATMworiking = true;
+    bool isATMworking = true;
     while (isATMworking) {
         //display
         for (const auto& pair : AccountMap) {
             cout << "[Account " << pair.first << "] Remaining Cash: KRW " << pair.second->getBalance() << endl;
         }
         for (const auto& pair : ATMmap) {
-            cout << "[ATM " << pair.first << "];
-            pair.second->showAvailableCash();
+            cout << "[ATM " << pair.first << "] Remaining Cash: KRW " << endl;
+            pair.second->ShowAvailableCash();
         }
         
         //select ATM
         string UsedATM;
         cout << "Write the name of an ATM that you want to use." << endl;
-        cin << UsedATM;
+        cin >> UsedATM;
 
         if (UsedATM == "x") {
             myGlobal->Display();
             cout << "Write the name of an ATM that you want to use." << endl;
-            cin << UsedATM;
+            cin >> UsedATM;
             
             
         }
@@ -1569,14 +1573,14 @@ int main() {
         //quit?
         char isQuit;
         cout << "Do you want to terminate current program? (y, n)" << endl;
-        cin << isQuit;
-        if (isQuit == "n") {
+        cin >> isQuit;
+        if (isQuit == 'n') {
             isATMworking = true;
         } else if (UsedATM == "x") {
             myGlobal->Display();
             cout << "Do you want to terminate current program? (y, n)" << endl;
-            cin << isQuit;
-            if (isQuit == "n") {
+            cin >> isQuit;
+            if (isQuit == 'n') {
                 isATMworking = true;
             } else { isATMworking = false; }
             
