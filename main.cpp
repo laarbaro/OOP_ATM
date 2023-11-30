@@ -910,9 +910,9 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                                     break;
                                 }else {
                                     cout << "1. 수표입력 2. 종료 \n" << endl;
-                                    int chice  = -1;
+                                    int choice  = -1;
                                     cin >> choice ;
-                                    if (chice == 2) {
+                                    if (choice == 2) {
                                         break;
                                     }else {
                                         cout << "수표를 입력해주세요\n" << endl;
