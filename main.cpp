@@ -719,10 +719,7 @@ void KoreanSession::mainKoreanDisplay() {
 void KoreanSession::VerifyAccountNum() {
     string inputAccount;
     bool verified;
-    map<string, Account*> accountmap;
-    map<string, Account*> tmp = this->myGlobal->getAccountMap();
-    accountmap.insert(tmp.begin(), tmp.end());
-
+    
     //계좌번호 입력받기
     while (true) {
         cout << " 계좌 번호를 입력해주세요\n" << endl;
@@ -741,10 +738,10 @@ void KoreanSession::VerifyAccountNum() {
 
 
         //global에서 accountmap 가져와서 account pointer로 bank 찾기
-        auto it = accountmap.find(inputAccount);
+        auto it = this->myGlobal->getAccountMap().find(inputAccount);
 
         //this->account에 account pointer를 저장하거나, validAccount를 false로 만들기
-        if (it != accountmap.end()) {
+        if (it != this->myGlobal->getAccountMap().end()) {
             string tempbank = it->second->getBankName();
 
             Bank* tmp = nullptr;
