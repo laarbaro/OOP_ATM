@@ -872,7 +872,7 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                                 
                             
                         } else if (depositinput == 2) {
-                            // 수표 입금 처리
+                            // 수표 입금 처리/stop
                             // 사용자에게 ?원권 수표의 장 수를 입력 받아 입금 처리합니다.
                             
                             cout << "수표를 입력해주세요\n" << endl;
@@ -891,13 +891,6 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
                                 continue;
                             }
 
-                           
-                                if (cin.fail() == true) {
-                                    cout << "유효하지 않은 번호입니다. 다시 입력해주세요." << endl;
-                                    cin.clear();
-                                    cin.ignore(100, '\n');
-                                    continue;
-                                } 
                             if ((0 < numBill) && (numBill <= 30)) {inAmount = 100000 * numBill; break;}
                             else if (numBill > 30) {
                                 atm->mainKoreanDisplay();
