@@ -1933,6 +1933,10 @@ void ATM::OpenSession() {
                 }
             };
         }
+    } else {
+        this->CurrentSession = new EnglishSession(this);
+        CurrentSession->SetmyGlobal(this->myGlobal);       
+        
     }
 }
 
@@ -2042,19 +2046,6 @@ int main() {
     string AccountNum;
     string pw;
     string ownername;
-
-    cout << "몇개의 admin card를 생성하시겠습니까?" << endl ;
-    int num = -1 ;
-    cin >> num ;
-    for (int i=0 ; i < num ; i++){
-        cout << "관리자 권한을 부여할 admin card 번호를 입력하세요." << endl;
-        string cardNumber;
-        cin >> cardNumber;
-        bool isAdmin;
-        isAdmin = true;
-        mainAdminMap.insert({ cardNumber, inputCardMap[cardNumber] });
-    }
-    
     cout << "Account를 선언하겠습니다" << endl;
     cout << "몇개의 Account를 만드시겠습니까?" << endl;
     cin >> NumofAccount;
@@ -2078,7 +2069,6 @@ int main() {
 
         //Card 선언
         //적어도 admin card는 여기에서 선언되어 ATM을 생성할 때 넣어줘야 함.
-        bool isAdmin ;
         cout << "카드를 만드시겠습니까? (y, n)" << endl;
         string makeCard;
         cin >> makeCard;
@@ -2086,9 +2076,23 @@ int main() {
             cout << "카드번호를 입력하세요" << endl;
             string cardNumber;
             cin >> cardNumber;
-            isAdmin = false;
+            cout << "관리자 권한을 부여하시겠습니까? (y, n)" << endl;
+            string askAdmin;
+            cin >> askAdmin;
+            bool isAdmin;
+
+
+
+            if (askAdmin == "y") {
+                isAdmin = true;
+            }
+            else { isAdmin = false; }
             AccountMap[AccountNum]->setMyCard(new Card(cardNumber, AccountNum, isAdmin));
             inputCardMap.insert({ cardNumber, AccountMap[AccountNum]->getMyCard() });
+
+            if (askAdmin == "y") {
+                mainAdminMap.insert({ cardNumber, inputCardMap[cardNumber] });
+            }
 
         }
     }
@@ -2118,7 +2122,14 @@ int main() {
         cout << "ATM의 이름을 설정하세요." << endl;
         cin >> ATMname;
     BacktoAdminCardSET:
-        cout << "ATM의 Admin Card의 카드 번호를 입력하세요." << endl;
+        cout << "아래 중 ATM의 Admin Card의 카드 번호를 입력하세요." << endl;
+        for (auto iter = inputCardMap.begin(); iter != inputCardMap.end(); iter++) {
+            if (iter->second->isAdminCard()) {
+                cout << iter->first << " ";
+            }
+            else {}
+
+        };
         cin >> AdminCard;
 
         Bank* ba;
