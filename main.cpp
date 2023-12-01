@@ -1649,23 +1649,25 @@ int main() {
     for (int i = 0; i < ATMNum; i++) {
         //Primary Bank Setting
         cout << "새로운 ATM을 만들겠습니다." << endl;
-        cout << "아래 중 ATM의 주거래 은행을 선택하세요" << endl;
-        cout << "[";
-        for (auto iter = InputBankMap.begin(); iter != InputBankMap.end(); iter++) {
-            cout << iter->first << " ";
-        };
-        cout << "]" << endl;
-        cin >> InputPrimaryBank;
+        BacktoATMSET:
+            cout << "아래 중 ATM의 주거래 은행을 선택하세요" << endl;
+            cout << "[";
+            for (auto iter = InputBankMap.begin(); iter != InputBankMap.end(); iter++) {
+                cout << iter->first << " ";
+            };
+            cout << "]" << endl;
+            cin >> InputPrimaryBank;
         cout << "ATM의 이름을 설정하세요." << endl;
         cin >> ATMname;
-        cout << "아래 중 ATM의 Admin Card의 카드 번호를 입력하세요." << endl;
-        for (auto iter = inputCardMap.begin(); iter != inputCardMap.end(); iter++) {
-            if (iter->second->isAdminCard()) {
-                cout << iter->first << " ";
-            }else {}
-            
-        };
-        cin >> AdminCard;
+        BacktoAdminCardSET:
+            cout << "아래 중 ATM의 Admin Card의 카드 번호를 입력하세요." << endl;
+            for (auto iter = inputCardMap.begin(); iter != inputCardMap.end(); iter++) {
+                if (iter->second->isAdminCard()) {
+                    cout << iter->first << " ";
+                }else {}
+                
+            };
+            cin >> AdminCard;
         
         Bank* ba;
         auto bankIter = InputBankMap.find(InputPrimaryBank);
