@@ -1887,13 +1887,10 @@ void ATM::Start() {
         }
     }
     else if (CheckInvalidCard(CN, PW)) {
-        cout << "I'm here 31" << endl;
         OpenSession();
-        cout << "I'm here 32" << endl;
     }
     else { cout << "올바르지 않은 카드입니다." << endl; }
 
-    cout << "I'm here 41";
 
     //Session 종료 또는 invalid card : 카드 return 표시하기
 
@@ -1902,28 +1899,20 @@ bool ATM::CheckInvalidCard(string cardnum, string pw) {
     ///////////////////////////////이 부분 어떻게 할지, bank에서 카드 맵 저장하는게 나을지도
     bool isExist = false;
     for (const auto& banks : GetPrimaryBank()) {
-        cout << "I'm here 11" << endl;
         map<string, Account*> accMap = banks.second->AccountsInBank();
-        cout << "I'm here 12" << endl;
         for (const auto& accs : accMap) {
             cout << accs.second->getAccountNum() << endl;
-            cout << "I'm here 13" << endl;
             if (accs.second->getMyCard()->getCardNumber() == cardnum && accs.second->verifyPW(pw)) {
-                cout << "I'm here 14" << endl;
                 isExist = true;
                 break;
             };
         }
     }
     for (const auto& banks : GetNonPrimaryBank()) {
-        cout << "I'm here 21" << endl;
         map<string, Account*> accMap = banks.second->AccountsInBank();
-        cout << "I'm here 22" << endl;
         for (const auto& accs : accMap) {
             cout << accs.second->getAccountNum() << endl;
-            cout << "I'm here 23" << endl;
             if (accs.second->getMyCard()->getCardNumber() == cardnum && accs.second->verifyPW(pw)) {
-                cout << "I'm here 24" << endl;
                 isExist = true;
                 break;
             };
