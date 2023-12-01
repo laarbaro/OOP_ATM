@@ -286,16 +286,13 @@ class Global {
 private:
     map<string, ATM*> ATMMap;
     map<string, Account*> AccountMap;
-    map<string, Card*> AdminMap;
 public:
-    Global(map<string, Account*> mpa, map<string, ATM*> mpb, map<string, Card*> mpc) : AccountMap(mpa), ATMMap(mpb), AdminMap(mpc) {};
+    Global(map<string, Account*> mpa, map<string, ATM*> mpb) : AccountMap(mpa), ATMMap(mpb) {};
     void setAccountMap(map<string, Account*> inmap);
     void setATMMap(map<string, ATM*> inmap);
-    void setAdminMap(map<string, Card*> inmap);
     void Display();
     map<string, ATM*> getATMMap() { return ATMMap; };
     map<string, Account*> getAccountMap() { return AccountMap; };
-    map<string, Card*> getAdminMap() { return AdminMap; };
 };
 
 
@@ -1998,9 +1995,7 @@ void Global::setAccountMap(map<string, Account*> inmap) {
 void Global::setATMMap(map<string, ATM*> inmap) {
     this->ATMMap = inmap;
 }
-void Global::setAdminMap(map<string, Card*> inmap) {
-    this->AdminMap = inmap;
-}
+
 void Global::Display() {
     //모든 ATM의 정보 출력
     for (pair<string, ATM*> i : ATMMap) {
@@ -2036,7 +2031,6 @@ int main() {
     //Account 선언
     map<string, Account*> AccountMap;
     map<string, Card*> inputCardMap;
-    map<string, Card*> mainAdminMap;
     int NumofAccount;
     string pb;
     string AccountNum;
@@ -2051,7 +2045,6 @@ int main() {
         cout << "관리자 권한을 부여할 admin card 번호를 입력하세요." << endl;
         string cardNumber;
         cin >> cardNumber;
-        mainAdminMap.insert({ cardNumber, inputCardMap[cardNumber] });
     }
     
     cout << "Account를 선언하겠습니다" << endl;
@@ -2138,7 +2131,7 @@ int main() {
         ATM* n = new ATM(ba, InputBankMap, AdminCardIn);
         ATMmap.insert({ ATMname, n });
     }
-    Global* myGlobal = new Global(AccountMap, ATMmap, mainAdminMap);
+    Global* myGlobal = new Global(AccountMap, ATMmap);
     for (auto& i : ATMmap) {
         i.second->SetGlobal(myGlobal);
     }
