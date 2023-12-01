@@ -90,7 +90,9 @@ public:
     // 소멸자에서 리소스 정리 작업 수행
     // 예: 동적으로 할당된 메모리 해제 등
 
-    void setAccounts(map<string, Account*> inputAcc) { accounts.insert(inputAcc.begin(), inputAcc.end()); };
+    void setAccounts(map<string, Account*> inputAcc) {
+        for (const auto& pair : inputAcc) { this->accounts[pair.first] = pair.second; }
+    };
     map<string, Account*> AccountsInBank() { return accounts; };
 };
 
