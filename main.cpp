@@ -2137,13 +2137,6 @@ int main() {
         cin >> ATMname;
     BacktoAdminCardSET:
         cout << "ATM의 Admin Card의 카드 번호를 입력하세요." << endl;
-        for (auto iter = inputCardMap.begin(); iter != inputCardMap.end(); iter++) {
-            if (iter->second->isAdminCard()) {
-                cout << iter->first << " ";
-            }
-            else {}
-
-        };
         cin >> AdminCard;
 
         Bank* ba;
