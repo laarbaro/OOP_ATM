@@ -237,7 +237,7 @@ private:
     map<string, Bank*> NonPrimaryBank;
     map<int, int> AvailableCash;//현금 단위, 갯수
     unsigned long long AvailableCashAmount;//현금 양
-    Card* AdminCard;
+    string AdminCard;
     vector<string> History;
     bool Bilingual = false;
     bool MultiBank = false;
@@ -265,7 +265,7 @@ public:
     map<string, Bank*> GetPrimaryBank() { return this->PrimaryBank; }
     map<string, Bank*> GetNonPrimaryBank() { return this->NonPrimaryBank; }
     map<int, int> GetAvailableCash() { return this->AvailableCash; }
-    Card* GetAdminCard() { return this->AdminCard; }
+    string GetAdminCard() { return this->AdminCard; }
     vector<string> GetHistory() { return this->History; }
     unsigned long long GetAvailableCashAmount() { return this->AvailableCashAmount; }
     Global* GetMyGlobal() { return this->myGlobal; }
@@ -2098,7 +2098,7 @@ int main() {
     map<string, ATM*> ATMmap;
     int ATMNum;
     string ATMname;
-    string AdminCard;
+    string AdminCardIn;
     string InputPrimaryBank;
     cout << "ATM을 설정하겠습니다" << endl;
     cout << "몇개의 ATM을 만드시겠습니까?" << endl;
@@ -2118,7 +2118,7 @@ int main() {
         cin >> ATMname;
     BacktoAdminCardSET:
         cout << "ATM의 Admin Card의 카드 번호를 입력하세요." << endl;
-        cin >> AdminCard;
+        cin >> AdminCardIn;
 
         Bank* ba;
         auto bankIter = InputBankMap.find(InputPrimaryBank);
@@ -2130,7 +2130,7 @@ int main() {
             goto BacktoATMSET;
         }
 
-        Card* c;
+        /*
         auto cardIter = inputCardMap.find(AdminCard);
         if (cardIter != inputCardMap.end()) {
             c = cardIter->second;
@@ -2138,12 +2138,12 @@ int main() {
         else {
             cout << "존재하지 않는 은행입니다" << endl;  // This line doesn't seem to do anything
             goto BacktoAdminCardSET;
-        }
+        }*/
 
 
 
 
-        ATM* n = new ATM(ba, InputBankMap, c);
+        ATM* n = new ATM(ba, InputBankMap, AdminCardIn);
         ATMmap.insert({ ATMname, n });
     }
     Global* myGlobal = new Global(AccountMap, ATMmap, mainAdminMap);
