@@ -1133,7 +1133,8 @@ KoreanSession::KoreanSession(ATM* iatm) {
                         }
                         mainKoreanDisplay();
 
-                        while (true) {
+                        bool keepgoing = true;
+                        while (keepgoing) {
                             cout << "          받으실 분의 계좌 번호를 입력해주십시오\n" << endl;
                             cout << "받으실 분 계좌 번호 : ";
                             string inDest;
@@ -1650,7 +1651,8 @@ EnglishSession::EnglishSession(ATM* iatm) {
                         }
                         mainEnglishDisplay();
 
-                        while (true) {
+                        bool keepgoing = true;
+                        while (keepgoing) {
                             cout << "Enter the recipient's account number\n" << endl;
                             cout << "Recipient's account number: ";
                             string inDest;
