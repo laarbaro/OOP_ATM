@@ -1160,7 +1160,7 @@ KoreanSession::KoreanSession(ATM* iatm) {
                                     if (pair.first == inDest) {
                                         AccountTransfer(inAmount, accTmp, 0);
                                         isAccNotExist = false;
-                                        keepGoing = false;
+                                        keepgoing = false;
                                     }
                                 }
                                 if (isAccNotExist) {
