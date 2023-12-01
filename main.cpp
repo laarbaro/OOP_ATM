@@ -1450,6 +1450,12 @@ EnglishSession::EnglishSession(ATM* iatm) {
                         continue;
                     };
 
+                    map<int, int> billCounts;
+                    billCounts[1000] = 0;
+                    billCounts[5000] = 0;
+                    billCounts[10000] = 0;
+                    billCounts[50000] = 0;
+
 
 
                     if (depositinput == 1) {
@@ -1460,11 +1466,7 @@ EnglishSession::EnglishSession(ATM* iatm) {
                             int sel = -1;
                             cin >> sel;
 
-                            map<int, int> billCounts;
-                            billCounts[1000] = 0;
-                            billCounts[5000] = 0;
-                            billCounts[10000] = 0;
-                            billCounts[50000] = 0;
+                            
 
                             if (sel == 0000000000) {
                                 this->myGlobal->Display();
@@ -1740,16 +1742,21 @@ EnglishSession::EnglishSession(ATM* iatm) {
 
                     
 
-                }else if (transactionNum == 4) { // Service Termination
+                }
+                if (transactionNum == 4) { 
+                    
+                    // Service Termination
                     sessionExitSignal = false;
                 }
-            }
+            
                 cout << "Session terminated" << endl;
                 cout << "Thank you for using the ATM\n" << endl;
                 if (GetSessionHistory().size() == 0) {  // History section
                     cout << "There is no transaction history for this session\n" << endl;
                 }
                 else {
+
+                    
                     cout << "Total transaction history for this session" << endl;
 
                     // atm->addTransaction(GetSessionHistory()); // Pass to ATM.
@@ -1761,7 +1768,9 @@ EnglishSession::EnglishSession(ATM* iatm) {
                 }
             }
         }
-    }
+    ｝
+    else { cout << " 세션이 종료됩니다. " << endl; }
+}//class 끝
 
 ATM::ATM() {
     cout << "아무 input 없이 ATM을 생성할 수 없습니다." << endl;
