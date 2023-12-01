@@ -1232,7 +1232,7 @@ KoreanSession::KoreanSession(ATM* iatm) {
     else { cout << " 세션이 종료됩니다. " << endl; }
 }//class 끝
 
--------------childs of Session - EnglishSession--------------
+//------------ - childs of Session - EnglishSession--------------
 class EnglishSession : public Session {
 public:
     EnglishSession(ATM* iatm);
@@ -1456,215 +1456,236 @@ EnglishSession::EnglishSession(ATM* iatm) {
                     else if (depositinput == 2) {
                         int numIterations = 0;
                         while (true) {
-                                if (numIterations == 30) {
-                                    cout << "You can deposit up to 30 checks." << endl;
-                                    break;
-                                } else {
-                                    cout << "1. Enter check 2. Exit\n" << endl;
-                                    int choice = -1;
-                                    cin >> choice;
-                                    if (cin.fail() == true) {
-                                        cout << "Invalid number. Please enter again." << endl;
-                                        cin.clear();
-                                        cin.ignore(100, '\n');
-                                        continue;
-                                    } else if (choice == 0000000000) {
-                                        this->myGlobal->Display();
-                                        continue;
-                                    }
-                                    if (choice == 2) {
-                                        break;
-                                    } else {
-                                        cout << "Enter the check amount: ";
-                                        cout << "Check : ";
-                                        int numBill = -1;
-                                        cin >> numBill;
-                        
-                                        if (cin.fail() == true) {
-                                            cout << "Invalid number." << endl;
-                                            cin.clear();
-                                            cin.ignore(100, '\n');
-                                            continue;
-                                        } else if (numBill == 0000000000) {
-                                            this->myGlobal->Display();
-                                            continue;
-                                        }
-                                        CheckDeposit(numBill, 0);
-                                        numIterations++;
-                                    }
-                                }
+                            if (numIterations == 30) {
+                                cout << "You can deposit up to 30 checks." << endl;
+                                break;
                             }
-                        } 
-                        else {
-                            cout << "Invalid number." << endl;
-                        }
-
-                    } 
-                    else if (transactionNum == 2) { // Withdrawal
-                        if (withdrawalCount == 3) {
-                            cout << "You have exceeded the maximum withdrawal limit per session.\n" << endl;
-                        } else {
-                            while (true) {
-                                mainEnglishDisplay();
-                                map<int, int> billCounts; // Map to store the count of each bill
-                                cout << "Select the type of bill to withdraw\n" << endl;
-                                cout << "1. 1000 won  2. 5000 won  3. 10000 won  4. 50000 won  5. Exit" << endl;
-                                cout << "Enter number: ";
-                                int bill = -1;
-                                cin >> bill;
-                    
-                                if (cin.fail() == true || bill < 1 || bill > 5) {
-                                    cout << "Invalid number." << endl;
-                                    cin.clear();
-                                    cin.ignore(100, '\n');
-                                    continue;
-                                } else if (bill == 0000000000) {
-                                    this->myGlobal->Display();
-                                    continue;
-                                }
-                    
-                                if (bill == 5) {
-                                    // Exit the loop when the user chooses to exit
-                                    break;
-                                }
-                    
-                                int billType;
-                                if (bill == 1) {
-                                    billType = 1000;
-                                } else if (bill == 2) {
-                                    billType = 5000;
-                                } else if (bill == 3) {
-                                    billType = 10000;
-                                } else if (bill == 4) {
-                                    billType = 50000;
-                                }
-                    
-                                cout << "Enter the number of bills to withdraw: ";
-                                int numBill = -1;
-                    
-                                cin >> numBill;
-                                if (cin.fail() == true || numBill <= 0) {
-                                    cout << "Invalid number." << endl;
-                                    cin.clear();
-                                    cin.ignore(100, '\n');
-                                    continue;
-                                } else if (numBill == 0000000000) {
-                                    this->myGlobal->Display();
-                                    continue;
-                                }
-                    
-                                billCounts[billType] = numBill;
-                                // Limit the number of bills that can be processed at once
-                                if (numBill > 50) {
-                                    cout << "You have exceeded the maximum number of bills that can be processed in one transaction." << endl;
-                                    break;
-                                }
-                                Withdrawal(billCounts, 0);
-                            }
-                        }
-                    } else if (transactionNum == 3) { // Transfer
-                        unsigned long long inAmount;
-                        int transferNum = -1;
-                        while (true) {
-                            cout << "Transfer service\n" << endl;
-                                cout << "             1. Account Transfer (Account to Account)" << endl;
-                                cout << "             2. Cash Transfer (Cash to Account)\n" << endl;
-                                cout << "==================================================" << endl;
-                                cout << "Enter number: ";
-                                cin >> transferNum;
+                            else {
+                                cout << "1. Enter check 2. Exit\n" << endl;
+                                int choice = -1;
+                                cin >> choice;
                                 if (cin.fail() == true) {
-                                    cout << "Invalid number." << endl;
+                                    cout << "Invalid number. Please enter again." << endl;
                                     cin.clear();
                                     cin.ignore(100, '\n');
                                     continue;
-                                } else if (transferNum == 0000000000) {
+                                }
+                                else if (choice == 0000000000) {
                                     this->myGlobal->Display();
                                     continue;
-                                } else {
+                                }
+                                if (choice == 2) {
                                     break;
-                                };
-                            }
-                            if (transferNum == 1) { // Account Transfer
-                                while (true) {
-                                    cout << "You have selected the Account Transfer service\n" << endl;
-                                    cout << "Enter the amount to transfer\n" << endl;
-                                    cout << "Transfer amount: ";
-                                    inAmount = -1;
-                                    cin >> inAmount;
-                                    if (cin.fail() == true) {
-                                        cout << "Invalid number." << endl;
-                                        cin.clear();
-                                        cin.ignore(100, '\n');
-                                        continue;
-                                    } else if (inAmount == 0000000000) {
-                                        this->myGlobal->Display();
-                                        continue;
-                                    } else if (inAmount < 0) {
-                                        cout << "Invalid number." << endl;
-                                    } else if (inAmount == 0) {
-                                        cout << "You cannot transfer 0 won\n" << endl;
-                                    } else {
-                                        break;
-                                    };
                                 }
-                                mainEnglishDisplay();
-                            
-                                while (true) {
-                                    cout << "Enter the recipient's account number\n" << endl;
-                                    cout << "Recipient's account number: ";
-                                    string inDest;
-                                    cin >> inDest;
-                            
+                                else {
+                                    cout << "Enter the check amount: ";
+                                    cout << "Check : ";
+                                    int numBill = -1;
+                                    cin >> numBill;
+
                                     if (cin.fail() == true) {
                                         cout << "Invalid number." << endl;
                                         cin.clear();
                                         cin.ignore(100, '\n');
                                         continue;
-                                    } else if (inDest == "x") {
-                                        this->myGlobal->Display();
-                                        continue;
-                                    } else {
-                                        // Get the account map from Global and pass the destination account*
-                                        auto it = this->myGlobal->getAccountMap().find(inDest);
-                            
-                                        if (it != this->myGlobal->getAccountMap().end()) {
-                                            AccountTransfer(inAmount, it->second, 0);
-                                        } else {
-                                            // If the account does not exist
-                                            cout << "The entered account number does not exist. Please enter again." << endl;
-                                            continue;
-                                        }
                                     }
-                                }
-                            }
-                            
-                            if (transactionNum == 4) { // Service Termination
-                                sessionExitSignal = false;
-                            }
-                            
-                        }
-                                
-                        cout << "Session terminated" << endl;
-                        cout << "Thank you for using the ATM\n" << endl;
-                        if (GetSessionHistory().size() == 0) {  // History section
-                            cout << "There is no transaction history for this session\n" << endl;
-                        } else {
-                            cout << "Total transaction history for this session" << endl;
-                        
-                            // atm->addTransaction(GetSessionHistory()); // Pass to ATM.
-                        
-                            for (int i = 0; i < GetSessionHistory().size(); i++) {
-                                cout << GetSessionHistory()[i] << endl; // Display history
+                                    else if (numBill == 0000000000) {
+                                        this->myGlobal->Display();
+                                        continue;
+                                    }
+                                    CheckDeposit(numBill, 0);
+                                    numIterations++;
                                 }
                             }
                         }
                     }
-                }
-                 else {cout << "Total transaction history for this session" << endl;}
-                }//class 끝
-                ///////////////////////stop
+                    else {
+                        cout << "Invalid number." << endl;
+                    }
 
-    ///--------------------------------method of ATM-------------------------------------
+                }
+                else if (transactionNum == 2) { // Withdrawal
+                    if (withdrawalCount == 3) {
+                        cout << "You have exceeded the maximum withdrawal limit per session.\n" << endl;
+                    }
+                    else {
+                        while (true) {
+                            mainEnglishDisplay();
+                            map<int, int> billCounts; // Map to store the count of each bill
+                            cout << "Select the type of bill to withdraw\n" << endl;
+                            cout << "1. 1000 won  2. 5000 won  3. 10000 won  4. 50000 won  5. Exit" << endl;
+                            cout << "Enter number: ";
+                            int bill = -1;
+                            cin >> bill;
+
+                            if (cin.fail() == true || bill < 1 || bill > 5) {
+                                cout << "Invalid number." << endl;
+                                cin.clear();
+                                cin.ignore(100, '\n');
+                                continue;
+                            }
+                            else if (bill == 0000000000) {
+                                this->myGlobal->Display();
+                                continue;
+                            }
+
+                            if (bill == 5) {
+                                // Exit the loop when the user chooses to exit
+                                break;
+                            }
+
+                            int billType;
+                            if (bill == 1) {
+                                billType = 1000;
+                            }
+                            else if (bill == 2) {
+                                billType = 5000;
+                            }
+                            else if (bill == 3) {
+                                billType = 10000;
+                            }
+                            else if (bill == 4) {
+                                billType = 50000;
+                            }
+
+                            cout << "Enter the number of bills to withdraw: ";
+                            int numBill = -1;
+
+                            cin >> numBill;
+                            if (cin.fail() == true || numBill <= 0) {
+                                cout << "Invalid number." << endl;
+                                cin.clear();
+                                cin.ignore(100, '\n');
+                                continue;
+                            }
+                            else if (numBill == 0000000000) {
+                                this->myGlobal->Display();
+                                continue;
+                            }
+
+                            billCounts[billType] = numBill;
+                            // Limit the number of bills that can be processed at once
+                            if (numBill > 50) {
+                                cout << "You have exceeded the maximum number of bills that can be processed in one transaction." << endl;
+                                break;
+                            }
+                            Withdrawal(billCounts, 0);
+                        }
+                    }
+                }
+                else if (transactionNum == 3) { // Transfer
+                    unsigned long long inAmount;
+                    int transferNum = -1;
+                    while (true) {
+                        cout << "Transfer service\n" << endl;
+                        cout << "             1. Account Transfer (Account to Account)" << endl;
+                        cout << "             2. Cash Transfer (Cash to Account)\n" << endl;
+                        cout << "==================================================" << endl;
+                        cout << "Enter number: ";
+                        cin >> transferNum;
+                        if (cin.fail() == true) {
+                            cout << "Invalid number." << endl;
+                            cin.clear();
+                            cin.ignore(100, '\n');
+                            continue;
+                        }
+                        else if (transferNum == 0000000000) {
+                            this->myGlobal->Display();
+                            continue;
+                        }
+                        else {
+                            break;
+                        };
+                    }
+                    if (transferNum == 1) { // Account Transfer
+                        while (true) {
+                            cout << "You have selected the Account Transfer service\n" << endl;
+                            cout << "Enter the amount to transfer\n" << endl;
+                            cout << "Transfer amount: ";
+                            inAmount = -1;
+                            cin >> inAmount;
+                            if (cin.fail() == true) {
+                                cout << "Invalid number." << endl;
+                                cin.clear();
+                                cin.ignore(100, '\n');
+                                continue;
+                            }
+                            else if (inAmount == 0000000000) {
+                                this->myGlobal->Display();
+                                continue;
+                            }
+                            else if (inAmount < 0) {
+                                cout << "Invalid number." << endl;
+                            }
+                            else if (inAmount == 0) {
+                                cout << "You cannot transfer 0 won\n" << endl;
+                            }
+                            else {
+                                break;
+                            };
+                        }
+                        mainEnglishDisplay();
+
+                        while (true) {
+                            cout << "Enter the recipient's account number\n" << endl;
+                            cout << "Recipient's account number: ";
+                            string inDest;
+                            cin >> inDest;
+
+                            if (cin.fail() == true) {
+                                cout << "Invalid number." << endl;
+                                cin.clear();
+                                cin.ignore(100, '\n');
+                                continue;
+                            }
+                            else if (inDest == "x") {
+                                this->myGlobal->Display();
+                                continue;
+                            }
+                            else {
+                                // Get the account map from Global and pass the destination account*
+                                auto it = this->myGlobal->getAccountMap().find(inDest);
+
+                                if (it != this->myGlobal->getAccountMap().end()) {
+                                    AccountTransfer(inAmount, it->second, 0);
+                                }
+                                else {
+                                    // If the account does not exist
+                                    cout << "The entered account number does not exist. Please enter again." << endl;
+                                    continue;
+                                }
+                            }
+                        }
+                    }
+
+                    if (transactionNum == 4) { // Service Termination
+                        sessionExitSignal = false;
+                    }
+
+                }
+
+                cout << "Session terminated" << endl;
+                cout << "Thank you for using the ATM\n" << endl;
+                if (GetSessionHistory().size() == 0) {  // History section
+                    cout << "There is no transaction history for this session\n" << endl;
+                }
+                else {
+                    cout << "Total transaction history for this session" << endl;
+
+                    // atm->addTransaction(GetSessionHistory()); // Pass to ATM.
+
+                    for (int i = 0; i < GetSessionHistory().size(); i++) {
+                        cout << GetSessionHistory()[i] << endl; // Display history
+                    }
+                }
+            }
+        }
+    }
+    else { cout << "Total transaction history for this session" << endl; }
+}//class 끝
+///////////////////////stop
+
+///--------------------------------method of ATM-------------------------------------
 
 ATM::ATM() {
     cout << "아무 input 없이 ATM을 생성할 수 없습니다." << endl;
@@ -1832,8 +1853,8 @@ void ATM::Start() {
 
     cout << "I'm here 41";
 
-        //Session 종료 또는 invalid card : 카드 return 표시하기
-        
+    //Session 종료 또는 invalid card : 카드 return 표시하기
+
 }
 bool ATM::CheckInvalidCard(string cardnum, string pw) {
     ///////////////////////////////이 부분 어떻게 할지, bank에서 카드 맵 저장하는게 나을지도
@@ -1899,7 +1920,7 @@ void ATM::OpenSession() {
             }
             else {
                 if (sel == 1) {
-                    this->CurrentSession = new EnglishSession();
+                    this->CurrentSession = new EnglishSession(this);
                     CurrentSession->SetmyGlobal(this->myGlobal);
                     break;
                 }
@@ -2083,7 +2104,7 @@ int main() {
     cin >> ATMNum;
     for (int i = 0; i < ATMNum; i++) {
         //Primary Bank Setting
-        cout << i+1 << "번째 ATM을 만들겠습니다." << endl;
+        cout << i + 1 << "번째 ATM을 만들겠습니다." << endl;
     BacktoATMSET:
         cout << "아래 중 ATM의 주거래 은행을 선택하세요" << endl;
         cout << "[";
