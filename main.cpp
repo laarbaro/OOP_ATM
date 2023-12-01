@@ -2118,7 +2118,7 @@ int main() {
         cout << "ATM의 이름을 설정하세요." << endl;
         cin >> ATMname;
     BacktoAdminCardSET:
-        cout << ATM의 Admin Card의 카드 번호를 입력하세요." << endl;
+        cout << "ATM의 Admin Card의 카드 번호를 입력하세요." << endl;
         cin >> AdminCard;
 
         Bank* ba;
