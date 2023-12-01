@@ -661,7 +661,7 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
         // 거래 정보를 출력합니다.
         if (x == 0) {//
             //출력 형태 : "Kakao 은행의 계좌 020202(계좌번호)에서 Kakao 은행의 계좌 020202(계좌번호)로 3000원이 송금되었습니다."
-            cout << account->getBankName() << " 은행의 계좌 " << account->getAccountNum() << "에서 " << destination->getBankName() << " 은행의 계좌 " << destination->getAccountNum() << "로 " << amount << "원이 출금되었습니다." << endl;
+            cout << account->getBankName() << " 은행의 계좌 " << account->getAccountNum() << "에서 " << destination->getBankName() << " 은행의 계좌 " << destination->getAccountNum() << "로 " << amount << "원이 송송금되었습니다." << endl;
         }
         else {
             //출력 형태 : "3000 won has been transferred from the account 020202 of Kakao Bank to the account 020202 of Kakao Bank."
@@ -1056,7 +1056,7 @@ KoreanSession::KoreanSession(ATM* iatm) {
 
                             }
 
-                            cout << "입금하실 지폐의 장 수를 입력해주세요: ";
+                            cout << "출금하실 지폐의 장 수를 입력해주세요: ";
                             int numBill = -1;
 
                             cin >> numBill;
@@ -1076,7 +1076,7 @@ KoreanSession::KoreanSession(ATM* iatm) {
                             billCounts[billType] = numBill;
                             // 한 번에 거래 가능한 장 수
                             if (numBill > 50) {
-                                cout << "거래 1회 당 입금 가능한 장 수를 초과하셨습니다." << endl;
+                                cout << "거래 1회 당 출출금 가능한 장 수를 초과하셨습니다." << endl;
                                 break;
 
                             }
