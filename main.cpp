@@ -813,6 +813,7 @@ void KoreanSession::AuthorizePassword() {
 KoreanSession::KoreanSession(ATM* iatm) {
     //Session Protected parameter 초기화 - account, card, transactionHistoryOfSession, currentTransactionID, myGlobal 비어있음
     atm = iatm;
+    this->SetmyGlobal(this->atm->GetMyGlobal());
     primarySignal = true; //
     authorizationCount = 0; //
     withdrawalCount = 0; // 이거 처리 !
@@ -1342,6 +1343,7 @@ void EnglishSession::AuthorizePassword() {
 
 EnglishSession::EnglishSession(ATM* iatm) {
     atm = iatm;
+    this->SetmyGlobal(this->atm->GetMyGlobal());
     primarySignal = true;
     authorizationCount = 0;
     withdrawalCount = 0;
