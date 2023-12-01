@@ -2081,7 +2081,7 @@ int main() {
     cin >> ATMNum;
     for (int i = 0; i < ATMNum; i++) {
         //Primary Bank Setting
-        cout << "새로운 ATM을 만들겠습니다." << endl;
+        cout << i+1 << "번째 ATM을 만들겠습니다." << endl;
     BacktoATMSET:
         cout << "아래 중 ATM의 주거래 은행을 선택하세요" << endl;
         cout << "[";
