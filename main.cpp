@@ -2095,19 +2095,6 @@ int main() {
             AccountMap[AccountNum]->setMyCard(new Card(cardNumber, AccountNum, isAdmin));
             inputCardMap.insert({ cardNumber, AccountMap[AccountNum]->getMyCard() });
 
-
-
-            if (askAdmin == "y") {
-                isAdmin = true;
-            }
-            else { isAdmin = false; }
-            AccountMap[AccountNum]->setMyCard(new Card(cardNumber, AccountNum, isAdmin));
-            inputCardMap.insert({ cardNumber, AccountMap[AccountNum]->getMyCard() });
-
-            if (askAdmin == "y") {
-                mainAdminMap.insert({ cardNumber, inputCardMap[cardNumber] });
-            }
-
         }
     }
 
