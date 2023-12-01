@@ -2200,7 +2200,12 @@ int main() {
 
         char isNew;
         while (true) {
-            cout << "Do you want to make new account or new ATM?" << endl;
+            string isNewOkay;
+            cout << "Do you want to make new account or new ATM? (y or n)" << endl;
+            cin >> isNewOkay;
+            if (isNewOkay == "n") {
+                break;
+            }
             cout << "[a] Make new account [b] Make new ATM" << endl;;
             cin >> isNew;
 
