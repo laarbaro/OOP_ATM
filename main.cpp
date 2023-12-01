@@ -25,13 +25,11 @@ class Card {
 private:
     string cardNumber;
     string accountNumber;
-    bool isAdmin;
-    //bool isBilingual; // 양 언어 구성이 카드와 관련이 있다고 가정
 
 public:
     // 생성자
-    Card(const string& cardNumber, const string& accountNumber, bool isAdmin)
-        : cardNumber(cardNumber), accountNumber(accountNumber), isAdmin(isAdmin) {}
+    Card(const string& cardNumber, const string& accountNumber)
+        : cardNumber(cardNumber), accountNumber(accountNumber) {}
 
     // 카드 번호를 가져오는 함수
     const string& getCardNumber() const;
@@ -41,7 +39,6 @@ public:
 
     // 카드가 관리자 카드인지 확인
     //[유리] card number와 password를 받아서 Admin인지 확인해주세요
-    bool isAdminCard() const;
     /*
         // 카드가 양 언어 지원으로 구성되어 있는지 확인
         bool isBilingualCard() const {
@@ -52,7 +49,6 @@ public:
 };
 const string& Card::getCardNumber() const { return cardNumber; }
 const string& Card::getAccountNumber() const { return accountNumber; }
-bool Card::isAdminCard() const { return isAdmin; }
 
 
 
@@ -2055,8 +2051,6 @@ int main() {
         cout << "관리자 권한을 부여할 admin card 번호를 입력하세요." << endl;
         string cardNumber;
         cin >> cardNumber;
-        bool isAdmin;
-        isAdmin = true;
         mainAdminMap.insert({ cardNumber, inputCardMap[cardNumber] });
     }
     
@@ -2083,12 +2077,10 @@ int main() {
 
         //Card 선언
         //적어도 admin card는 여기에서 선언되어 ATM을 생성할 때 넣어줘야 함.'
-        bool isAdmin;
         cout << "카드번호를 입력하세요" << endl;
         string cardNumber;
         cin >> cardNumber;
-        isAdmin = false;
-        AccountMap[AccountNum]->setMyCard(new Card(cardNumber, AccountNum, isAdmin));
+        AccountMap[AccountNum]->setMyCard(new Card(cardNumber, AccountNum));
         inputCardMap.insert({ cardNumber, AccountMap[AccountNum]->getMyCard() });
     }
 
