@@ -338,10 +338,8 @@ void Session::CashDeposit(map<int, int> amount, int x) { //x=0이면 한국어
     //Primary bank인지 확인하고 fee를 결정합니다.
     unsigned long long fee = 0;
     if (!primarySignal) fee = 1000;
-
     // ATM에 화폐를 추가합니다.
     atm->SetAvailableCash(amount, true);  // ATM에 돈을 추가하는거면 true, 빼는 거면 false
-
     // amount map에 있는 돈의 총량을 계산하고 계좌에 입금합니다.
     unsigned long long totalAmount = 0;
     for (const auto& entry : amount) {
@@ -350,8 +348,8 @@ void Session::CashDeposit(map<int, int> amount, int x) { //x=0이면 한국어
         totalAmount += (denomination * count);
     }
     int transactionID = GetNextTransactionID();
+    cout << totalAmount - fee << endl;
     account->deposit(totalAmount - fee);
-
 
     //History를 저장합니다.
     //형식 : [1] Transaction ID: 1234, Card number: 234, Transaction type: Cash deposit, Amount: 2347, Deposit account number: 23478
@@ -365,10 +363,8 @@ void Session::CashDeposit(map<int, int> amount, int x) { //x=0이면 한국어
     out += to_string(totalAmount);
     out += ", Deposit account number: ";
     out += account->getAccountNum();
-
     atm->SetHistory(out);
     this->transctionHistoryOfSession.push_back(out);
-
 
 
     /////question) History가 string으로 바뀌어 업데이트 했습니다. 삭제해도 될까요?
@@ -738,7 +734,7 @@ void KoreanSession::VerifyAccountNum() {
         if (isValid) {
             map<string, Account*>accMap = this->myGlobal->getAccountMap();
             string tempbank = accMap[inputAccount]->getBankName();
-            
+
             Bank* tmp = nullptr;
             for (const auto& pair : atm->GetPrimaryBank()) { tmp = pair.second; }
             string checkbank = tmp->getBankName();
@@ -759,14 +755,14 @@ void KoreanSession::VerifyAccountNum() {
                     this->account = accMap[inputAccount];
                 }
             }
-            
+
         }
-        else{
+        else {
             mainKoreanDisplay();
             cout << "입력한 계좌번호가 존재하지 않습니다." << endl;
             this->validAccount = false;
         }
-        
+
     }
 }
 
@@ -1254,55 +1250,61 @@ void EnglishSession::VerifyAccountNum() {
     string inputAccount;
     bool verified;
 
-    // Receive account number input
+    //계좌번호 입력받기
     while (true) {
-        cout << "Please enter the account number\n" << endl;
+        cout << " Please enter the account number\n" << endl;
         cout << "Account Number: ";
         cin >> inputAccount;
-        if (cin.fail() == true) {
+        if (cin.fail() == true) { // 사용자의 입력이 string이 아닌 경우
             cout << "Invalid string." << endl;
             cin.clear();
             cin.ignore(100, '\n');
-            continue;
+            continue; //for문 다시 돌아가서 선택하게 하기.
         }
         else if (inputAccount == "x") {
             this->myGlobal->Display();
             continue;
         }
 
-        // Get account map from global and find bank using account pointer
-        auto it = this->myGlobal->getAccountMap().find(inputAccount);
-
-        // Set this->account to account pointer or set validAccount to false
-        if (it != this->myGlobal->getAccountMap().end()) {
-            string tempbank = it->second->getBankName();
+        bool isValid = false;
+        for (const auto& accMap : this->myGlobal->getAccountMap()) {
+            if (accMap.first == inputAccount) { isValid = true; }
+        }
+        if (isValid) {
+            map<string, Account*>accMap = this->myGlobal->getAccountMap();
+            string tempbank = accMap[inputAccount]->getBankName();
 
             Bank* tmp = nullptr;
             for (const auto& pair : atm->GetPrimaryBank()) { tmp = pair.second; }
             string checkbank = tmp->getBankName();
 
-            if (checkbank.compare(tempbank) == 0) {
-                this->account = it->second;
+            if (checkbank.compare(tempbank) == 0) { //현재 세션에서 사용 중인 ATM 객체(atm)의 기본 은행 정보와, 입력된 계좌 번호에 해당하는 Bank 객체의 은행 이름을 비교 ! 두 은행 이름이 같다면, 현재 세션에서 사용 중인 은행이라는 것을 의미
+                this->account = accMap[inputAccount]; //같다면, 해당 은행에서 입력된 계좌 번호에 해당하는 Account 객체를 찾아서 account 포인터에 저장합니다. 이렇게 하면 현재 세션에서 사용할 수 있는 계좌를 설정
+                this->validAccount = true;
+                break;
             }
             else {
-                if (atm->IsMultiBank() == 0) {
+                if (atm->IsMultiBank() == 0) { //타은행 계좌를 사용할 수 없다면
                     mainEnglishDisplay();
-                    cout << "Cannot use accounts from other banks\n" << endl;
-                    validAccount = false;
+                    cout << "Cannot use accounts from other banks\n\n" << endl;
+                    this->validAccount = false;
                 }
                 else {
                     primarySignal = false;
-                    this->account = it->second;
+                    this->account = accMap[inputAccount];
                 }
             }
+
         }
         else {
             mainEnglishDisplay();
             cout << "The entered account number does not exist." << endl;
             this->validAccount = false;
         }
+
     }
 }
+
 
 void EnglishSession::AuthorizePassword() {
     for (int i = 1; i < 4; i++) {
@@ -1396,7 +1398,8 @@ EnglishSession::EnglishSession(ATM* iatm) {
                         continue;
                     };
 
-                    map<int, int> billCounts;
+                    
+
                     if (depositinput == 1) {
                         while (true) {
                             mainEnglishDisplay();
@@ -1405,10 +1408,17 @@ EnglishSession::EnglishSession(ATM* iatm) {
                             int sel = -1;
                             cin >> sel;
 
+                            map<int, int> billCounts;
+                            billCounts[1000] = 0;
+                            billCounts[5000] = 0;
+                            billCounts[10000] = 0;
+                            billCounts[50000] = 0;
+
                             if (sel == 0000000000) {
                                 this->myGlobal->Display();
                                 continue;
-                            } else if (cin.fail() == true || sel < 1 || sel > 5) {
+                            }
+                            else if (cin.fail() == true || sel < 1 || sel > 5) {
                                 cout << "Invalid number." << endl;
                                 cin.clear();
                                 cin.ignore(100, '\n');
@@ -1449,7 +1459,7 @@ EnglishSession::EnglishSession(ATM* iatm) {
                             }
 
                             billCounts[Type] = bill;
-                            CashDeposit(billCounts, 0);
+                            CashDeposit(billCounts, 1);
                         }
                     }
                     else if (depositinput == 2) {
@@ -1492,7 +1502,7 @@ EnglishSession::EnglishSession(ATM* iatm) {
                                         this->myGlobal->Display();
                                         continue;
                                     }
-                                    CheckDeposit(numBill, 0);
+                                    CheckDeposit(numBill, 1);
                                     numIterations++;
                                 }
                             }
@@ -1520,7 +1530,8 @@ EnglishSession::EnglishSession(ATM* iatm) {
                             if (bill == 0000000000) {
                                 this->myGlobal->Display();
                                 continue;
-                            } else if (cin.fail() == true || bill < 1 || bill > 5) {
+                            }
+                            else if (cin.fail() == true || bill < 1 || bill > 5) {
                                 cout << "Invalid number." << endl;
                                 cin.clear();
                                 cin.ignore(100, '\n');
@@ -1567,7 +1578,7 @@ EnglishSession::EnglishSession(ATM* iatm) {
                                 cout << "You have exceeded the maximum number of bills that can be processed in one transaction." << endl;
                                 break;
                             }
-                            Withdrawal(billCounts, 0);
+                            Withdrawal(billCounts, 1);
                         }
                     }
                 }
@@ -1645,7 +1656,7 @@ EnglishSession::EnglishSession(ATM* iatm) {
                                 auto it = this->myGlobal->getAccountMap().find(inDest);
 
                                 if (it != this->myGlobal->getAccountMap().end()) {
-                                    AccountTransfer(inAmount, it->second, 0);
+                                    AccountTransfer(inAmount, it->second, 1);
                                 }
                                 else {
                                     // If the account does not exist
@@ -1929,10 +1940,11 @@ void ATM::OpenSession() {
                 }
             };
         }
-    } else {
+    }
+    else {
         this->CurrentSession = new EnglishSession(this);
-        CurrentSession->SetmyGlobal(this->myGlobal);       
-        
+        CurrentSession->SetmyGlobal(this->myGlobal);
+
     }
 }
 
@@ -1948,12 +1960,12 @@ void ATM::SetAvailableCash(map<int, int> inputcash, bool Plus) {
             int currentnum = inputcash.find(iter->first)->second;
             iter->second -= currentnum;
         }
-        int sum = 0;
-        for (auto iter = this->AvailableCash.begin(); iter != this->AvailableCash.end(); iter++) {
-            sum += ((iter->first) * (iter->second));
+    }
+    int sum = 0;
+    for (auto iter = this->AvailableCash.begin(); iter != this->AvailableCash.end(); iter++) {
+        sum += ((iter->first) * (iter->second));
 
-            this->AvailableCashAmount = sum;
-        }
+        this->AvailableCashAmount = sum;
     }
 }
 
@@ -2040,16 +2052,16 @@ int main() {
     string pw;
     string ownername;
 
-    
-    cout << "몇개의 admin card를 생성하시겠습니까?" << endl ;
-    int num = -1 ;
-    cin >> num ;
-    for (int i=0 ; i < num ; i++){
+
+    cout << "몇개의 admin card를 생성하시겠습니까?" << endl;
+    int num = -1;
+    cin >> num;
+    for (int i = 0; i < num; i++) {
         cout << "관리자 권한을 부여할 admin card 번호를 입력하세요." << endl;
         string cardNumber;
         cin >> cardNumber;
     }
-    
+
     cout << "Account를 선언하겠습니다" << endl;
     cout << "몇개의 Account를 만드시겠습니까?" << endl;
     cin >> NumofAccount;
