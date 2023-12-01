@@ -247,7 +247,7 @@ private:
 
 public:
     ATM();
-    ATM(Bank* pb, map<string, Bank*> allb, Card* admin);//primary bank pointer, allbankmap, admincard
+    ATM(Bank* pb, map<string, Bank*> allb, string admin);//primary bank pointer, allbankmap, admincard
     ~ATM();
     void Start();
     bool CheckAdmin();
