@@ -1153,6 +1153,20 @@ KoreanSession::KoreanSession(ATM* iatm) {
                             }
                             else {
                                 //Global에서 account map 가져와서 destination account* 넘겨주기
+                                bool isAccNotExist = true;
+                                for (const auto& pair: this->myGlobal->getAccountMap()) {
+                                    Account* accTmp = pair.second;
+                                    if (pair.first == inDest) {
+                                        AccountTransfer(inAmount, accTmp, 0);
+                                        isAccNotExist = false;
+                                        keepGoing = false;
+                                    }
+                                }
+                                if (isAccNotExist) {
+                                    cout << "입력한 계좌번호가 존재하지 않습니다. 다시 입력해주세요." << endl;
+                                    continue;
+                                }
+                                /*
                                 auto it = this->myGlobal->getAccountMap().find(inDest);
 
                                 if (it != this->myGlobal->getAccountMap().end()) {
@@ -1164,6 +1178,7 @@ KoreanSession::KoreanSession(ATM* iatm) {
                                     cout << "입력한 계좌번호가 존재하지 않습니다. 다시 입력해주세요." << endl;
                                     continue;
                                 }
+                                */
                             }
                         }
 
@@ -1653,16 +1668,32 @@ EnglishSession::EnglishSession(ATM* iatm) {
                             }
                             else {
                                 // Get the account map from Global and pass the destination account*
+                                bool isAccNotExist = true;
+                                for (const auto& pair: this->myGlobal->getAccountMap()) {
+                                    Account* accTmp = pair.second;
+                                    if (pair.first == inDest) {
+                                        AccountTransfer(inAmount, accTmp, 0);
+                                        isAccNotExist = false;
+                                        keepgoing = false;
+                                    }
+                                }
+                                if (isAccNotExist) {
+                                    cout << "The entered account number does not exist. Please enter again." << endl;
+                                    continue;
+                                }
+
+                                /*
                                 auto it = this->myGlobal->getAccountMap().find(inDest);
 
                                 if (it != this->myGlobal->getAccountMap().end()) {
-                                    AccountTransfer(inAmount, it->second, 1);
+                                    AccountTransfer(inAmount, it->second, 0);
                                 }
                                 else {
                                     // If the account does not exist
                                     cout << "The entered account number does not exist. Please enter again." << endl;
                                     continue;
                                 }
+                                */
                             }
                         }
                     }
