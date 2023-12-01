@@ -479,7 +479,7 @@ void Session::Withdrawal(const map<int, int>& amount, int x) {
     unsigned long long totalAmountCash = atm->GetAvailableCashAmount();
 
     //비교해 출금
-    if (totalAmountCash < totalAmount + fee) {
+    if (totalAmountCash < totalAmount) {
         if (x == 0) cout << " 현재 기기 내 현금이 부족합니다\n" << endl;
         else cout << " OUR ATM DOESN'T HAVE ENOUGH MONEY\n" << endl;
     }
@@ -1404,14 +1404,14 @@ EnglishSession::EnglishSession(ATM* iatm) {
                             cout << "1. 1000 won  2. 5000 won  3. 10000 won  4. 50000 won 5. Exit" << endl;
                             int sel = -1;
                             cin >> sel;
-                            if (cin.fail() == true || sel < 1 || sel > 5) {
+
+                            if (sel == 0000000000) {
+                                this->myGlobal->Display();
+                                continue;
+                            } else if (cin.fail() == true || sel < 1 || sel > 5) {
                                 cout << "Invalid number." << endl;
                                 cin.clear();
                                 cin.ignore(100, '\n');
-                                continue;
-                            }
-                            else if (sel == 0000000000) {
-                                this->myGlobal->Display();
                                 continue;
                             }
 
@@ -1517,14 +1517,13 @@ EnglishSession::EnglishSession(ATM* iatm) {
                             int bill = -1;
                             cin >> bill;
 
-                            if (cin.fail() == true || bill < 1 || bill > 5) {
+                            if (bill == 0000000000) {
+                                this->myGlobal->Display();
+                                continue;
+                            } else if (cin.fail() == true || bill < 1 || bill > 5) {
                                 cout << "Invalid number." << endl;
                                 cin.clear();
                                 cin.ignore(100, '\n');
-                                continue;
-                            }
-                            else if (bill == 0000000000) {
-                                this->myGlobal->Display();
                                 continue;
                             }
 
