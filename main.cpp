@@ -731,38 +731,42 @@ void KoreanSession::VerifyAccountNum() {
             continue;
         }
 
-
-        //global에서 accountmap 가져와서 account pointer로 bank 찾기
-        auto it = this->myGlobal->getAccountMap().find(inputAccount);
-
-        //this->account에 account pointer를 저장하거나, validAccount를 false로 만들기
-        if (it != this->myGlobal->getAccountMap().end()) {
-            string tempbank = it->second->getBankName();
-
+        bool isValid = false;
+        for (const auto& accMap : this->myGlobal->getAccountMap()) {
+            if (accMap.first == inputAccount) { isValid = true; }
+        }
+        if (isValid) {
+            map<string, Account*>accMap = this->myGlobal->getAccountMap();
+            string tempbank = accMap[inputAccount]->getBankName();
+            
             Bank* tmp = nullptr;
             for (const auto& pair : atm->GetPrimaryBank()) { tmp = pair.second; }
             string checkbank = tmp->getBankName();
 
             if (checkbank.compare(tempbank) == 0) { //현재 세션에서 사용 중인 ATM 객체(atm)의 기본 은행 정보와, 입력된 계좌 번호에 해당하는 Bank 객체의 은행 이름을 비교 ! 두 은행 이름이 같다면, 현재 세션에서 사용 중인 은행이라는 것을 의미
-                this->account = it->second; //같다면, 해당 은행에서 입력된 계좌 번호에 해당하는 Account 객체를 찾아서 account 포인터에 저장합니다. 이렇게 하면 현재 세션에서 사용할 수 있는 계좌를 설정
+                this->account = accMap[inputAccount]; //같다면, 해당 은행에서 입력된 계좌 번호에 해당하는 Account 객체를 찾아서 account 포인터에 저장합니다. 이렇게 하면 현재 세션에서 사용할 수 있는 계좌를 설정
+                this->validAccount = true;
+                break;
             }
             else {
                 if (atm->IsMultiBank() == 0) { //타은행 계좌를 사용할 수 없다면
                     mainKoreanDisplay();
                     cout << "타은행 계좌는 사용하실 수 없습니다\n" << endl;
-                    validAccount = false;
+                    this->validAccount = false;
                 }
                 else {
                     primarySignal = false;
-                    this->account = it->second;
+                    this->account = accMap[inputAccount];
                 }
             }
+            
         }
-        else {//accout 존재하지 않음
+        else{
             mainKoreanDisplay();
             cout << "입력한 계좌번호가 존재하지 않습니다." << endl;
             this->validAccount = false;
         }
+        
     }
 }
 
