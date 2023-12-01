@@ -1205,7 +1205,8 @@ KoreanSession::KoreanSession(ATM* iatm) {
 
                      }
                      */
-
+                    
+                    }
                     if (transactionNum == 4) { // 서비스 종료
 
                         sessionExitSignal = false;
@@ -1214,7 +1215,7 @@ KoreanSession::KoreanSession(ATM* iatm) {
 
 
 
-                }
+                
                 //}
 
 
