@@ -827,7 +827,7 @@ KoreanSession::KoreanSession(ATM* iatm) {
 
                 //서비스 선택 UI
                 cout << "원하시는 서비스를 선택해주세요\n" << endl;
-                cout << "1. 입금    2. 출금   3. 송금   4. 거래 내역 조회   5. 서비스 종료\n" << endl; //거래 3번 이상 시 세션 새로 열기
+                cout << "1. 입금    2. 출금   3. 송금   4. 서비스 종료\n" << endl; //거래 3번 이상 시 세션 새로 열기
                 cout << "번호 입력 : ";
                 int transactionNum = -1;
                 cin >> transactionNum;
@@ -1360,7 +1360,7 @@ EnglishSession::EnglishSession(ATM* iatm) {
                 mainEnglishDisplay();
 
                 cout << "Please select the desired service\n" << endl;
-                cout << "1. Deposit    2. Withdrawal   3. Transfer   4. Transaction History   5. Exit\n" << endl;
+                cout << "1. Deposit    2. Withdrawal   3. Transfer   4. Exit\n" << endl;
                 cout << "Enter the number: ";
                 int transactionNum = -1;
                 cin >> transactionNum;
