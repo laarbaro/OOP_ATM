@@ -1056,7 +1056,7 @@ KoreanSession::KoreanSession(ATM* iatm) {
 
                             }
 
-                            cout << "입금하실 지폐의 장 수를 입력해주세요: ";
+                            cout << "출금하실 지폐의 장 수를 입력해주세요: ";
                             int numBill = -1;
 
                             cin >> numBill;
@@ -1915,7 +1915,7 @@ void ATM::OpenSession() {
             cout << "[1] English [etc] Korean" << endl;
             cin >> sel;
             if (cin.fail() == true) { // 사용자의 입력이 string이 아닌 경우
-                cout << "유효하지 않은 문자열입니다." << endl;
+                cout << "유효하지 않은 숫자입니다." << endl;
                 cin.clear();
                 cin.ignore(100, '\n');
                 continue; //for문 다시 돌아가서 선택하게 하기.
