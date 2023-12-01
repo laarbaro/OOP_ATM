@@ -266,7 +266,7 @@ public:
     Card* GetAdminCard() { return this->AdminCard; }
     vector<string> GetHistory() { return this->History; }
     unsigned long long GetAvailableCashAmount() { return this->AvailableCashAmount; }
-    Global* GetMyGolbal() { return this->myGlobal; }
+    Global* GetMyGlobal() { return this->myGlobal; }
 
 
     //Is 함수
