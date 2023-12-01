@@ -460,19 +460,51 @@ void Session::CheckDeposit(unsigned long long amount, int x) {
 
 // 3. 출금해주는 함수
 void Session::Withdrawal(const map<int, int>& amount, int x) {
+
+    map<int, int>amount2;
+    amount2[1000] = 0;
+    amount2[5000] = 0;
+    amount2[10000] = 0;
+    amount2[50000] = 0;
+    
     unsigned long long fee = 1000;
     if (!primarySignal) fee = 2000;
 
     //withdraw할 총량을 계산함
     unsigned long long totalAmount = 0;
-    for (const auto& entry : amount) {
-        int denomination = entry.first;
-        int count = entry.second;
+    for (auto iter = amount.begin(); iter != amount.end(); iter++) {
+
+        int denomination = iter->first;
+        int count = iter->second;
+
+        if (count > 0){
+            amount2[iter->first] = iter->second;
+        }
         totalAmount += (denomination * count);
     }
 
-    //ATM의 사용 가능한 현금의 양을 가져옴
-    unsigned long long totalAmountCash = atm->GetAvailableCashAmount();
+    map<int, int> totalCash = this->atm->GetAvailableCash();
+    int totalAmountCash=0;
+    int a[] = { 1000, 5000, 10000, 50000 };
+
+    for (int i = 0; i < 4; i++) {
+
+        if (amount2[a[i]] > totalCash[a[i]]){
+            totalAmount += 10000000000000000000;
+        }
+     }
+    
+    
+    for (auto iter = totalCash.begin(); iter != totalCash.end(); iter++) {
+
+
+        cout << iter->first << endl;
+        cout << iter->second << endl;
+        int denomination2 = iter->first;
+        int count2 = iter->second;
+        totalAmountCash += (denomination2 * count2);
+
+    }
 
     //비교해 출금
     if (totalAmountCash < totalAmount) {
@@ -485,7 +517,11 @@ void Session::Withdrawal(const map<int, int>& amount, int x) {
     }
     else {
         // 출금금액과 수수료를 ATM과 계좌에서 각각 차감
-        atm->SetAvailableCash(amount, false);  // 가능한 돈을 차감하는 함수로 가정
+        cout << "1000 " << amount2[1000] << endl;
+        cout << "5000 " << amount2[5000] << endl;
+        cout << "10000 " << amount2[10000] << endl;
+        cout << "50000 " << amount2[50000] << endl;
+        atm->SetAvailableCash(amount2, false);  // 가능한 돈을 차감하는 함수로 가정
         account->withdraw(totalAmount + fee);
 
         int transactionID = GetNextTransactionID();
@@ -871,6 +907,11 @@ KoreanSession::KoreanSession(ATM* iatm) {
 
                     //선택 : 현금 입금
                     map<int, int> billCounts; // 각 지폐의 갯수를 저장할 맵
+                    billCounts[1000] = 0;
+                    billCounts[5000] = 0;
+                    billCounts[10000] = 0;
+                    billCounts[50000] = 0;
+                    
                     if (depositinput == 1) {
                         while (true) {
                             mainKoreanDisplay();
