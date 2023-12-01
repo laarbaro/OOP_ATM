@@ -1155,7 +1155,7 @@ KoreanSession::KoreanSession(ATM* iatm) {
                             else {
                                 //Global에서 account map 가져와서 destination account* 넘겨주기
                                 bool isAccNotExist = true;
-                                for (const auto& pair: this->myGlobal->getAccountMap()) {
+                                for (const auto& pair : this->myGlobal->getAccountMap()) {
                                     Account* accTmp = pair.second;
                                     if (pair.first == inDest) {
                                         AccountTransfer(inAmount, accTmp, 0);
@@ -1414,7 +1414,7 @@ EnglishSession::EnglishSession(ATM* iatm) {
                         continue;
                     };
 
-                    
+
 
                     if (depositinput == 1) {
                         while (true) {
@@ -1523,10 +1523,12 @@ EnglishSession::EnglishSession(ATM* iatm) {
                                 }
                             }
                         }
+                        continue;
                     }
                     else {
                         cout << "Invalid number." << endl;
                     }
+
 
                 }
                 else if (transactionNum == 2) { // Withdrawal
@@ -1671,7 +1673,7 @@ EnglishSession::EnglishSession(ATM* iatm) {
                             else {
                                 // Get the account map from Global and pass the destination account*
                                 bool isAccNotExist = true;
-                                for (const auto& pair: this->myGlobal->getAccountMap()) {
+                                for (const auto& pair : this->myGlobal->getAccountMap()) {
                                     Account* accTmp = pair.second;
                                     if (pair.first == inDest) {
                                         AccountTransfer(inAmount, accTmp, 0);
@@ -1700,12 +1702,12 @@ EnglishSession::EnglishSession(ATM* iatm) {
                         }
                     }
 
-                    if (transactionNum == 4) { // Service Termination
-                        sessionExitSignal = false;
-                    }
+                    
 
+                }else if (transactionNum == 4) { // Service Termination
+                    sessionExitSignal = false;
                 }
-
+            }
                 cout << "Session terminated" << endl;
                 cout << "Thank you for using the ATM\n" << endl;
                 if (GetSessionHistory().size() == 0) {  // History section
@@ -1719,15 +1721,11 @@ EnglishSession::EnglishSession(ATM* iatm) {
                     for (int i = 0; i < GetSessionHistory().size(); i++) {
                         cout << GetSessionHistory()[i] << endl; // Display history
                     }
+
                 }
             }
         }
     }
-    else { cout << "Total transaction history for this session" << endl; }
-}//class 끝
-///////////////////////stop
-
-///--------------------------------method of ATM-------------------------------------
 
 ATM::ATM() {
     cout << "아무 input 없이 ATM을 생성할 수 없습니다." << endl;
@@ -2198,6 +2196,104 @@ int main() {
         }
 
         ATMmap[UsedATM]->Start();
+
+        char isNew;
+        while (true) {
+            cout << "Do you want to make new account or new ATM?" << endl;
+            cout << "[a] Make new account [b] Make new ATM" << endl;;
+            cin >> isNew;
+
+            if (cin.fail() == true) {
+                cout << "It's valid character. Please reselect character." << endl;
+                cin.clear();
+                cin.ignore(100, '\n');
+                continue; //for문 다시 돌아가서 선택하게 하기.
+            }
+            else if (isNew == 'x') {
+                myGlobal->Display();
+                continue;
+            } else if (isNew == 'a'){
+                cout << "Account를 선언하겠습니다" << endl;
+                cout << "몇개의 Account를 만드시겠습니까?" << endl;
+                cin >> NumofAccount;
+                for (int i = 0; i < NumofAccount; i++) {
+                    cout << "계좌" << (i + 1) << "의 주거래 은행을 알려주세요" << endl;
+                    cin >> pb;
+                    cout << "계좌번호를 입력해주세요" << endl;
+                    cin >> AccountNum;
+                    cout << "계좌 소유주의 성명을 입력해주세요" << endl;
+                    cin >> ownername;
+                    cout << "계좌 비밀번호를 입력해주세요" << endl;
+                    cin >> pw;
+                    //const string& accountNum, const string& password, const string& ownerName, Bank* bank
+                    map<string, Bank*> inputTMP;
+                    inputTMP[pb] = InputBankMap[pb];
+                    //Account(AccountNum, pw, ownername, inputTMP); //수정중
+                    AccountMap.insert({ AccountNum, new Account(AccountNum, pw, ownername, inputTMP[pb]) });//stop
+                    map<string, Account*> bankin;
+                    bankin[AccountNum] = AccountMap[AccountNum];
+                    InputBankMap[pb]->setAccounts(bankin);
+
+                    //Card 선언
+                    cout << "카드번호를 입력하세요" << endl;
+                    string cardNumber;
+                    cin >> cardNumber;
+                    AccountMap[AccountNum]->setMyCard(new Card(cardNumber, AccountNum));
+                    inputCardMap.insert({ cardNumber, AccountMap[AccountNum]->getMyCard() });
+                }
+                break;
+            }
+            else if (isNew == 'b') {
+                int ATMNum1;
+                string ATMname1;
+                string AdminCardIn1;
+                string InputPrimaryBank1;
+                cout << "ATM을 설정하겠습니다" << endl;
+                cout << "몇개의 ATM을 만드시겠습니까?" << endl;
+                cin >> ATMNum1;
+                for (int i = 0; i < ATMNum1; i++) {
+                    //Primary Bank Setting
+                    cout << i + 1 << "번째 ATM을 만들겠습니다." << endl;
+                    while (true) {
+                        cout << "아래 중 ATM의 주거래 은행을 선택하세요" << endl;
+                        cout << "[";
+                        for (auto iter = InputBankMap.begin(); iter != InputBankMap.end(); iter++) {
+                            cout << iter->first << " ";
+                        };
+                        cout << "]" << endl;
+                        cin >> InputPrimaryBank1;
+
+
+                        Bank* ba;
+                        auto bankIter = InputBankMap.find(InputPrimaryBank1);
+                        if (bankIter != InputBankMap.end()) {
+                            ba = bankIter->second;
+                            break;
+                        }
+                        else {
+                            cout << "존재하지 않는 은행입니다." << endl;
+                            continue;
+                        }
+
+                    cout << "ATM의 이름을 설정하세요." << endl;
+                    cin >> ATMname1;
+
+                    cout << "ATM의 Admin Card의 카드 번호를 입력하세요." << endl;
+                    cin >> AdminCardIn1;
+
+                    ATM* n = new ATM(ba, InputBankMap, AdminCardIn);
+                    ATMmap.insert({ ATMname, n });
+                    }
+                    
+                }
+                break;
+            }
+            else {
+                cout << "It's valid character. Please reselect character." << endl;
+                continue;
+            }
+        }
+        
 
         //quit?
         char isQuit;
