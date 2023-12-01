@@ -106,7 +106,7 @@ private:
     string accountNum;
     string password;
     string ownerName;
-    int balance;
+    long long int balance;
     Bank* myBank; // Bank 클래스의 전방 선언 사용 ,  포인터 연결은 여기서 해주는게 맞음
     Card* myCard;
 
@@ -472,6 +472,11 @@ void Session::Withdrawal(const map<int, int>& amount, int x) {
 
     //withdraw할 총량을 계산함
     unsigned long long totalAmount = 0;
+    for (const auto& pair: amount) {
+        totalAmount += pair.first * pair.second;
+    }
+    /*
+    unsigned long long totalAmount = 0;
     for (auto iter = amount.begin(); iter != amount.end(); iter++) {
 
         int denomination = iter->first;
@@ -481,7 +486,7 @@ void Session::Withdrawal(const map<int, int>& amount, int x) {
             amount2[iter->first] = iter->second;
         }
         totalAmount += (denomination * count);
-    }
+    }*/
 
     map<int, int> totalCash = this->atm->GetAvailableCash();
     int totalAmountCash=0;
@@ -1450,12 +1455,6 @@ EnglishSession::EnglishSession(ATM* iatm) {
                         continue;
                     };
 
-                    map<int, int> billCounts;
-                    billCounts[1000] = 0;
-                    billCounts[5000] = 0;
-                    billCounts[10000] = 0;
-                    billCounts[50000] = 0;
-
 
 
                     if (depositinput == 1) {
@@ -1466,7 +1465,11 @@ EnglishSession::EnglishSession(ATM* iatm) {
                             int sel = -1;
                             cin >> sel;
 
-                            
+                            map<int, int> billCounts;
+                            billCounts[1000] = 0;
+                            billCounts[5000] = 0;
+                            billCounts[10000] = 0;
+                            billCounts[50000] = 0;
 
                             if (sel == 0000000000) {
                                 this->myGlobal->Display();
@@ -1742,21 +1745,16 @@ EnglishSession::EnglishSession(ATM* iatm) {
 
                     
 
-                }
-                if (transactionNum == 4) { 
-                    
-                    // Service Termination
+                }else if (transactionNum == 4) { // Service Termination
                     sessionExitSignal = false;
                 }
-            
+            }
                 cout << "Session terminated" << endl;
                 cout << "Thank you for using the ATM\n" << endl;
                 if (GetSessionHistory().size() == 0) {  // History section
                     cout << "There is no transaction history for this session\n" << endl;
                 }
                 else {
-
-                    
                     cout << "Total transaction history for this session" << endl;
 
                     // atm->addTransaction(GetSessionHistory()); // Pass to ATM.
@@ -1768,9 +1766,7 @@ EnglishSession::EnglishSession(ATM* iatm) {
                 }
             }
         }
-    ｝
-    else { cout << " 세션이 종료됩니다. " << endl; }
-}//class 끝
+    }
 
 ATM::ATM() {
     cout << "아무 input 없이 ATM을 생성할 수 없습니다." << endl;
@@ -2367,3 +2363,4 @@ int main() {
 
     return 0;
 }
+
