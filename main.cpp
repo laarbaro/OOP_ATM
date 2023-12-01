@@ -1697,7 +1697,7 @@ ATM::ATM() {
 
 }
 
-ATM::ATM(Bank* pb, map<string, Bank*> allb, Card* admin) {
+ATM::ATM(Bank* pb, map<string, Bank*> allb, string admin) {
     //primary bank pointer, allbankmap, admincard
 
     //변수 선언
@@ -1894,7 +1894,7 @@ bool ATM::CheckInvalidCard(string cardnum, string pw) {
 
 bool ATM::CheckAdmin(string cardnum) {
     bool isAdmin = false;
-    if (cardnum == AdminCard->getCardNumber()) {
+    if (cardnum == this->AdminCard) {
         isAdmin = true;
     }
     return isAdmin;
