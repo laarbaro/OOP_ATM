@@ -90,7 +90,7 @@ public:
     // 소멸자에서 리소스 정리 작업 수행
     // 예: 동적으로 할당된 메모리 해제 등
 
-    void setAccounts(map<string, Account*> inputAcc) {accounts.insert(inputAcc.begin(), inputAcc.end());};
+    void setAccounts(map<string, Account*> inputAcc) { accounts.insert(inputAcc.begin(), inputAcc.end()); };
     map<string, Account*> AccountsInBank() { return accounts; };
 };
 
@@ -131,7 +131,7 @@ public:
 
     // Bank 이름 반환 함수
     string getBankName() const;
-    
+
     //card pointer
     Card* getMyCard() { return myCard; };
     void setMyCard(Card* crd) { myCard = crd; };
@@ -713,13 +713,13 @@ void KoreanSession::mainKoreanDisplay() {
     if (atm->IsMultiBank()) {
         cout << "타은행 거래 가능>" << endl;
     }
-    else {cout << "주거래 은행 전용>" << endl;}
+    else { cout << "<주거래 은행 전용>" << endl; }
 }
 
 void KoreanSession::VerifyAccountNum() {
     string inputAccount;
     bool verified;
-    
+
     //계좌번호 입력받기
     while (true) {
         cout << " 계좌 번호를 입력해주세요\n" << endl;
@@ -893,7 +893,7 @@ KoreanSession::KoreanSession(ATM* iatm) {
                                 this->myGlobal->Display();
                                 continue;
                             }
-                            
+
 
 
                             if (sel == 5) {
@@ -1269,7 +1269,7 @@ ATM::ATM(Bank* pb, map<string, Bank*> allb, Card* admin) {
 
     cin >> this->SerialNumber;
     this->PrimaryBank.insert({ pb->getBankName(), pb });
-    allb.erase("bankname");
+    allb.erase(bankname);
     this->NonPrimaryBank.insert(allb.begin(), allb.end());
     cout << "Primary 및 Nonprimary bank 설정이 완료되었습니다" << endl;
     this->AdminCard = admin;
@@ -1400,28 +1400,45 @@ void ATM::Start() {
         }
     }
     else if (CheckInvalidCard(CN, PW)) {
-            OpenSession();
+        cout << "I'm here 31" << endl;
+        OpenSession();
+        cout << "I'm here 32" << endl;
     }
     else { cout << "올바르지 않은 카드입니다." << endl; }
-    
-    //Session 종료 또는 invalid card : 카드 return 표시하기
+
+    cout << "I'm here 41";
+
+        //Session 종료 또는 invalid card : 카드 return 표시하기
+        
 }
 bool ATM::CheckInvalidCard(string cardnum, string pw) {
     ///////////////////////////////이 부분 어떻게 할지, bank에서 카드 맵 저장하는게 나을지도
     bool isExist = false;
     for (const auto& banks : GetPrimaryBank()) {
+        cout << "I'm here 11" << endl;
         map<string, Account*> accMap = banks.second->AccountsInBank();
+        cout << "I'm here 12" << endl;
         for (const auto& accs : accMap) {
+            cout << accs.second->getAccountNum() << endl;
+            cout << "I'm here 13" << endl;
             if (accs.second->getMyCard()->getCardNumber() == cardnum && accs.second->verifyPW(pw)) {
+                cout << "I'm here 14" << endl;
                 isExist = true;
+                break;
             };
         }
     }
     for (const auto& banks : GetNonPrimaryBank()) {
+        cout << "I'm here 21" << endl;
         map<string, Account*> accMap = banks.second->AccountsInBank();
+        cout << "I'm here 22" << endl;
         for (const auto& accs : accMap) {
+            cout << accs.second->getAccountNum() << endl;
+            cout << "I'm here 23" << endl;
             if (accs.second->getMyCard()->getCardNumber() == cardnum && accs.second->verifyPW(pw)) {
+                cout << "I'm here 24" << endl;
                 isExist = true;
+                break;
             };
         }
     }
@@ -1430,11 +1447,8 @@ bool ATM::CheckInvalidCard(string cardnum, string pw) {
 
 bool ATM::CheckAdmin(string cardnum) {
     bool isAdmin = false;
-    map<string, Card*> tmp = this->myGlobal->getAdminMap();
-    for (const auto& element : tmp) {
-        if (element.first == cardnum) {
-            isAdmin = true;
-        }
+    if (cardnum == AdminCard->getCardNumber()) {
+        isAdmin = true;
     }
     return isAdmin;
 }
@@ -1588,7 +1602,7 @@ int main() {
     cout << "몇개의 Account를 만드시겠습니까?" << endl;
     cin >> NumofAccount;
     for (int i = 0; i < NumofAccount; i++) {
-        cout << "계좌"<<(i+1)<<"의 주거래 은행을 알려주세요" << endl;
+        cout << "계좌" << (i + 1) << "의 주거래 은행을 알려주세요" << endl;
         cin >> pb;
         cout << "계좌번호를 입력해주세요" << endl;
         cin >> AccountNum;
@@ -1604,7 +1618,7 @@ int main() {
         map<string, Account*> bankin;
         bankin[AccountNum] = AccountMap[AccountNum];
         InputBankMap[pb]->setAccounts(bankin);
-        
+
         //Card 선언
         //적어도 admin card는 여기에서 선언되어 ATM을 생성할 때 넣어줘야 함.
         cout << "카드를 만드시겠습니까? (y, n)" << endl;
@@ -1618,20 +1632,20 @@ int main() {
             string askAdmin;
             cin >> askAdmin;
             bool isAdmin;
-            
-            
-            
+
+
+
             if (askAdmin == "y") {
                 isAdmin = true;
             }
             else { isAdmin = false; }
             AccountMap[AccountNum]->setMyCard(new Card(cardNumber, AccountNum, isAdmin));
             inputCardMap.insert({ cardNumber, AccountMap[AccountNum]->getMyCard() });
-            
+
             if (askAdmin == "y") {
-                mainAdminMap.insert({cardNumber, inputCardMap[cardNumber]});
+                mainAdminMap.insert({ cardNumber, inputCardMap[cardNumber] });
             }
-            
+
         }
     }
 
@@ -1649,26 +1663,27 @@ int main() {
     for (int i = 0; i < ATMNum; i++) {
         //Primary Bank Setting
         cout << "새로운 ATM을 만들겠습니다." << endl;
-        BacktoATMSET:
-            cout << "아래 중 ATM의 주거래 은행을 선택하세요" << endl;
-            cout << "[";
-            for (auto iter = InputBankMap.begin(); iter != InputBankMap.end(); iter++) {
-                cout << iter->first << " ";
-            };
-            cout << "]" << endl;
-            cin >> InputPrimaryBank;
+    BacktoATMSET:
+        cout << "아래 중 ATM의 주거래 은행을 선택하세요" << endl;
+        cout << "[";
+        for (auto iter = InputBankMap.begin(); iter != InputBankMap.end(); iter++) {
+            cout << iter->first << " ";
+        };
+        cout << "]" << endl;
+        cin >> InputPrimaryBank;
         cout << "ATM의 이름을 설정하세요." << endl;
         cin >> ATMname;
-        BacktoAdminCardSET:
-            cout << "아래 중 ATM의 Admin Card의 카드 번호를 입력하세요." << endl;
-            for (auto iter = inputCardMap.begin(); iter != inputCardMap.end(); iter++) {
-                if (iter->second->isAdminCard()) {
-                    cout << iter->first << " ";
-                }else {}
-                
-            };
-            cin >> AdminCard;
-        
+    BacktoAdminCardSET:
+        cout << "아래 중 ATM의 Admin Card의 카드 번호를 입력하세요." << endl;
+        for (auto iter = inputCardMap.begin(); iter != inputCardMap.end(); iter++) {
+            if (iter->second->isAdminCard()) {
+                cout << iter->first << " ";
+            }
+            else {}
+
+        };
+        cin >> AdminCard;
+
         Bank* ba;
         auto bankIter = InputBankMap.find(InputPrimaryBank);
         if (bankIter != InputBankMap.end()) {
@@ -1691,7 +1706,7 @@ int main() {
 
 
 
-        
+
         ATM* n = new ATM(ba, InputBankMap, c);
         ATMmap.insert({ ATMname, n });
     }
@@ -1704,7 +1719,7 @@ int main() {
     while (isATMworking) {
         //display
         for (const auto& pair : AccountMap) {
-            cout << "[Account " << pair.first << "] "<< pair.second->getBalance() << endl;
+            cout << "[Account " << pair.first << "] " << pair.second->getBalance() << endl;
         }
         for (const auto& pair : ATMmap) {
             cout << "[ATM " << pair.first << "] " << endl;
