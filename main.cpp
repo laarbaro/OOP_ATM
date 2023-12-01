@@ -711,9 +711,9 @@ void KoreanSession::mainKoreanDisplay() {
     for (const auto& pair : atm->GetPrimaryBank()) { tmp = pair.first; }
     cout << tmp << " 은행" << endl;
     if (atm->IsMultiBank()) {
-        cout << "주거래 은행 전용>" << endl;
+        cout << "타은행 거래 가능>" << endl;
     }
-    else { cout << "타은행 거래 가능>" << endl; }
+    else {cout << "주거래 은행 전용>" << endl;}
 }
 
 void KoreanSession::VerifyAccountNum() {
