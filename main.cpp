@@ -2084,18 +2084,12 @@ int main() {
         //Card 선언
         //적어도 admin card는 여기에서 선언되어 ATM을 생성할 때 넣어줘야 함.'
         bool isAdmin;
-        cout << "카드를 만드시겠습니까? (y, n)" << endl;
-        string makeCard;
-        cin >> makeCard;
-        if (makeCard == "y") {
-            cout << "카드번호를 입력하세요" << endl;
-            string cardNumber;
-            cin >> cardNumber;
-            isAdmin = false;
-            AccountMap[AccountNum]->setMyCard(new Card(cardNumber, AccountNum, isAdmin));
-            inputCardMap.insert({ cardNumber, AccountMap[AccountNum]->getMyCard() });
-
-        }
+        cout << "카드번호를 입력하세요" << endl;
+        string cardNumber;
+        cin >> cardNumber;
+        isAdmin = false;
+        AccountMap[AccountNum]->setMyCard(new Card(cardNumber, AccountNum, isAdmin));
+        inputCardMap.insert({ cardNumber, AccountMap[AccountNum]->getMyCard() });
     }
 
 
