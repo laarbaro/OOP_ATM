@@ -661,7 +661,7 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
         // 거래 정보를 출력합니다.
         if (x == 0) {//
             //출력 형태 : "Kakao 은행의 계좌 020202(계좌번호)에서 Kakao 은행의 계좌 020202(계좌번호)로 3000원이 송금되었습니다."
-            cout << account->getBankName() << " 은행의 계좌 " << account->getAccountNum() << "에서 " << destination->getBankName() << " 은행의 계좌 " << destination->getAccountNum() << "로 " << amount << "원이 송송금되었습니다." << endl;
+            cout << account->getBankName() << " 은행의 계좌 " << account->getAccountNum() << "에서 " << destination->getBankName() << " 은행의 계좌 " << destination->getAccountNum() << "로 " << amount << "원이 송금되었습니다." << endl;
         }
         else {
             //출력 형태 : "3000 won has been transferred from the account 020202 of Kakao Bank to the account 020202 of Kakao Bank."
