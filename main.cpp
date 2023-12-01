@@ -360,7 +360,7 @@ void Session::CashDeposit(map<int, int> amount, int x) { //x=0이면 한국어
     out += "] Transaction ID: ";
     out += to_string(this->currentTransactionID);
     out += ", Card number: ";
-    out += card->getCardNumber();
+    out += account->getMyCard()->getCardNumber();
     out += ", Transaction type: Cash deposit, Amount: ";
     out += to_string(totalAmount);
     out += ", Deposit account number: ";
@@ -426,7 +426,7 @@ void Session::CheckDeposit(unsigned long long amount, int x) {
     out += "] Transaction ID: ";
     out += to_string(this->currentTransactionID);
     out += ", Card number: ";
-    out += card->getCardNumber();
+    out += account->getMyCard()->getCardNumber();
     out += ", Transaction type: Check deposit, Amount: ";
     out += to_string(totalAmount);
     out += ", Deposit account number: ";
@@ -503,7 +503,7 @@ void Session::Withdrawal(const map<int, int>& amount, int x) {
         out += "] Transaction ID: ";
         out += to_string(this->currentTransactionID);
         out += ", Card number: ";
-        out += card->getCardNumber();
+        out += account->getMyCard()->getCardNumber();
         out += ", Transaction type: Withdrawal, Amount: ";
         out += to_string(totalAmount);
         out += ", Deposit account number: ";
@@ -576,7 +576,7 @@ void Session::CashTransfer(map<int, int> amount, Account* destination, int x) { 
     out += "] Transaction ID: ";
     out += to_string(this->currentTransactionID);
     out += ", Card number: ";
-    out += card->getCardNumber();
+    out += account->getMyCard()->getCardNumber();
     out += ", Transaction type: Cash transfer, Amount: ";
     out += to_string(totalAmount);
     out += ", account number for withdrawal: ";
@@ -645,7 +645,7 @@ void Session::AccountTransfer(unsigned long long amount, Account* destination, i
         out += "] Transaction ID: ";
         out += to_string(this->currentTransactionID);
         out += ", Card number: ";
-        out += card->getCardNumber();
+        out += account->getMyCard()->getCardNumber();
         out += ", Transaction type: Account transfer, Amount: ";
         out += to_string(amount);
         out += ", account number for withdrawal: ";
