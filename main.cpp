@@ -498,8 +498,6 @@ void Session::Withdrawal(const map<int, int>& amount, int x) {
     for (auto iter = totalCash.begin(); iter != totalCash.end(); iter++) {
 
 
-        cout << iter->first << endl;
-        cout << iter->second << endl;
         int denomination2 = iter->first;
         int count2 = iter->second;
         totalAmountCash += (denomination2 * count2);
@@ -517,10 +515,6 @@ void Session::Withdrawal(const map<int, int>& amount, int x) {
     }
     else {
         // 출금금액과 수수료를 ATM과 계좌에서 각각 차감
-        cout << "1000 " << amount2[1000] << endl;
-        cout << "5000 " << amount2[5000] << endl;
-        cout << "10000 " << amount2[10000] << endl;
-        cout << "50000 " << amount2[50000] << endl;
         atm->SetAvailableCash(amount2, false);  // 가능한 돈을 차감하는 함수로 가정
         account->withdraw(totalAmount + fee);
 
