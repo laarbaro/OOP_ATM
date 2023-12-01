@@ -40,7 +40,6 @@ public:
     const string& getAccountNumber() const;
 
     // 카드가 관리자 카드인지 확인
-    //[유리] card number와 password를 받아서 Admin인지 확인해주세요
     bool isAdminCard() const;
     /*
         // 카드가 양 언어 지원으로 구성되어 있는지 확인
@@ -1812,10 +1811,11 @@ void ATM::Start() {
     string PW;
     cout << "Insert card number" << endl;
     cin >> CN;
-    cout << "Insert password" << endl;
-    cin >> PW;
+
+    cout << "I'm here 12" << endl;
     //Card 입력받은 경우 : admin인지, 올바른 카드인지 확인 후 session 열어주기
     if (CheckAdmin(CN)) {
+        cout << "I'm here 13" << endl;
         int sel = 1;
         bool repeat = true;
         cout << "Welcome Administrator" << endl;
@@ -1842,48 +1842,40 @@ void ATM::Start() {
                 continue;
             }
             else {
-                cout << "error : 올바른 input을 입력해주세요" << endl;
+                cout << "error : 올바른 input을 입력해주세요. 이 문장은 출력되지 않을 것입니다" << endl;
             }
         }
     }
-    else if (CheckInvalidCard(CN, PW)) {
-        cout << "I'm here 31" << endl;
-        OpenSession();
-        cout << "I'm here 32" << endl;
+    else {
+        cout << "I'm here 14" << endl;
+        cout << "Insert password" << endl;
+        cin >> PW;
+        if (CheckInvalidCard(CN, PW)) {
+            cout << "I'm here 15" << endl;
+            OpenSession();
+        } else { 
+            cout << "I'm here 16" << endl; 
+            cout << "올바르지 않은 카드입니다." << endl; }
     }
-    else { cout << "올바르지 않은 카드입니다." << endl; }
-
-    cout << "I'm here 41";
-
-    //Session 종료 또는 invalid card : 카드 return 표시하기
-
 }
 bool ATM::CheckInvalidCard(string cardnum, string pw) {
     ///////////////////////////////이 부분 어떻게 할지, bank에서 카드 맵 저장하는게 나을지도
     bool isExist = false;
     for (const auto& banks : GetPrimaryBank()) {
-        cout << "I'm here 11" << endl;
         map<string, Account*> accMap = banks.second->AccountsInBank();
-        cout << "I'm here 12" << endl;
         for (const auto& accs : accMap) {
             cout << accs.second->getAccountNum() << endl;
-            cout << "I'm here 13" << endl;
             if (accs.second->getMyCard()->getCardNumber() == cardnum && accs.second->verifyPW(pw)) {
-                cout << "I'm here 14" << endl;
                 isExist = true;
                 break;
             };
         }
     }
     for (const auto& banks : GetNonPrimaryBank()) {
-        cout << "I'm here 21" << endl;
         map<string, Account*> accMap = banks.second->AccountsInBank();
-        cout << "I'm here 22" << endl;
         for (const auto& accs : accMap) {
             cout << accs.second->getAccountNum() << endl;
-            cout << "I'm here 23" << endl;
             if (accs.second->getMyCard()->getCardNumber() == cardnum && accs.second->verifyPW(pw)) {
-                cout << "I'm here 24" << endl;
                 isExist = true;
                 break;
             };
@@ -1902,6 +1894,7 @@ bool ATM::CheckAdmin(string cardnum) {
 void ATM::OpenSession() {
     //언어 받고 session열어주기
     if (this->Bilingual) {
+        cout << "I'm here 17" << endl;
         int sel;
         while (true) {
             cout << "Select Language" << endl;
@@ -1933,10 +1926,11 @@ void ATM::OpenSession() {
                 }
             };
         }
-    } else {
+    }
+    else {
         this->CurrentSession = new EnglishSession(this);
-        CurrentSession->SetmyGlobal(this->myGlobal);       
-        
+        CurrentSession->SetmyGlobal(this->myGlobal);
+
     }
 }
 
@@ -2047,11 +2041,11 @@ int main() {
     string pw;
     string ownername;
 
-    
-    cout << "몇개의 admin card를 생성하시겠습니까?" << endl ;
-    int num = -1 ;
-    cin >> num ;
-    for (int i=0 ; i < num ; i++){
+
+    cout << "몇개의 admin card를 생성하시겠습니까?" << endl;
+    int num = -1;
+    cin >> num;
+    for (int i = 0; i < num; i++) {
         cout << "관리자 권한을 부여할 admin card 번호를 입력하세요." << endl;
         string cardNumber;
         cin >> cardNumber;
@@ -2059,7 +2053,7 @@ int main() {
         isAdmin = true;
         mainAdminMap.insert({ cardNumber, inputCardMap[cardNumber] });
     }
-    
+
     cout << "Account를 선언하겠습니다" << endl;
     cout << "몇개의 Account를 만드시겠습니까?" << endl;
     cin >> NumofAccount;
@@ -2117,8 +2111,10 @@ int main() {
         cout << "ATM의 이름을 설정하세요." << endl;
         cin >> ATMname;
     BacktoAdminCardSET:
+        cout << "I'm here 4" << endl;
         cout << "ATM의 Admin Card의 카드 번호를 입력하세요." << endl;
-        cin >> AdminCard;
+        string adcard;
+        cin >> adcard;
 
         Bank* ba;
         auto bankIter = InputBankMap.find(InputPrimaryBank);
@@ -2131,24 +2127,28 @@ int main() {
         }
 
         Card* c;
-        auto cardIter = inputCardMap.find(AdminCard);
-        if (cardIter != inputCardMap.end()) {
+        auto cardIter = mainAdminMap.find(AdminCard);
+        cout << "I'm here 1" << endl;
+        if (cardIter != mainAdminMap.end()) {
             c = cardIter->second;
+            cout << "I'm here 2" << endl;
         }
         else {
-            cout << "존재하지 않는 은행입니다" << endl;  // This line doesn't seem to do anything
+            cout << "I'm here 3" << endl;
+            cout << "존재하지 않는 Admin Card입니다" << endl;  // This line doesn't seem to do anything
             goto BacktoAdminCardSET;
         }
 
-
-
-
+        cout << "I'm here 5" << endl;
         ATM* n = new ATM(ba, InputBankMap, c);
+        cout << "I'm here 6" << endl;
         ATMmap.insert({ ATMname, n });
+        cout << "I'm here 7" << endl;
     }
     Global* myGlobal = new Global(AccountMap, ATMmap, mainAdminMap);
     for (auto& i : ATMmap) {
         i.second->SetGlobal(myGlobal);
+        cout << "I'm here 9" << endl;
     }
 
     bool isATMworking = true;
@@ -2166,6 +2166,7 @@ int main() {
         string UsedATM;
         cout << "Write the name of an ATM that you want to use." << endl;
         cin >> UsedATM;
+        cout << "I'm here 10" << endl;
 
         if (UsedATM == "x") {
             myGlobal->Display();
@@ -2174,9 +2175,9 @@ int main() {
 
 
         }
-
+        cout << "I'm here 11" << endl;
         ATMmap[UsedATM]->Start();
-
+        cout << "I'm here 12" << endl;
         //quit?
         char isQuit;
         cout << "Do you want to terminate current program? (y, n)" << endl;
