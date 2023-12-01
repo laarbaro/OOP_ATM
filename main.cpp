@@ -1666,8 +1666,30 @@ int main() {
             
         };
         cin >> AdminCard;
-        Bank* ba = InputBankMap.find(InputPrimaryBank)->second;
-        Card* c = inputCardMap.find(AdminCard)->second;
+        
+        Bank* ba;
+        auto bankIter = InputBankMap.find(InputPrimaryBank);
+        if (bankIter != InputBankMap.end()) {
+            ba = bankIter->second;
+        }
+        else {
+            cout << "존재하지 않는 은행입니다" << endl;  // This line doesn't seem to do anything
+            goto BacktoATMSET;
+        }
+
+        Card* c;
+        auto cardIter = inputCardMap.find(AdminCard);
+        if (cardIter != inputCardMap.end()) {
+            c = cardIter->second;
+        }
+        else {
+            cout << "존재하지 않는 은행입니다" << endl;  // This line doesn't seem to do anything
+            goto BacktoAdminCardSET;
+        }
+
+
+
+        
         ATM* n = new ATM(ba, InputBankMap, c);
         ATMmap.insert({ ATMname, n });
     }
