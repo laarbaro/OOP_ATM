@@ -339,6 +339,7 @@ void Session::CashDeposit(map<int, int> amount, int x) { //x=0이면 한국어
     unsigned long long fee = 0;
     if (!primarySignal) fee = 1000;
     // ATM에 화폐를 추가합니다.
+
     atm->SetAvailableCash(amount, true);  // ATM에 돈을 추가하는거면 true, 빼는 거면 false
     // amount map에 있는 돈의 총량을 계산하고 계좌에 입금합니다.
     unsigned long long totalAmount = 0;
@@ -365,7 +366,6 @@ void Session::CashDeposit(map<int, int> amount, int x) { //x=0이면 한국어
     out += account->getAccountNum();
     atm->SetHistory(out);
     this->transctionHistoryOfSession.push_back(out);
-
 
     /////question) History가 string으로 바뀌어 업데이트 했습니다. 삭제해도 될까요?
     // ------[history 관리]
@@ -460,22 +460,60 @@ void Session::CheckDeposit(unsigned long long amount, int x) {
 
 // 3. 출금해주는 함수
 void Session::Withdrawal(const map<int, int>& amount, int x) {
+    map<int, int>amount2;
+    amount2[1000] = 0;
+    amount2[5000] = 0;
+    amount2[10000] = 0;
+    amount2[50000] = 0;
+    
+
     unsigned long long fee = 1000;
     if (!primarySignal) fee = 2000;
 
     //withdraw할 총량을 계산함
     unsigned long long totalAmount = 0;
-    for (const auto& entry : amount) {
-        int denomination = entry.first;
-        int count = entry.second;
-        totalAmount += (denomination * count);
-    }
+    
+    for (auto iter = amount.begin(); iter != amount.end(); iter++) {
+        
+        int denomination = iter->first;
+        int count = iter->second;
 
-    //ATM의 사용 가능한 현금의 양을 가져옴
-    unsigned long long totalAmountCash = atm->GetAvailableCashAmount();
+        if (count > 0){
+            amount2[iter->first] = iter->second;
+        }
+        totalAmount += (denomination * count);
+        
+    }  
+
+    
+    map<int, int> totalCash = this->atm->GetAvailableCash();
+    int totalAmountCash=0;
+    int a[] = { 1000, 5000, 10000, 50000 };
+
+    for (int i = 0; i < 4; i++) {
+        
+        if (amount2[a[i]] > totalCash[a[i]]){
+            totalAmount += 10000000000000000000;
+        }
+
+    }
+    
+
+    for (auto iter = totalCash.begin(); iter != totalCash.end(); iter++) {
+
+
+        cout << iter->first << endl;
+        cout << iter->second << endl;
+        int denomination2 = iter->first;
+        int count2 = iter->second;
+        totalAmountCash += (denomination2 * count2);
+
+    }
+    
 
     //비교해 출금
     if (totalAmountCash < totalAmount) {
+
         if (x == 0) cout << " 현재 기기 내 현금이 부족합니다\n" << endl;
         else cout << " OUR ATM DOESN'T HAVE ENOUGH MONEY\n" << endl;
     }
@@ -484,8 +522,13 @@ void Session::Withdrawal(const map<int, int>& amount, int x) {
         else cout << " YOU DON'T HAVE ENOUGH MONEY\n" << endl;
     }
     else {
+
         // 출금금액과 수수료를 ATM과 계좌에서 각각 차감
-        atm->SetAvailableCash(amount, false);  // 가능한 돈을 차감하는 함수로 가정
+        cout << "1000 " << amount2[1000] << endl;
+        cout << "5000 " << amount2[5000] << endl;
+        cout << "10000 " << amount2[10000] << endl;
+        cout << "50000 " << amount2[50000] << endl;
+        atm->SetAvailableCash(amount2, false);  // 가능한 돈을 차감하는 함수로 가정
         account->withdraw(totalAmount + fee);
 
         int transactionID = GetNextTransactionID();
@@ -805,7 +848,7 @@ void KoreanSession::AuthorizePassword() {
 
 KoreanSession::KoreanSession(ATM* iatm) {
     //Session Protected parameter 초기화 - account, card, transactionHistoryOfSession, currentTransactionID, myGlobal 비어있음
-    atm = iatm;
+    this-> atm = iatm;
     this->SetmyGlobal(this->atm->GetMyGlobal());
     primarySignal = true; //
     authorizationCount = 0; //
@@ -871,6 +914,10 @@ KoreanSession::KoreanSession(ATM* iatm) {
 
                     //선택 : 현금 입금
                     map<int, int> billCounts; // 각 지폐의 갯수를 저장할 맵
+                    billCounts[1000] = 0;
+                    billCounts[5000] = 0;
+                    billCounts[10000] = 0;
+                    billCounts[50000] = 0;
                     if (depositinput == 1) {
                         while (true) {
                             mainKoreanDisplay();
@@ -931,6 +978,8 @@ KoreanSession::KoreanSession(ATM* iatm) {
 
 
                             billCounts[Type] = bill;
+                            cout << "나 " << Type << " " << billCounts[Type] << "입금합니다" << endl;
+
                             CashDeposit(billCounts, 0);
 
 
@@ -1205,8 +1254,7 @@ KoreanSession::KoreanSession(ATM* iatm) {
 
                      }
                      */
-                    
-                    }
+
                     if (transactionNum == 4) { // 서비스 종료
 
                         sessionExitSignal = false;
@@ -1215,7 +1263,7 @@ KoreanSession::KoreanSession(ATM* iatm) {
 
 
 
-                
+                }
                 //}
 
 
@@ -1580,6 +1628,7 @@ EnglishSession::EnglishSession(ATM* iatm) {
                             int numBill = -1;
 
                             cin >> numBill;
+
                             if (cin.fail() == true || numBill <= 0) {
                                 cout << "Invalid number." << endl;
                                 cin.clear();
@@ -1703,30 +1752,31 @@ EnglishSession::EnglishSession(ATM* iatm) {
                         }
                     }
 
-                    
 
-                }else if (transactionNum == 4) { // Service Termination
+
+                }
+                else if (transactionNum == 4) { // Service Termination
                     sessionExitSignal = false;
                 }
             }
-                cout << "Session terminated" << endl;
-                cout << "Thank you for using the ATM\n" << endl;
-                if (GetSessionHistory().size() == 0) {  // History section
-                    cout << "There is no transaction history for this session\n" << endl;
+            cout << "Session terminated" << endl;
+            cout << "Thank you for using the ATM\n" << endl;
+            if (GetSessionHistory().size() == 0) {  // History section
+                cout << "There is no transaction history for this session\n" << endl;
+            }
+            else {
+                cout << "Total transaction history for this session" << endl;
+
+                // atm->addTransaction(GetSessionHistory()); // Pass to ATM.
+
+                for (int i = 0; i < GetSessionHistory().size(); i++) {
+                    cout << GetSessionHistory()[i] << endl; // Display history
                 }
-                else {
-                    cout << "Total transaction history for this session" << endl;
 
-                    // atm->addTransaction(GetSessionHistory()); // Pass to ATM.
-
-                    for (int i = 0; i < GetSessionHistory().size(); i++) {
-                        cout << GetSessionHistory()[i] << endl; // Display history
-                    }
-
-                }
             }
         }
     }
+}
 
 ATM::ATM() {
     cout << "아무 input 없이 ATM을 생성할 수 없습니다." << endl;
@@ -1972,12 +2022,14 @@ void ATM::OpenSession() {
 void ATM::SetAvailableCash(map<int, int> inputcash, bool Plus) {
     if (Plus) {
         for (auto iter = this->AvailableCash.begin(); iter != this->AvailableCash.end(); iter++) {
+
             int currentnum = inputcash.find(iter->first)->second;
             iter->second += currentnum;
         }
     }
     else {
         for (auto iter = this->AvailableCash.begin(); iter != this->AvailableCash.end(); iter++) {
+
             int currentnum = inputcash.find(iter->first)->second;
             iter->second -= currentnum;
         }
@@ -2200,12 +2252,7 @@ int main() {
 
         char isNew;
         while (true) {
-            string isNewOkay;
-            cout << "Do you want to make new account or new ATM? (y or n)" << endl;
-            cin >> isNewOkay;
-            if (isNewOkay == "n") {
-                break;
-            }
+            cout << "Do you want to make new account or new ATM?" << endl;
             cout << "[a] Make new account [b] Make new ATM" << endl;;
             cin >> isNew;
 
@@ -2218,7 +2265,8 @@ int main() {
             else if (isNew == 'x') {
                 myGlobal->Display();
                 continue;
-            } else if (isNew == 'a'){
+            }
+            else if (isNew == 'a') {
                 cout << "Account를 선언하겠습니다" << endl;
                 cout << "몇개의 Account를 만드시겠습니까?" << endl;
                 cin >> NumofAccount;
@@ -2281,16 +2329,16 @@ int main() {
                             continue;
                         }
 
-                    cout << "ATM의 이름을 설정하세요." << endl;
-                    cin >> ATMname1;
+                        cout << "ATM의 이름을 설정하세요." << endl;
+                        cin >> ATMname1;
 
-                    cout << "ATM의 Admin Card의 카드 번호를 입력하세요." << endl;
-                    cin >> AdminCardIn1;
+                        cout << "ATM의 Admin Card의 카드 번호를 입력하세요." << endl;
+                        cin >> AdminCardIn1;
 
-                    ATM* n = new ATM(ba, InputBankMap, AdminCardIn);
-                    ATMmap.insert({ ATMname, n });
+                        ATM* n = new ATM(ba, InputBankMap, AdminCardIn);
+                        ATMmap.insert({ ATMname, n });
                     }
-                    
+
                 }
                 break;
             }
@@ -2299,7 +2347,7 @@ int main() {
                 continue;
             }
         }
-        
+
 
         //quit?
         char isQuit;
